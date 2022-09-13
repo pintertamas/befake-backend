@@ -18,4 +18,8 @@ A technológiák, amiket használni fogok és az ismeretségem velük (1-3 skál
 - Microservices architecture  - 2
 - PostgreSQL                  - 3
 
-![]([https://www.theguardian.com/media/2022/aug/02/bereal-the-instagram-rival-app-wants-me-to-be-authentic-i-cant-imagine-anything-more-boring](https://i.guim.co.uk/img/media/6a1c50677e857d9520af6c96b00caea78a094ecb/0_0_2500_1500/master/2500.jpg?width=880&quality=85&fit=max&s=040b6bcaaddc82647bd1975566c4b3a3))
+A BeReal nevű alkalmazás képei, amire alapul az én alkalmazásom:
+
+<img src="https://i.guim.co.uk/img/media/6a1c50677e857d9520af6c96b00caea78a094ecb/0_0_2500_1500/master/2500.jpg?width=880&quality=85&fit=max&s=040b6bcaaddc82647bd1975566c4b3a3" width="700" />
+
+ ![](https://9to5mac.com/wp-content/uploads/sites/6/2022/07/BeReal-02.jpg?quality=82&strip=all&w=700)
