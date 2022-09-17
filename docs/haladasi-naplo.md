@@ -10,7 +10,7 @@ A repok url-jei:
 - https://github.com/pintertamas/befake-mobile
 
 ### 3. hét
-Adobe XD segítségével elkészítettem a képernyőképeket. Mivel a BeReal nevű alkalmazást fogom lemásolni,nem volt nehéz dolgom, csak ugyan azt meg kellett valósítnom mint az app, egy két számomra felesleges funkciót lecsípve.
+Adobe XD segítségével elkészítettem a képernyőképeket. Mivel a BeReal nevű alkalmazást fogom lemásolni, nem volt nehéz dolgom, csak ugyan azt meg kellett valósítnom mint az app, egy néhány számomra felesleges funkciót lecsípve.
 A képernyőképeket ebben a mappában lehet részletesen megnézni (egyelőre nem csináltam regisztrációs és bejelentkezős felületet, de az is lesz majd):
 
 ```https://github.com/pintertamas/befake-backend/tree/main/docs/designs/artboards```
