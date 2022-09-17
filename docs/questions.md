@@ -12,6 +12,9 @@
 - Ez így most a képernyőképek alapján teljesíthető feladatnak tűnik, vagy túlvállaltam magam?
   - ?
 
+- Az endpointok a mostani állapotukban elegek lesznek/jókat írtam össze? Mit hagytam ki, mi az amin változtassak?
+  - ?
+
 ---
 
 - Hova lenne érdemes deployolni?
