@@ -32,8 +32,8 @@ GET:
 - /storage/{userId} -> visszaadjaa felhasználó addigi összes posztját
 
 POST:
-- /user/register -> regisztrál egy felhasználót
-- /user/login -> beléptet egy felhasználót
+- /auth/register -> regisztrál egy felhasználót
+- /auth/login -> beléptet egy felhasználót
 - /user/edit/{id} -> szerkeszt egy felhasználót
 - /friendlist/add/{userId} -> hozzáadja a kért barátot pending státusszal
 - /friendlist/confirm/{userId} -> elfogadja a barát kérést és a pending státuszt aktívra változtatja
