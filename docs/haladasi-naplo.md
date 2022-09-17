@@ -49,3 +49,9 @@ DELETE:
 - /comment/delete/{commentId} -> töröl egy kommentet
 - /reaction/delete/{reactionId} -> töröl egy reakciót
 ```
+
+Csináltam egy új fájlt, amiben a kérdéseimet fogom követni. Ez itt érhető el:
+
+```https://github.com/pintertamas/befake-backend/blob/main/docs/questions.md```
+
+
