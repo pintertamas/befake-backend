@@ -16,7 +16,7 @@ A képernyőképeket ebben a mappában lehet részletesen megnézni (egyelőre n
 ```https://github.com/pintertamas/befake-backend/tree/main/docs/designs/artboards```
 
 Az egészről pedig a terv itt látható:
-![](https://github.com/pintertamas/befake-backend/blob/main/docs/designs/Screenshot%202022-09-17%20at%2021.34.53.png)
+![](https://github.com/pintertamas/befake-backend/blob/main/docs/designs/Screenshot%202022-09-18%20at%200.44.35.png)
 
 Elkészítettem az EK diagramot is, jelenlegi formájában így néz ki:
 ![](https://github.com/pintertamas/befake-backend/blob/main/docs/BeFake%20ER%20diagram.png?raw=true)
