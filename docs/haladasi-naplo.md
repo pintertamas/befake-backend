@@ -19,7 +19,7 @@ Az egészről pedig a terv itt látható:
 ![](https://github.com/pintertamas/befake-backend/blob/main/docs/designs/Screenshot%202022-09-18%20at%200.44.35.png)
 
 Elkészítettem az EK diagramot is, jelenlegi formájában így néz ki:
-![](https://github.com/pintertamas/befake-backend/blob/main/docs/BeFake%20ER%20diagram.png?raw=true)
+![](https://github.com/pintertamas/befake-backend/blob/main/docs/ER%20diagrams/BeFake%20ER%20diagram_2.png)
 
 Az alkalmazás ezeket az endpointokat fogja tudni kiszolgálni:
 
