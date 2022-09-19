@@ -3,7 +3,10 @@
 - Az authnál hogyan lesz az megoldva, hogy maga az auth (login register) egy külön microservice, viszont azt a részt is annak kéne csinálnia, hogy ellenőrzi a tokenek validságát és ad refresh tokent a kéréseknél, szóval kb az egész appban ott van valamennyire, nem tudom hogyan kellene különválasztani?
   - ?
 
-- RabbitMQ-t érdemes lenne-e használnom microservicek közti kommunikációhoz HTTP (REST Templates basic kommunikáció) helyett? -> lehetne akkor aszinkron módon kommunikálniuk (ha jól értem), az is gyorsítaná az alkalmazást
+- RabbitMQ-t/Apache Kafkát érdemes lenne-e használnom microservicek közti kommunikációhoz HTTP (REST Templates kommunikáció) helyett? -> lehetne akkor aszinkron módon kommunikálniuk (ha jól értem), az is gyorsítaná az alkalmazást
+  - ?
+
+- Ezeknél a messaging szolgáltatásoknál minden serviceben kell lennie egy producer/consumernek?
   - ?
 
 - Jó most úgy az ER diagramom ahogy megcsináltam?
