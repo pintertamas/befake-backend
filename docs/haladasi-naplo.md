@@ -58,6 +58,10 @@ Ezek mellett csinálok egy Udemy kurzust is ami a Spring Bootos microservicek fe
 A kurzus itt érhető el: ```https://www.udemy.com/course/microservices-with-spring-boot-and-spring-cloud/```
 
 Egyelőre annyit csináltam, hogy van két microservicem, az egyik egy adatbázisból szed pénzváltós adatokat, a másik meg feign client segítségével kommunikál ezzel a service-szel és kiszámolja hogy a visszaadott értékek alapján mennyit ér x pénz egy másik valutában.
-A kétservice mellett van egy Netflix Eureka naming server is, ami kezeli a loadot és balance-olja a két futó instance között a kéréseket, amit közben a böngészőből tudok monitorozni. A szakdolgozatomban majda nnyival szeretném ezt a részt bővíteni, hogy ahol cask lehet Kafkát vagy RabbitMQ-t használok a kommunikációra, hogy megbízható, hibatűrőbb és skálázhatóbb legyen az alkalmazás.
+A két service mellett van egy Netflix Eureka naming server is, ami kezeli a loadot és balance-olja a két futó instance között a kéréseket, amit közben a böngészőből tudok monitorozni. A szakdolgozatomban majda nnyival szeretném ezt a részt bővíteni, hogy ahol cask lehet Kafkát vagy RabbitMQ-t használok a kommunikációra, hogy megbízható, hibatűrőbb és skálázhatóbb legyen az alkalmazás.
+Ezek mellé csináltam egy API gateway-t is, aminek köszönhetően olyat tudok csinálni, hogy a gateway portján hívom a keresett endpointokat, a gateway pedig ezeket a kéréseket továbbítja az eureka szervernek, ami load balance-olva tovább adja adott microserviceknek, amik valami más porton futnak, de ezt nem kell ismernie a felhasználónak, mivel be vannak regisztrálva már az eureka szerveren.
 
+Ez így néz ki a gyakorlatban:
+
+![](https://i0.wp.com/kishoretechblog.com/wp-content/uploads/2020/04/API-Gateway.png?w=791&ssl=1)
 
