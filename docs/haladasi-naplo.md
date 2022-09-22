@@ -34,20 +34,22 @@ GET:
 POST:
 - /auth/register -> regisztrál egy felhasználót
 - /auth/login -> beléptet egy felhasználót
-- /user/edit/{id} -> szerkeszt egy felhasználót
 - /friendlist/add/{userId} -> hozzáadja a kért barátot pending státusszal
 - /friendlist/confirm/{userId} -> elfogadja a barát kérést és a pending státuszt aktívra változtatja
 - /post/create -> készít egy posztot
-- /post/edit/{id} -> szerkeszti a kért posztot
 - /comment/create -> kommentel egyet
 - /reaction/create -> reagál egyet
 
+PATCH:
+- /user/{id} -> szerkeszt egy felhasználót
+- /post/{id} -> szerkeszti a kért posztot
+
 DELETE:
-- /user/delete/{id} -> töröl egy felhasználót
-- /friendlist/remove/{userId} -> töröl egy barátot
-- /post/delete/{postId} -> töröl egy posztot
-- /comment/delete/{commentId} -> töröl egy kommentet
-- /reaction/delete/{reactionId} -> töröl egy reakciót
+- /user/{id} -> töröl egy felhasználót
+- /friendlist/{userId} -> töröl egy barátot
+- /post/{postId} -> töröl egy posztot
+- /comment/{commentId} -> töröl egy kommentet
+- /reaction/{reactionId} -> töröl egy reakciót
 ```
 
 Csináltam egy új fájlt, amiben a kérdéseimet fogom követni. Ez itt érhető el:
