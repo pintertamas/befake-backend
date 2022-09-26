@@ -71,6 +71,7 @@ Ez így néz ki a gyakorlatban:
 Véglegesítettem a téma magyar és angol címét:
 - Skálázhatóság vizsgálata mikroszolgáltatásokra épülő konténer-alapú képmegosztó alkalmazáson
 - Scalability analysis of a microservice-based containerized image sharing application
+
 Csináltam egy fájlt a tervezési megfontolások követéséhez:
 
 ```https://github.com/pintertamas/befake-backend/blob/main/docs/tervezesi-megfontolasok.md```
