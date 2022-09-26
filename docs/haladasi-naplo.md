@@ -67,3 +67,11 @@ Ez így néz ki a gyakorlatban:
 
 ![](https://i0.wp.com/kishoretechblog.com/wp-content/uploads/2020/04/API-Gateway.png?w=791&ssl=1)
 
+### 4. hét
+Véglegesítettem a téma magyar és angol címét:
+- Skálázhatóság vizsgálata mikroszolgáltatásokra épülő konténer-alapú képmegosztó alkalmazáson
+- Scalability analysis of a microservice-based containerized image sharing application
+Csináltam egy fájlt a tervezési megfontolások követéséhez:
+
+```https://github.com/pintertamas/befake-backend/blob/main/docs/tervezesi-megfontolasok.md```
+
