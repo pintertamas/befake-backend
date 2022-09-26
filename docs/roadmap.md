@@ -4,8 +4,9 @@
 - [X] sema ek diagrammal
 - [X] rest api kitalalasa
 
+- [X] témakiírás címének véglegesítése
 - [ ] témakiírás szövegének véglegesítése
-- [ ] tervezési döntések dokumentálása
+- [X] tervezési döntések dokumentálása
 - [ ] spring oldalon daok, repo reteg es controller reteg (service retegnel mit akarok szetvalasztani? - mi menjen kulon kontenerekben kulon skalazodassal)
 - [ ] swagger -> generálás
 
