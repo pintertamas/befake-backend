@@ -28,7 +28,7 @@ GET:
 - /user/{id} -> visszaadja egy felhasználó adatait
 - /post/{postId} -> visszaadja a kért posztot
 - /post/todaysPost/{userId} -> visszaadja a felhasználó aznapi posztját
-- /storage/last14days/{userId} -> visszaadja a felhasználó utolsó 2 hetének posztjait
+- /storage/lastPosts/{userId} -> visszaadja a felhasználó utolsó X napjának posztjait - itt az X egy paraméter lesz, amit ha nem adunk meg akkor az alapértelmezett érték 14 lesz
 - /storage/{userId} -> visszaadjaa felhasználó addigi összes posztját
 
 POST:
