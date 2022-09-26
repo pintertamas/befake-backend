@@ -21,3 +21,24 @@ Ha viszont berakok a többi service és a notification szervice közé egy messa
 Azért is akarom ennél a servicenél alkalmazni ezt, mert ott a legfontosabb, hogy bármilyen hiba esetén utólag visszaálljon a rend.
 Ha nem tudnak kommentelni a felhasználók egy darabig, az nem olyan probléma, minthogy lemaradnak fontos eseményekről, ezért ennél a részénél az alkalmazásnak fontosnak tartom hogy használjam vagy a kafka, vagy a rabbitmq által nyújtott előnyöket.
 
+### Mikroszolgáltatások szétválasztása
+A microservicek szétválasztásánál a szempont a felelősségi körük és a feltehető terhelésük mértéke volt a szempont.
+
+- **UserService**: Profil szerkesztése
+- **AuthenticationService**: Regisztráció, Authentikáció kezelése
+
+Ezt a kettőt amiatt választottam szét, mert egy nagyobb alkalmazásnál lehet több féle bejelentkezési metódus is, ráadásul az authentikációnak semmi köze a felhasználó személyes adataihoz. Ugyan így fordítva is igaz, hogy a felhasználót kezelő servicenek nincsen köze a bejelentkezés folyamatához.
+Ezt ennek a threadnek az elolvasása után döntöttem el: [stackoverflow link](https://stackoverflow.com/questions/44886715/should-the-auth-server-be-combined-with-the-user-service-in-a-microservices-arch)
+
+- **PostService**: Itt lehet hozzáadni, törölni, szerkeszteni, lekérni a posztokat. Ebből kell majd a legtöbb instance-nek futnia, mivel ez lesz a leginkább leterhelve
+- **InteractionService**: Itt lehet kommenteket és reakciókat létrehozni, törölni.
+- **FriendService**: Barát jelöléseket, törléseket és jelölések elfogadását teszi lehetővé.
+- **NotificationService**: Értesítéseket küld a mobilok felé bizonyos történésekről.
+- **NamingServer**: Terhelés elosztása és naming szerver
+- **APIGatewayServier**: API Gateway szerver
+
+### Service kommunikáció
+A servicek feign client tervezési mintával fognak ehymással kommunikálni HTTP kérések formájában, kivéve a Notification Service-szel, ami előtt lesz egy message queue szolgáltatás.
+
+### Load balancing
+A terhelés szétosztását egy Eureka szerver fogja megvalósítani
