@@ -76,3 +76,7 @@ Csináltam egy fájlt a tervezési megfontolások követéséhez:
 
 ```https://github.com/pintertamas/befake-backend/blob/main/docs/tervezesi-megfontolasok.md```
 
+Folytattam az Udemy-s kurzust, de nem sokat haladtam vele a gyakorlatban, mivel el voltam akadva egy elég bosszantó hibánál: nem lehetett Docker image-et csinálni a microservice-eimből. Elment jó sok órám debugolással, aztán mivel nem volt rá megoldás a neten, megpróbáltam magamtól megoldani.
+Mint kiderült, az volt a hiba, hogy nekem Amazon Corretto-s JDK-m volt, a buildpack meg BellSoft-ossal működik csak, valami megmagyarázhatatlan indok miatt.
+Most hogy sikerült ezt megoldani, már vannak konténerizált mikroszolgáltatásaim, amiket futtatni tudok egy docker-compose.yaml fájl segítségével.
+A tervem az még erre a hétre, hogy a Kubernetessel is elkezdek ismerkedni. Ha ez is meglesz, akkor már fogok úgy állni a szakdogával is, hogy a kurzuson tanultakat már alkalmazni tudjam rajta.
