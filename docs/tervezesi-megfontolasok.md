@@ -35,7 +35,7 @@ Ezt ennek a threadnek az elolvasása után döntöttem el: [stackoverflow link](
 - **FriendService**: Barát jelöléseket, törléseket és jelölések elfogadását teszi lehetővé.
 - **NotificationService**: Értesítéseket küld a mobilok felé bizonyos történésekről.
 - **NamingServer**: Terhelés elosztása és naming szerver
-- **APIGatewayServier**: API Gateway szerver
+- **APIGatewayServer**: API Gateway szerver
 
 ### Service kommunikáció
 A servicek feign client tervezési mintával fognak ehymással kommunikálni HTTP kérések formájában, kivéve a Notification Service-szel, ami előtt lesz egy message queue szolgáltatás.
