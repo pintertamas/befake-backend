@@ -5,12 +5,12 @@
 - [X] rest api kitalalasa
 
 - [X] témakiírás címének véglegesítése
-- [ ] témakiírás szövegének véglegesítése
 - [X] tervezési döntések dokumentálása
-- [ ] spring oldalon daok, repo reteg es controller reteg (service retegnel mit akarok szetvalasztani? - mi menjen kulon kontenerekben kulon skalazodassal)
-- [ ] swagger -> generálás
+- [X] spring oldalon daok, repo reteg es controller reteg (service retegnel mit akarok szetvalasztani? - mi menjen kulon kontenerekben kulon skalazodassal)
+
+- [ ] témakiírás szövegének véglegesítése
+- [ ] megírni az egészet
 
 ---
 
-- [ ] megírni az egészet
 - [ ] android alkalmazás
