@@ -24,8 +24,8 @@ Ha nem tudnak kommentelni a felhasználók egy darabig, az nem olyan probléma, 
 ### Mikroszolgáltatások szétválasztása
 A microservicek szétválasztásánál a szempont a felelősségi körük és a feltehető terhelésük mértéke volt a szempont.
 
-- **UserService**: Profil szerkesztése
-- **AuthenticationService**: Regisztráció, Authentikáció kezelése
+- **UserService**: Regisztráció, Profil szerkesztése
+- **AuthenticationService**: Authentikáció kezelése
 
 Ezt a kettőt amiatt választottam szét, mert egy nagyobb alkalmazásnál lehet több féle bejelentkezési metódus is, ráadásul az authentikációnak semmi köze a felhasználó személyes adataihoz. Ugyan így fordítva is igaz, hogy a felhasználót kezelő servicenek nincsen köze a bejelentkezés folyamatához.
 Ezt ennek a threadnek az elolvasása után döntöttem el: [stackoverflow link](https://stackoverflow.com/questions/44886715/should-the-auth-server-be-combined-with-the-user-service-in-a-microservices-arch)
