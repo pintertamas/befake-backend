@@ -42,3 +42,6 @@ A servicek feign client tervezési mintával fognak ehymással kommunikálni HTT
 
 ### Load balancing
 A terhelés szétosztását egy Eureka szerver fogja megvalósítani
+
+### Adatbázisok
+Egy adatbázist fogok használni az összes microservicehez, mivel a serviceim a legnagyobb terhelést a képfeltöltésre helyezik, amit terveim szerint egy CDN szolgáltatással fogok megoldani. A többi service viszont egy jól skálázó SQL adatbázist fog írni, ami mivel önmagában megoldja a skálázódást, nem követeli meg hogy külön db-ket használjak minden microservicenél.
