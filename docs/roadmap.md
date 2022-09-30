@@ -2,7 +2,15 @@
 
 - [X] specko befejezes kepernyokepekkel
 - [X] sema ek diagrammal
-- [ ] rest api kitalalasa
+- [X] rest api kitalalasa
+
+- [X] témakiírás címének véglegesítése
+- [X] tervezési döntések dokumentálása
+- [X] spring oldalon daok, repo reteg es controller reteg (service retegnel mit akarok szetvalasztani? - mi menjen kulon kontenerekben kulon skalazodassal)
+
+- [ ] témakiírás szövegének véglegesítése
+- [ ] megírni az egészet
+
 ---
-- [ ] spring oldalon daok, repo reteg es controller reteg (service retegnel mit akarok szetvalasztani? - mi menjen kulon kontenerekben kulon skalazodassal)
+
 - [ ] android alkalmazás
