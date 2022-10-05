@@ -18,7 +18,6 @@ public class ApiGatewayConfiguration {
 
     @Bean
     public RouteLocator gatewayRouter(RouteLocatorBuilder builder) {
-        //Function<PredicateSpec, Buildable<Route>> routeFunction;
         return builder.routes()
                 .route("user-service", r -> r.path("/user/**")
                         .filters(f -> f.filter(filter))

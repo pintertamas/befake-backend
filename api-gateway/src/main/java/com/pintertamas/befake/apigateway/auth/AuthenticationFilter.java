@@ -1,6 +1,8 @@
 package com.pintertamas.befake.apigateway.auth;
 
 import io.jsonwebtoken.Claims;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.cloud.gateway.filter.GatewayFilter;
@@ -22,27 +24,36 @@ public class AuthenticationFilter implements GatewayFilter {
     @Autowired
     private JwtUtil jwtUtil;
 
+    Logger logger = LoggerFactory.getLogger(this.getClass());
+
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
         ServerHttpRequest request = exchange.getRequest();
+        logger.info("Request path: " + request.getPath());
 
         if (routerValidator.isSecured.test(request)) {
-            if (this.isAuthMissing(request))
-                return this.onError(exchange, "Authorization header is missing in request", HttpStatus.UNAUTHORIZED);
+            if (this.isAuthMissing(request)) {
+                logger.error("Auth is missing");
+                return this.onError(exchange);
+            }
 
             final String token = this.getAuthHeader(request);
 
-            if (jwtUtil.isInvalid(token))
-                return this.onError(exchange, "Authorization header is invalid", HttpStatus.UNAUTHORIZED);
+            if (jwtUtil.isInvalid(token)) {
+                logger.error("Token is invalid");
+                return this.onError(exchange);
+            }
 
+            logger.info("Token: " + token);
             this.populateRequestWithHeaders(exchange, token);
         }
         return chain.filter(exchange);
     }
 
-    private Mono<Void> onError(ServerWebExchange exchange, String err, HttpStatus httpStatus) {
+    private Mono<Void> onError(ServerWebExchange exchange) {
+        logger.error("Something went wrong in the AuthenticationFilter class");
         ServerHttpResponse response = exchange.getResponse();
-        response.setStatusCode(httpStatus);
+        response.setStatusCode(HttpStatus.UNAUTHORIZED);
         return response.setComplete();
     }
 

@@ -8,12 +8,14 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="api-gateway" />
-        <module name="naming-server" />
+        <module name="authorization-service" />
         <module name="user-service" />
+        <module name="naming-server" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
       <module name="api-gateway" target="17" />
+      <module name="authorization-service" target="17" />
       <module name="naming-server" target="17" />
       <module name="user-service" target="17" />
     </bytecodeTargetLevel>
@@ -21,6 +23,7 @@
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
       <module name="api-gateway" options="-parameters" />
+      <module name="authorization-service" options="-parameters" />
       <module name="naming-server" options="-parameters" />
       <module name="user-service" options="-parameters" />
     </option>

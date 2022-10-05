@@ -5,9 +5,11 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.data.annotation.CreatedDate;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
+import java.time.Instant;
 
 @Getter
 @Setter
@@ -45,8 +47,8 @@ public class User {
     private byte[] profilePicture;
 
     @Column
-    @GeneratedValue
-    private Timestamp registrationDate;
+    @CreatedDate
+    private Instant registrationDate;
 
     /*@JsonIgnore
     @OneToMany
