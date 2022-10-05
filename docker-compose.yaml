@@ -83,6 +83,9 @@ services:
       - db
       - naming-server
       - api-gateway
+    environment:
+      EUREKA.CLIENT.SERVICEURL.DEFAULTZONE: http://naming-server:8761/eureka
+      SPRING.ZIPKIN.BASEURL: http://zipkin-server:9411
 
   auth-service:
     image: pintertamas/befake-authorization-service:0.0.1-SNAPSHOT
@@ -95,6 +98,9 @@ services:
       - db
       - naming-server
       - api-gateway
+    environment:
+      EUREKA.CLIENT.SERVICEURL.DEFAULTZONE: http://naming-server:8761/eureka
+      SPRING.ZIPKIN.BASEURL: http://zipkin-server:9411
 
 networks:
   befake-network:
