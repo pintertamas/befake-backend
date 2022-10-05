@@ -6,9 +6,6 @@ import org.springframework.cloud.gateway.route.RouteLocator;
 import org.springframework.cloud.gateway.route.builder.RouteLocatorBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.web.csrf.CsrfToken;
-import org.springframework.web.server.WebFilter;
-import reactor.core.publisher.Mono;
 
 @Configuration
 public class ApiGatewayConfiguration {

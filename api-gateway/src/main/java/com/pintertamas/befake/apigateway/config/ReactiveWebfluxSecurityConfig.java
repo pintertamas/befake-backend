@@ -10,6 +10,7 @@ public class ReactiveWebfluxSecurityConfig {
 
     @Bean
     public SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http) {
+
         http
                 .csrf(ServerHttpSecurity.CsrfSpec::disable);
         return http.build();
