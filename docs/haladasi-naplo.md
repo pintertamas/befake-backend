@@ -80,3 +80,9 @@ Folytattam az Udemy-s kurzust, de nem sokat haladtam vele a gyakorlatban, mivel 
 Mint kiderült, az volt a hiba, hogy nekem Amazon Corretto-s JDK-m volt, a buildpack meg BellSoft-ossal működik csak, valami megmagyarázhatatlan indok miatt.
 Most hogy sikerült ezt megoldani, már vannak konténerizált mikroszolgáltatásaim, amiket futtatni tudok egy docker-compose.yaml fájl segítségével.
 A tervem az még erre a hétre, hogy a Kubernetessel is elkezdek ismerkedni. Ha ez is meglesz, akkor már fogok úgy állni a szakdogával is, hogy a kurzuson tanultakat már alkalmazni tudjam rajta.
+
+### 5. hét
+Megcsináltam az api-gateway-t, a naming-server-t és megírtam a user-service-t. Az api-gatewaybe raktam authentikációt és az authorizációhoz létrehoztam az auth-service-t. Az api-gateway minden kérést csak token kíséretében küld tovább, az /auth/login és /user/register kéréseket viszont továbbítja token nélkül is. Sajnos elég sok időm ment el azza, hogy az auth-service 403-as válaszokat adott vissza, de aztán rájöttem, hogy a csrf-et kellett kikapcsolni ahhoz, hogy működjön újra.
+A másik kettő bosszantó probléma amibe belfutottam az az, hogy a Docker néha megbolondul és nem hajlandó semmit se csinálni amit előtte simán tudtam, amíg újra nem indítom, helyette csak 500-as hibákat dob. A másik meg az, hogy ha egy service Dockerben fut csak, akkor az api gateway "Failed to resolve 'de7e17ad10f5' after 5 queries" hibaüzenetet ad és nem éri el. Erre még nem találtam megoldást.
+
+### 6. hét
