@@ -2,15 +2,15 @@ package com.pintertamas.befake.authorizationservice.exception;
 
 public class UserNotFoundException extends Exception {
     private static final String errorMessage = "Could not find user by ";
-    private final String usernameOrEmail;
+    private final String username;
 
-    public UserNotFoundException(String usernameOrEmail) {
-        super(errorMessage + usernameOrEmail);
-        this.usernameOrEmail = usernameOrEmail;
+    public UserNotFoundException(String username) {
+        super(errorMessage + username);
+        this.username = username;
     }
 
     @Override
     public String getMessage() {
-        return errorMessage + usernameOrEmail;
+        return errorMessage + username;
     }
 }

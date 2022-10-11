@@ -37,7 +37,7 @@ public class AuthService {
         User existingUser = userRepository.findUserByUsername(authenticationRequest.getUsername());
         if (existingUser == null) {
             logger.info("User not found");
-            throw new UserNotFoundException("Could not find a user with this username");
+            throw new UserNotFoundException(authenticationRequest.getUsername());
         }
         authenticate(authenticationRequest.getUsername(), authenticationRequest.getPassword());
         final UserDetails userDetails = userDetailsService.loadUserByUsername(authenticationRequest.getUsername());
