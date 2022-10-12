@@ -5,17 +5,14 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
-import lombok.AllArgsConstructor;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.crypto.SecretKey;
-import java.io.Serial;
 import java.io.Serializable;
 import java.util.*;
 import java.util.function.Function;
@@ -23,15 +20,17 @@ import java.util.function.Function;
 @Component
 public class JwtTokenUtil implements Serializable {
 
-    @Autowired
-    UserRepository userRepository;
-
-    @Serial
-    private static final long serialVersionUID = -2550185165626007488L;
+    final UserRepository userRepository;
 
     public static final long JWT_TOKEN_VALIDITY = 5 * 60 * 60;
 
+    Logger logger = LoggerFactory.getLogger(this.getClass());
+
     SecretKey secret = Keys.secretKeyFor(SignatureAlgorithm.HS512);
+
+    public JwtTokenUtil(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
 
     public String getUsernameFromToken(String token) {
         return getClaimFromToken(token, Claims::getSubject);
@@ -59,15 +58,9 @@ public class JwtTokenUtil implements Serializable {
     public String generateToken(UserDetails userDetails) {
         Map<String, Object> claims = new HashMap<>();
 
-        Collection<? extends GrantedAuthority> roles = userDetails.getAuthorities();
+        logger.info("secret at auth-service: " + Arrays.toString(secret.getEncoded()));
 
-        claims.put("isUser", true);
-
-        return doGenerateToken(claims, userDetails.getUsername());
-    }
-
-    private String doGenerateToken(Map<String, Object> claims, String subject) {
-        return Jwts.builder().setClaims(claims).setSubject(subject).setIssuedAt(new Date(System.currentTimeMillis()))
+        return Jwts.builder().setClaims(claims).setSubject(userDetails.getUsername()).setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + JWT_TOKEN_VALIDITY * 1000))
                 .signWith(this.secret).compact();
     }

@@ -20,8 +20,10 @@ public class JwtUtil {
     SecretKey secret = Keys.secretKeyFor(SignatureAlgorithm.HS512);
 
     public Claims getAllClaimsFromToken(String token) {
+        token = token.split(" ")[1].trim(); // removes the "Bearer " substring from the beginning of the token
+
         logger.info("token: " + token);
-        logger.info("secret: " + Arrays.toString(secret.getEncoded()));
+        logger.info("secret at api-gateway: " + Arrays.toString(secret.getEncoded()));
         return Jwts.parserBuilder().setSigningKey(secret).build().parseClaimsJws(token).getBody();
     }
 
