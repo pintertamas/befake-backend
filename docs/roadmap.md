@@ -8,7 +8,7 @@
 - [X] tervezési döntések dokumentálása
 - [X] spring oldalon daok, repo reteg es controller reteg (service retegnel mit akarok szetvalasztani? - mi menjen kulon kontenerekben kulon skalazodassal)
 
-- [ ] témakiírás szövegének véglegesítése
+- [X] témakiírás szövegének véglegesítése
 - [ ] megírni az egészet
 
 ---
