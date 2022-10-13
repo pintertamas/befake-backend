@@ -1,9 +1,7 @@
 package com.pintertamas.befake.apigateway.auth;
 
-import io.jsonwebtoken.Claims;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.cloud.gateway.filter.GatewayFilter;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
@@ -14,17 +12,22 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
+import java.util.Map;
+
 @RefreshScope
 @Component
 public class AuthenticationFilter implements GatewayFilter {
 
-    @Autowired
-    private RouterValidator routerValidator;
+    private final RouterValidator routerValidator;
 
-    @Autowired
-    private JwtUtil jwtUtil;
+    private final JwtUtil jwtUtil;
 
-    Logger logger = LoggerFactory.getLogger(this.getClass());
+    final Logger logger = LoggerFactory.getLogger(this.getClass());
+
+    public AuthenticationFilter(RouterValidator routerValidator, JwtUtil jwtUtil) {
+        this.routerValidator = routerValidator;
+        this.jwtUtil = jwtUtil;
+    }
 
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
@@ -68,7 +71,10 @@ public class AuthenticationFilter implements GatewayFilter {
     }
 
     private void populateRequestWithHeaders(ServerWebExchange exchange, String token) {
-        Claims claims = jwtUtil.getAllClaimsFromToken(token);
-        exchange.getRequest().mutate().header("id", String.valueOf(claims.get("id"))).header("role", String.valueOf(claims.get("role"))).build();
+        Map<String, Object> claims = jwtUtil.getAllClaimsFromToken(token);
+        exchange.getRequest()
+                .mutate()
+                .header("id", String.valueOf(claims.get("id")))
+                .header("role", String.valueOf(claims.get("role"))).build();
     }
 }

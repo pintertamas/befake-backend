@@ -7,14 +7,14 @@ import java.util.List;
 import java.util.function.Predicate;
 
 @Component
-public class RouterValidator {
+public final class RouterValidator {
 
     public static final List<String> openApiEndpoints= List.of(
             "/auth/login",
             "/user/register"
     );
 
-    public Predicate<ServerHttpRequest> isSecured =
+    public final Predicate<ServerHttpRequest> isSecured =
             request -> openApiEndpoints
                     .stream()
                     .noneMatch(uri -> request.getURI().getPath().contains(uri));

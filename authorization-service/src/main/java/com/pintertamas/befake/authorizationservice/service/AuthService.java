@@ -33,7 +33,7 @@ public class AuthService {
 
     Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    public String generateToken(JwtRequest authenticationRequest) throws Exception {
+    public String generateToken(JwtRequest authenticationRequest) throws BadCredentialsException, UserNotFoundException {
         User existingUser = userRepository.findUserByUsername(authenticationRequest.getUsername());
         if (existingUser == null) {
             logger.info("User not found");
@@ -44,14 +44,14 @@ public class AuthService {
         return jwtTokenUtil.generateToken(userDetails);
     }
 
-    private void authenticate(String username, String password) throws Exception {
+    private void authenticate(String username, String password) throws BadCredentialsException {
         try {
             logger.info("Authenticating user: " + username + " with password: " + password);
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
         } catch (DisabledException e) {
-            throw new Exception("USER_DISABLED", e);
+            throw new BadCredentialsException("USER_DISABLED", e);
         } catch (BadCredentialsException e) {
-            throw new Exception("INVALID_CREDENTIALS", e);
+            throw new BadCredentialsException("INVALID_CREDENTIALS", e);
         }
     }
 

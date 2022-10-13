@@ -9,9 +9,9 @@ import com.pintertamas.befake.authorizationservice.service.AuthService;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.annotation.*;
 
 @Slf4j
@@ -19,13 +19,13 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/auth")
 public class AuthorizationController {
 
-    @Autowired
-    AuthService authService;
-
-    @Autowired
-    JwtTokenUtil jwtTokenUtil;
+    private AuthService authService;
 
     Logger logger = LoggerFactory.getLogger(this.getClass());
+
+    public AuthorizationController(AuthService authService) {
+        this.authService = authService;
+    }
 
     @PostMapping("/login")
     public ResponseEntity<?> createAuthenticationToken(@RequestBody JwtRequest authRequest) {
@@ -38,6 +38,9 @@ public class AuthorizationController {
         } catch (UserNotFoundException exception) {
             logger.info("USER NOT FOUND");
             return new ResponseEntity<>(exception.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        } catch (BadCredentialsException e) {
+            logger.error("BAD CREDENTIALS");
+            return new ResponseEntity<>("Bad credentials", HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
             logger.error("ERROR AT LOGIN");
             return new ResponseEntity<>("Could not reach database", HttpStatus.INTERNAL_SERVER_ERROR);

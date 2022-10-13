@@ -3,7 +3,6 @@ package com.pintertamas.befake.authorizationservice.model;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
-import java.io.Serial;
 import java.io.Serializable;
 
 @Getter

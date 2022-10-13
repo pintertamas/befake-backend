@@ -7,7 +7,6 @@ import com.pintertamas.userservice.repository.UserRepository;
 import com.pintertamas.userservice.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,13 +18,16 @@ import java.util.List;
 @RequestMapping("/user")
 public class UserController {
 
-    @Autowired
-    UserRepository userRepository;
+    final UserRepository userRepository;
 
-    @Autowired
-    private UserService userService;
+    private final UserService userService;
 
-    Logger logger = LoggerFactory.getLogger(this.getClass());
+    final Logger logger = LoggerFactory.getLogger(this.getClass());
+
+    public UserController(UserRepository userRepository, UserService userService) {
+        this.userRepository = userRepository;
+        this.userService = userService;
+    }
 
     @GetMapping()
     public ResponseEntity<?> getUserData(@RequestParam Long userId) {
@@ -62,6 +64,7 @@ public class UserController {
             return ResponseEntity.badRequest().body(exception.getMessage());
         } catch (Exception exception) {
             logger.error("Something went wrong during registration...");
+            logger.error(exception.getMessage());
             return ResponseEntity.badRequest().body(exception.getMessage());
         }
     }

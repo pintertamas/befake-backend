@@ -8,7 +8,7 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.data.annotation.CreatedDate;
 
 import javax.persistence.*;
-import java.time.Instant;
+import java.sql.Timestamp;
 
 @Getter
 @Setter
@@ -39,19 +39,13 @@ public class User {
     @Column
     private String biography;
 
-    // just the name of their city or something
     @Column
-    private String location;
+    private String location; // just the name of their city or something
 
     @Column()
     private byte[] profilePicture;
 
     @Column
     @CreatedDate
-    private Instant registrationDate;
-
-    /*@JsonIgnore
-    @OneToMany
-    @JoinColumn(name = "user2_id", nullable = false)
-    private List<User> friends;*/
+    private Timestamp registrationDate;
 }

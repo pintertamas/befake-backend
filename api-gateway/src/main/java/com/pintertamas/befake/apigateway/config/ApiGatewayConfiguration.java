@@ -1,24 +1,18 @@
 package com.pintertamas.befake.apigateway.config;
 
 import com.pintertamas.befake.apigateway.auth.AuthenticationFilter;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cloud.client.loadbalancer.LoadBalanced;
 import org.springframework.cloud.gateway.route.RouteLocator;
 import org.springframework.cloud.gateway.route.builder.RouteLocatorBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.web.reactive.function.client.WebClient;
 
 @Configuration
 public class ApiGatewayConfiguration {
 
-    @Autowired
-    AuthenticationFilter filter;
+    final AuthenticationFilter filter;
 
-    @Bean
-    @LoadBalanced
-    public WebClient.Builder loadBalancedWebClientBuilder() {
-        return WebClient.builder();
+    public ApiGatewayConfiguration(AuthenticationFilter filter) {
+        this.filter = filter;
     }
 
     @Bean
