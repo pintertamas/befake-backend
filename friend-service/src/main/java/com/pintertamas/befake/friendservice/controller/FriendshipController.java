@@ -3,12 +3,15 @@ package com.pintertamas.befake.friendservice.controller;
 import com.pintertamas.befake.friendservice.exception.FriendshipException;
 import com.pintertamas.befake.friendservice.exception.UserNotFoundException;
 import com.pintertamas.befake.friendservice.model.Friendship;
+import com.pintertamas.befake.friendservice.model.Status;
 import com.pintertamas.befake.friendservice.service.FriendService;
 import com.pintertamas.befake.friendservice.service.JwtUtil;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/friendlist")
@@ -68,6 +71,32 @@ public class FriendshipController {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
         } catch (FriendshipException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        } catch (Exception e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @GetMapping
+    public ResponseEntity<?> getFriendList(@RequestHeader HttpHeaders headers) {
+        try {
+            Long userId = jwtUtil.getUserIdFromToken(headers);
+            List<Friendship> friendList = friendService.getFriendListByStatus(userId, Status.ACCEPTED);
+            return new ResponseEntity<>(friendList, HttpStatus.OK);
+        } catch (UserNotFoundException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+        } catch (Exception e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @GetMapping("/pending")
+    public ResponseEntity<?> getPendingRequests(@RequestHeader HttpHeaders headers) {
+        try {
+            Long userId = jwtUtil.getUserIdFromToken(headers);
+            List<Friendship> friendList = friendService.getFriendListByStatus(userId, Status.PENDING);
+            return new ResponseEntity<>(friendList, HttpStatus.OK);
+        } catch (UserNotFoundException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
         } catch (Exception e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }

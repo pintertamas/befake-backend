@@ -10,6 +10,8 @@ import com.pintertamas.befake.friendservice.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -63,5 +65,23 @@ public class FriendService {
         if (incomingFriendship.isEmpty()) throw new FriendshipException("There is no invitation to accept");
 
         friendshipRepository.delete(incomingFriendship.get());
+    }
+
+    public List<Friendship> getFriendListByStatus(Long userId, Status status) {
+        Optional<List<Friendship>> outgoingFriendship = friendshipRepository.findAllByUser1Id(userId);
+        Optional<List<Friendship>> incomingFriendship = friendshipRepository.findAllByUser2Id(userId);
+        List<Friendship> friendships = new ArrayList<>();
+
+        addFilteredFriendshipsToList(friendships, outgoingFriendship, status);
+        addFilteredFriendshipsToList(friendships, incomingFriendship, status);
+
+        return friendships;
+    }
+
+    private void addFilteredFriendshipsToList(List<Friendship> friendships, Optional<List<Friendship>> list, Status status) {
+        list.ifPresent(friendshipList -> friendships.addAll(friendshipList
+                .stream()
+                .filter((friendship) -> friendship.getStatus().equals(status))
+                .toList()));
     }
 }
