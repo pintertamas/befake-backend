@@ -30,7 +30,7 @@ public class JwtUtil {
         }
     }
 
-    private boolean isTokenExpired(String token) {
+    public boolean isTokenExpired(String token) {
         try {
             Object expirationDateObject = this.getAllClaimsFromToken(token).getOrDefault("exp", false);
             logger.info("exp: " + expirationDateObject);
@@ -43,10 +43,6 @@ public class JwtUtil {
             logger.error(e.getMessage());
             return true;
         }
-    }
-
-    public boolean isInvalid(String token) {
-        return this.isTokenExpired(token);
     }
 
 }

@@ -25,6 +25,10 @@ public class ApiGatewayConfiguration {
                 .route("auth-service", r -> r.path("/auth/**")
                         .filters(f -> f.filter(filter))
                         .uri("lb://auth-service"))
+
+                .route("post-service", r -> r.path("/post/**")
+                        .filters(f -> f.filter(filter))
+                        .uri("lb://post-service"))
                 .build();
     }
 }

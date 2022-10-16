@@ -42,7 +42,7 @@ public class AuthenticationFilter implements GatewayFilter {
 
             final String token = this.getAuthHeader(request);
 
-            if (jwtUtil.isInvalid(token)) {
+            if (jwtUtil.isTokenExpired(token)) {
                 logger.error("Token is invalid");
                 return this.onError(exchange);
             }
