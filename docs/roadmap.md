@@ -50,4 +50,9 @@ DELETE:
 
 notes>
 - user serviceben a user törlése küldjön kérést a friend servicenek hogy törölje a meglévő barátságokat
+- user regisztrálásra email service emailt küld (esetleg az is a notificationbe megy és arra figyel az email service és küldi az emailt)
+- poszt kreálásnál mehet az üzenet kafkának és erre megy az értesítés a barátoknak
+- egy szerver ami a random időpontot generálja (egy darab instance lehet csak belőle)
+- barát kérésre is mehet az üzenet meg komment, reakció stb
+- profilkép feltöltő endpoint kell ami s3-ba kiteszi a képet
 - 
