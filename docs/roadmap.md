@@ -48,3 +48,6 @@ DELETE:
 - [ ] ```/comment/{commentId} ``` -> töröl egy kommentet
 - [ ] ```/reaction/{reactionId} ``` -> töröl egy reakciót
 
+notes>
+- user serviceben a user törlése küldjön kérést a friend servicenek hogy törölje a meglévő barátságokat
+- 
