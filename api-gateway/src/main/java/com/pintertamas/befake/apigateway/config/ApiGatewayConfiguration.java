@@ -29,6 +29,10 @@ public class ApiGatewayConfiguration {
                 .route("post-service", r -> r.path("/post/**")
                         .filters(f -> f.filter(filter))
                         .uri("lb://post-service"))
+
+                .route("friend-service", r -> r.path("/friendlist/**")
+                        .filters(f -> f.filter(filter))
+                        .uri("lb://friend-service"))
                 .build();
     }
 }

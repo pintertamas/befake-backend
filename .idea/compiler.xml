@@ -12,11 +12,13 @@
         <module name="post-service" />
         <module name="user-service" />
         <module name="naming-server" />
+        <module name="friend-service" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
       <module name="api-gateway" target="17" />
       <module name="authorization-service" target="17" />
+      <module name="friend-service" target="17" />
       <module name="naming-server" target="17" />
       <module name="post-service" target="17" />
       <module name="user-service" target="17" />
@@ -26,6 +28,7 @@
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
       <module name="api-gateway" options="-parameters" />
       <module name="authorization-service" options="-parameters" />
+      <module name="friend-service" options="-parameters" />
       <module name="naming-server" options="-parameters" />
       <module name="post-service" options="-parameters" />
       <module name="user-service" options="-parameters" />

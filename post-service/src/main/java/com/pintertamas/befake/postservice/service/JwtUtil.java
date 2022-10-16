@@ -1,6 +1,6 @@
 package com.pintertamas.befake.postservice.service;
 
-import com.amazonaws.services.connect.model.UserNotFoundException;
+import com.amazonaws.services.cloudtrail.model.InvalidTokenException;
 import com.amazonaws.services.mq.model.NotFoundException;
 import com.pintertamas.befake.postservice.model.Post;
 import com.pintertamas.befake.postservice.model.User;
@@ -8,7 +8,6 @@ import com.pintertamas.befake.postservice.repository.PostRepository;
 import com.pintertamas.befake.postservice.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.stereotype.Service;
 
@@ -41,17 +40,17 @@ public class JwtUtil {
         return !post.get().getUserId().equals(user.getId());
     }
 
-    private User getUserFromToken(HttpHeaders headers) {
+    private User getUserFromToken(HttpHeaders headers) throws InvalidTokenException {
         String token = getTokenFromHeader(headers);
         token = token.split(" ")[1].trim();
         log.info(token);
         String username = this.getAllClaimsFromToken(token).getOrDefault("sub", false).toString();
         User user = userRepository.findUserByUsername(username);
-        if (user == null) throw new UserNotFoundException("This token does not belong to an existing user!");
+        if (user == null) throw new InvalidTokenException("This token does not belong to an existing user!");
         return user;
     }
 
-    public Long getUserIdFromToken(HttpHeaders headers) throws UsernameNotFoundException {
+    public Long getUserIdFromToken(HttpHeaders headers) throws InvalidTokenException {
         User user = getUserFromToken(headers);
         return user.getId();
     }
