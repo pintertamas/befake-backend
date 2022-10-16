@@ -7,12 +7,14 @@ import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.amazonaws.services.s3.model.S3Object;
 import com.amazonaws.services.s3.model.S3ObjectInputStream;
 import com.amazonaws.util.IOUtils;
+import com.pintertamas.befake.postservice.exception.WrongFormatException;
 import com.pintertamas.befake.postservice.model.Post;
 import com.pintertamas.befake.postservice.repository.PostRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.tomcat.util.http.fileupload.FileUploadException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
@@ -20,6 +22,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -39,12 +44,12 @@ public class PostService {
         this.postRepository = postRepository;
     }
 
-    public Post createPost(Long userId, MultipartFile mainPhoto, MultipartFile selfiePhoto, String location) throws IOException {
+    public Post createPost(Long userId, MultipartFile mainPhoto, MultipartFile selfiePhoto, String location) throws IOException, WrongFormatException {
         long now = System.currentTimeMillis();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MMM-dd_HH:mm:ss");
         Date date = new Date(now);
-        String mainName = sdf.format(date) + "_main";
-        String selfieName = sdf.format(date) + "_selfie";
+        String mainName = sdf.format(date) + "_main." + getExtensionOfFile(mainPhoto);
+        String selfieName = sdf.format(date) + "_selfie." + getExtensionOfFile(selfiePhoto);
         try {
             uploadImage(mainPhoto, mainName);
             uploadImage(selfiePhoto, selfieName);
@@ -55,11 +60,15 @@ public class PostService {
             post.setPostingTime(new Timestamp(now));
             post.setUserId(userId);
             return postRepository.save(post);
-        } catch (Exception e) {
+        } catch (WrongFormatException e) {
             deleteImage(mainName);
             deleteImage(selfieName);
             throw e;
         }
+    }
+
+    private String getExtensionOfFile(MultipartFile file) {
+        return StringUtils.getFilenameExtension(file.getOriginalFilename());
     }
 
     public void addDescription(Long postId, String description) throws NotFoundException {
@@ -72,7 +81,7 @@ public class PostService {
         }
     }
 
-    private void uploadImage(MultipartFile image, String fileName) throws IOException {
+    private void uploadImage(MultipartFile image, String fileName) throws IOException, WrongFormatException {
         File file = convertMultipartFileToFile(image);
         try {
             PutObjectRequest putObjectRequest = new PutObjectRequest(bucketName, fileName, file);
@@ -119,18 +128,15 @@ public class PostService {
         postRepository.delete(post.get());
     }
 
-    private File convertMultipartFileToFile(MultipartFile multipartFile) throws IOException {
+    private File convertMultipartFileToFile(MultipartFile multipartFile) throws IOException, WrongFormatException {
+        if (!isAnImage(multipartFile)) throw new WrongFormatException("Wrong image format");
         String originalFileName = multipartFile.getOriginalFilename();
         if (originalFileName == null) throw new IOException("Original filename is null");
         File convertedFile = new File(originalFileName);
-        try (FileOutputStream fileOutputStream = new FileOutputStream(convertedFile)) {
-            fileOutputStream.write(multipartFile.getBytes());
-            fileOutputStream.close();
-            return convertedFile;
-        } catch (IOException e) {
-            log.error("Error converting multipart file to file", e);
-            throw e;
-        }
+        FileOutputStream fileOutputStream = new FileOutputStream(convertedFile);
+        fileOutputStream.write(multipartFile.getBytes());
+        fileOutputStream.close();
+        return convertedFile;
     }
 
     public List<Post> getPostsByUser(Long userId) {
@@ -139,7 +145,7 @@ public class PostService {
         return posts.get();
     }
 
-    private boolean multipartIsImage(MultipartFile file) {
+    private boolean isAnImage(MultipartFile file) {
         try {
             String fileContentType = file.getContentType();
             System.out.println(fileContentType);
@@ -148,5 +154,19 @@ public class PostService {
         } catch (Exception e) {
             return false;
         }
+    }
+
+    public List<Post> getPostsFromLastXDays(Long userId, int days) {
+        LocalTime midnight = LocalTime.MIDNIGHT;
+        LocalDate xDaysAgo = LocalDate.now().minusDays(days - 1);
+        LocalDateTime xDaysAgoMidnight = LocalDateTime.of(xDaysAgo, midnight);
+        log.info("x days ago midnight was: " + xDaysAgoMidnight);
+        Optional<List<Post>> posts = postRepository.findAllByUserIdAndPostingTimeAfter(userId, Timestamp.valueOf(xDaysAgoMidnight));
+        if (posts.isEmpty()) throw new NotFoundException("Could not find posts belonging to this user");
+        return posts.get();
+    }
+
+    public Post getLastPostBy(Long userId) {
+        return getPostsFromLastXDays(userId, 1).get(0);
     }
 }
