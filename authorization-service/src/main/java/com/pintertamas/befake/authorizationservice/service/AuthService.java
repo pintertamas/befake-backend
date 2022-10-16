@@ -5,6 +5,7 @@ import com.pintertamas.befake.authorizationservice.exception.UserNotFoundExcepti
 import com.pintertamas.befake.authorizationservice.model.JwtRequest;
 import com.pintertamas.befake.authorizationservice.model.User;
 import com.pintertamas.befake.authorizationservice.repository.UserRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +17,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
 
+@Slf4j
 @Service
 public class AuthService {
 
@@ -31,12 +33,10 @@ public class AuthService {
     @Autowired
     private JwtTokenUtil jwtTokenUtil;
 
-    Logger logger = LoggerFactory.getLogger(this.getClass());
-
     public String generateToken(JwtRequest authenticationRequest) throws BadCredentialsException, UserNotFoundException {
         User existingUser = userRepository.findUserByUsername(authenticationRequest.getUsername());
         if (existingUser == null) {
-            logger.info("User not found");
+            log.info("User not found");
             throw new UserNotFoundException(authenticationRequest.getUsername());
         }
         authenticate(authenticationRequest.getUsername(), authenticationRequest.getPassword());
@@ -46,12 +46,12 @@ public class AuthService {
 
     private void authenticate(String username, String password) throws BadCredentialsException {
         try {
-            logger.info("Authenticating user: " + username + " with password: " + password);
+            log.info("Authenticating user: " + username + " with password: " + password);
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
         } catch (DisabledException e) {
-            throw new BadCredentialsException("USER_DISABLED", e);
+            throw new BadCredentialsException("BAD_CREDENTIALS");
         } catch (BadCredentialsException e) {
-            throw new BadCredentialsException("INVALID_CREDENTIALS", e);
+            throw new BadCredentialsException("INVALID_CREDENTIALS");
         }
     }
 

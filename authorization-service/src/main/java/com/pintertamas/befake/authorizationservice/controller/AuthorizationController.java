@@ -19,9 +19,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/auth")
 public class AuthorizationController {
 
-    private AuthService authService;
-
-    Logger logger = LoggerFactory.getLogger(this.getClass());
+    private final AuthService authService;
 
     public AuthorizationController(AuthService authService) {
         this.authService = authService;
@@ -30,19 +28,19 @@ public class AuthorizationController {
     @PostMapping("/login")
     public ResponseEntity<?> createAuthenticationToken(@RequestBody JwtRequest authRequest) {
         try {
-            logger.info("Authenticating user with credentials: " + authRequest.toString());
+            log.info("Authenticating user with credentials: " + authRequest.toString());
             String token = authService.generateToken(authRequest);
             User user = authService.getUserByUsername(authRequest.getUsername());
-            logger.info("NEW LOGIN");
+            log.info("NEW LOGIN");
             return new ResponseEntity<>(new UserResponse(user, token), HttpStatus.OK);
         } catch (UserNotFoundException exception) {
-            logger.info("USER NOT FOUND");
+            log.info("USER NOT FOUND");
             return new ResponseEntity<>(exception.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         } catch (BadCredentialsException e) {
-            logger.error("BAD CREDENTIALS");
+            log.error("BAD CREDENTIALS");
             return new ResponseEntity<>("Bad credentials", HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
-            logger.error("ERROR AT LOGIN");
+            log.error("ERROR AT LOGIN");
             return new ResponseEntity<>("Could not reach database", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }

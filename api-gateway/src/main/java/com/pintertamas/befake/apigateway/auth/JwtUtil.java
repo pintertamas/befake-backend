@@ -1,5 +1,6 @@
 package com.pintertamas.befake.apigateway.auth;
 
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
@@ -10,12 +11,11 @@ import java.time.Instant;
 import java.util.Date;
 import java.util.Map;
 
+@Slf4j
 @Component
 public class JwtUtil {
 
     private final JwtDecoder jwtDecoder;
-
-    private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     public JwtUtil(JwtDecoder jwtDecoder) {
         this.jwtDecoder = jwtDecoder;
@@ -33,14 +33,14 @@ public class JwtUtil {
     public boolean isTokenExpired(String token) {
         try {
             Object expirationDateObject = this.getAllClaimsFromToken(token).getOrDefault("exp", false);
-            logger.info("exp: " + expirationDateObject);
+            log.info("exp: " + expirationDateObject);
             Instant expirationDate = Instant.parse(expirationDateObject.toString());
             Instant now = new Date().toInstant();
             boolean isExpired = expirationDate.compareTo(now) < 0;
             if (isExpired) throw new JwtException("This token is expired");
             return false;
         } catch (Exception e) {
-            logger.error(e.getMessage());
+            log.error(e.getMessage());
             return true;
         }
     }

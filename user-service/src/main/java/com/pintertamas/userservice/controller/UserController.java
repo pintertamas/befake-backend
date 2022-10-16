@@ -5,6 +5,7 @@ import com.pintertamas.userservice.exceptions.UserNotFoundException;
 import com.pintertamas.userservice.model.User;
 import com.pintertamas.userservice.repository.UserRepository;
 import com.pintertamas.userservice.service.UserService;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.util.List;
 
+@Slf4j
 @RestController
 @RequestMapping("/user")
 public class UserController {
@@ -21,8 +23,6 @@ public class UserController {
     final UserRepository userRepository;
 
     private final UserService userService;
-
-    final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     public UserController(UserRepository userRepository, UserService userService) {
         this.userRepository = userRepository;
@@ -54,17 +54,17 @@ public class UserController {
     public ResponseEntity<?> register(@Valid @RequestBody User newUser) {
         try {
             User user = userService.register(newUser);
-            logger.info("USER CREATED: " + newUser);
+            log.info("USER CREATED: " + newUser);
             // todo: send email with notification service (it is going to be implemented at the end of the project)
             // if (!notificationService.sendRegistrationSuccessfulMessage(newUser.getEmail(), newUser.getUsername()))
             //    throw new Exception("Could not send Email to: " + newUser.getEmail());
             return ResponseEntity.ok(user);
         } catch (UserExistsException exception) {
-            logger.error("USER ALREADY EXISTS: " + exception.getExistingUser());
+            log.error("USER ALREADY EXISTS: " + exception.getExistingUser());
             return ResponseEntity.badRequest().body(exception.getMessage());
         } catch (Exception exception) {
-            logger.error("Something went wrong during registration...");
-            logger.error(exception.getMessage());
+            log.error("Something went wrong during registration...");
+            log.error(exception.getMessage());
             return ResponseEntity.badRequest().body(exception.getMessage());
         }
     }

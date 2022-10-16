@@ -1,5 +1,6 @@
 package com.pintertamas.befake.apigateway.auth;
 
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
@@ -14,6 +15,7 @@ import reactor.core.publisher.Mono;
 
 import java.util.Map;
 
+@Slf4j
 @RefreshScope
 @Component
 public class AuthenticationFilter implements GatewayFilter {
@@ -21,8 +23,6 @@ public class AuthenticationFilter implements GatewayFilter {
     private final RouterValidator routerValidator;
 
     private final JwtUtil jwtUtil;
-
-    final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     public AuthenticationFilter(RouterValidator routerValidator, JwtUtil jwtUtil) {
         this.routerValidator = routerValidator;
@@ -32,29 +32,29 @@ public class AuthenticationFilter implements GatewayFilter {
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
         ServerHttpRequest request = exchange.getRequest();
-        logger.info("Request path: " + request.getPath());
+        log.info("Request path: " + request.getPath());
 
         if (routerValidator.isSecured.test(request)) {
             if (this.isAuthMissing(request)) {
-                logger.error("Auth is missing");
+                log.error("Auth is missing");
                 return this.onError(exchange);
             }
 
             final String token = this.getAuthHeader(request);
 
             if (jwtUtil.isTokenExpired(token)) {
-                logger.error("Token is invalid");
+                log.error("Token is invalid");
                 return this.onError(exchange);
             }
 
-            logger.info("Token: " + token);
+            log.info("Token: " + token);
             this.populateRequestWithHeaders(exchange, token);
         }
         return chain.filter(exchange);
     }
 
     private Mono<Void> onError(ServerWebExchange exchange) {
-        logger.error("Something went wrong in the AuthenticationFilter class");
+        log.error("Something went wrong in the AuthenticationFilter class");
         ServerHttpResponse response = exchange.getResponse();
         response.setStatusCode(HttpStatus.UNAUTHORIZED);
         return response.setComplete();
@@ -62,7 +62,7 @@ public class AuthenticationFilter implements GatewayFilter {
 
     private String getAuthHeader(ServerHttpRequest request) {
         String header = request.getHeaders().getOrEmpty("Authorization").get(0);
-        logger.info("Auth header: " + header);
+        log.info("Auth header: " + header);
         return header;
     }
 
