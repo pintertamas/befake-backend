@@ -19,6 +19,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -37,10 +39,12 @@ public class PostService {
         this.postRepository = postRepository;
     }
 
-    public Post createPost(Long userId, MultipartFile mainPhoto, MultipartFile selfiePhoto, String location) throws FileUploadException {
-        Long now = System.currentTimeMillis();
-        String mainName = "main_" + now;
-        String selfieName = "selfie_" + now;
+    public Post createPost(Long userId, MultipartFile mainPhoto, MultipartFile selfiePhoto, String location) throws IOException {
+        long now = System.currentTimeMillis();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MMM-dd_HH:mm:ss");
+        Date date = new Date(now);
+        String mainName = sdf.format(date) + "_main";
+        String selfieName = sdf.format(date) + "_selfie";
         try {
             uploadImage(mainPhoto, mainName);
             uploadImage(selfiePhoto, selfieName);
@@ -68,7 +72,7 @@ public class PostService {
         }
     }
 
-    private void uploadImage(MultipartFile image, String fileName) throws FileUploadException {
+    private void uploadImage(MultipartFile image, String fileName) throws IOException {
         File file = convertMultipartFileToFile(image);
         try {
             PutObjectRequest putObjectRequest = new PutObjectRequest(bucketName, fileName, file);
@@ -77,7 +81,7 @@ public class PostService {
         } catch (Exception e) {
             log.error("Could not upload image", e);
             file.delete();
-            throw new FileUploadException("Error uploading image");
+            throw new FileUploadException("MultipartFile conversion to File was successful, but an error happened during the upload");
         }
     }
 
@@ -96,28 +100,53 @@ public class PostService {
         return null;
     }
 
-    public String deleteImage(String fileName) throws IllegalArgumentException {
+    private void deleteImage(String imageName) throws IllegalArgumentException {
         try {
-            s3.deleteObject(bucketName, fileName);
-            return fileName + " has been deleted";
+            s3.deleteObject(bucketName, imageName);
         } catch (Exception e) {
             throw new IllegalArgumentException("Wrong fileName");
         }
     }
 
-    private File convertMultipartFileToFile(MultipartFile multipartFile) {
-        File convertedFile = new File(multipartFile.getOriginalFilename());
+    public void deletePost(Long postId) throws NotFoundException {
+        Optional<Post> post = postRepository.findById(postId);
+        if (post.isEmpty()) throw new NotFoundException("Could not find post by id: " + postId);
+        String imageName;
+        imageName = post.get().getMainPhoto();
+        deleteImage(imageName);
+        imageName = post.get().getSelfiePhoto();
+        deleteImage(imageName);
+        postRepository.delete(post.get());
+    }
+
+    private File convertMultipartFileToFile(MultipartFile multipartFile) throws IOException {
+        String originalFileName = multipartFile.getOriginalFilename();
+        if (originalFileName == null) throw new IOException("Original filename is null");
+        File convertedFile = new File(originalFileName);
         try (FileOutputStream fileOutputStream = new FileOutputStream(convertedFile)) {
             fileOutputStream.write(multipartFile.getBytes());
+            fileOutputStream.close();
+            return convertedFile;
         } catch (IOException e) {
             log.error("Error converting multipart file to file", e);
+            throw e;
         }
-        return convertedFile;
     }
 
     public List<Post> getPostsByUser(Long userId) {
         Optional<List<Post>> posts = postRepository.findAllByUserId(userId);
         if (posts.isEmpty()) throw new NotFoundException("No posts could be found");
         return posts.get();
+    }
+
+    private boolean multipartIsImage(MultipartFile file) {
+        try {
+            String fileContentType = file.getContentType();
+            System.out.println(fileContentType);
+            if (fileContentType == null || !fileContentType.startsWith("image/")) throw new Exception();
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
     }
 }

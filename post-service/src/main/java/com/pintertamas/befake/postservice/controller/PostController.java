@@ -1,5 +1,6 @@
 package com.pintertamas.befake.postservice.controller;
 
+import com.amazonaws.services.mq.model.NotFoundException;
 import com.pintertamas.befake.postservice.model.Post;
 import com.pintertamas.befake.postservice.service.JwtUtil;
 import com.pintertamas.befake.postservice.service.PostService;
@@ -12,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 @Slf4j
@@ -37,7 +39,7 @@ public class PostController {
             Long userId = jwtUtil.getUserIdFromToken(headers);
             Post post = postService.createPost(userId, main, selfie, location);
             return new ResponseEntity<>(post, HttpStatus.CREATED);
-        } catch (FileUploadException e) {
+        } catch (IOException e) {
             log.error(e.getMessage());
             return new ResponseEntity<>("Could not upload image", HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -69,14 +71,29 @@ public class PostController {
         }
     }
 
-    @DeleteMapping("/{fileName}")
-    public ResponseEntity<String> deleteImage(@PathVariable String fileName) {
+    @PatchMapping("/{postId}")
+    public ResponseEntity<?> addDescription(@PathVariable Long postId, @RequestParam String description) {
         try {
-            return new ResponseEntity<>(postService.deleteImage(fileName), HttpStatus.OK);
-        } catch (IllegalArgumentException e) {
-            return new ResponseEntity<>("Could not delete file", HttpStatus.BAD_REQUEST);
+            postService.addDescription(postId, description);
+            return new ResponseEntity<>(description, HttpStatus.OK);
+        } catch (NotFoundException e) {
+            return new ResponseEntity<>("Could not find post", HttpStatus.NOT_FOUND);
         } catch (Exception e) {
-            return new ResponseEntity<>("Could not delete file", HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>("Could not add description", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @DeleteMapping("/{postId}")
+    public ResponseEntity<String> deletePost(@PathVariable Long postId) {
+        try {
+            postService.deletePost(postId);
+            return new ResponseEntity<>(postId + " successfully deleted", HttpStatus.OK);
+        } catch (NotFoundException e) {
+            return new ResponseEntity<>("Could not find post", HttpStatus.NOT_FOUND);
+        } catch (IllegalArgumentException e) {
+            return new ResponseEntity<>("Could not delete post", HttpStatus.BAD_REQUEST);
+        } catch (Exception e) {
+            return new ResponseEntity<>("Could not delete post", HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
     }
