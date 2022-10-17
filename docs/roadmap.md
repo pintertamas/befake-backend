@@ -55,4 +55,4 @@ notes>
 - egy szerver ami a random időpontot generálja (egy darab instance lehet csak belőle)
 - barát kérésre is mehet az üzenet meg komment, reakció stb
 - profilkép feltöltő endpoint kell ami s3-ba kiteszi a képet
-- 
+- a remove post is hívjon át az interactionbe és törölje a poszthoz tartozó dolgokat

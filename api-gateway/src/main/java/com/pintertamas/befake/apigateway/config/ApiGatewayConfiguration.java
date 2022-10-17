@@ -33,6 +33,14 @@ public class ApiGatewayConfiguration {
                 .route("friend-service", r -> r.path("/friendlist/**")
                         .filters(f -> f.filter(filter))
                         .uri("lb://friend-service"))
+
+                .route("interaction-service", r -> r.path("/comment/**", "/reaction/**")
+                        .filters(f -> f.filter(filter))
+                        .uri("lb://interaction-service"))
+
+                .route("notification-service", r -> r.path("/notification/**")
+                        .filters(f -> f.filter(filter))
+                        .uri("lb://notification-service"))
                 .build();
     }
 }

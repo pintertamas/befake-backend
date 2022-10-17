@@ -12,18 +12,6 @@ services:
       - "5432:5432"
     networks:
       - befake-network
-        
-  #pgadmin:
-  #  container_name: pgadmin4
-  #  image: dpage/pgadmin4
-  #  restart: always
-  #  environment:
-  #    PGADMIN_DEFAULT_EMAIL: admin@admin.com
-  #    PGADMIN_DEFAULT_PASSWORD: root
-  #  ports:
-  #    - "5050:80"
-  #  networks:
-  #    - befake-network
 
   api-gateway:
     image: pintertamas/befake-api-gateway:0.0.1-SNAPSHOT
@@ -77,6 +65,52 @@ services:
     restart: always
     ports:
       - "8000:8000"
+    networks:
+      - befake-network
+    depends_on:
+      - db
+      - naming-server
+      - api-gateway
+      - friend-service
+    environment:
+      EUREKA.CLIENT.SERVICEURL.DEFAULTZONE: http://naming-server:8761/eureka
+      SPRING.ZIPKIN.BASEURL: http://zipkin-server:9411
+
+  post-service:
+    image: pintertamas/befake-post-service:0.0.1-SNAPSHOT
+    restart: always
+    ports:
+      - "8001:8001"
+    networks:
+      - befake-network
+    depends_on:
+      - db
+      - naming-server
+      - api-gateway
+    environment:
+      EUREKA.CLIENT.SERVICEURL.DEFAULTZONE: http://naming-server:8761/eureka
+      SPRING.ZIPKIN.BASEURL: http://zipkin-server:9411
+
+  friend-service:
+    image: pintertamas/befake-friend-service:0.0.1-SNAPSHOT
+    restart: always
+    ports:
+      - "8003:8003"
+    networks:
+      - befake-network
+    depends_on:
+      - db
+      - naming-server
+      - api-gateway
+    environment:
+      EUREKA.CLIENT.SERVICEURL.DEFAULTZONE: http://naming-server:8761/eureka
+      SPRING.ZIPKIN.BASEURL: http://zipkin-server:9411
+
+  interaction-service:
+    image: pintertamas/befake-interaction-service:0.0.1-SNAPSHOT
+    restart: always
+    ports:
+      - "8002:8002"
     networks:
       - befake-network
     depends_on:
