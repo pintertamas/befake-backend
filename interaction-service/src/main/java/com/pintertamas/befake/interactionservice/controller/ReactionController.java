@@ -75,14 +75,38 @@ public class ReactionController {
         }
     }
 
-    @DeleteMapping("/{postId}")
+    @DeleteMapping("/{reactionId}")
     public ResponseEntity<String> deleteReactionOnPost(
-            @PathVariable Long postId,
+            @PathVariable Long reactionId,
             @RequestHeader HttpHeaders headers) {
         try {
+            Reaction reaction = reactionService.getReactionById(reactionId);
             Long userId = jwtUtil.getUserIdFromToken(headers);
-            reactionService.deleteReactionOnPost(postId, userId);
-            return new ResponseEntity<>(postId + " successfully deleted", HttpStatus.OK);
+            Long postOwnerId = jwtUtil.getPostOwnerId(reaction.getPostId());
+            if (!reaction.getUserId().equals(userId) && !userId.equals(postOwnerId))
+                throw new AccessDeniedException("You can't delete this reaction");
+            reactionService.deleteReactionOnPost(reactionId);
+            return new ResponseEntity<>(reactionId + " successfully deleted", HttpStatus.OK);
+        } catch (NotFoundException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+        } catch (IllegalArgumentException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        } catch (AccessDeniedException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.UNAUTHORIZED);
+        } catch (Exception e) {
+            return new ResponseEntity<>("Could not delete reaction", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @DeleteMapping("/{postId}/delete-all")
+    public ResponseEntity<?> deleteAllReactionsOnPost(@PathVariable Long postId, @RequestHeader HttpHeaders headers) {
+        try {
+            Long userId = jwtUtil.getUserIdFromToken(headers);
+            Long postOwnerId = jwtUtil.getPostOwnerId(postId);
+            if (!userId.equals(postOwnerId))
+                throw new AccessDeniedException("You are not the owner of this post");
+            reactionService.deleteEveryReactionOnPost(postId);
+            return new ResponseEntity<>("Successfully deleted every reaction on post " + postId, HttpStatus.OK);
         } catch (NotFoundException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
         } catch (IllegalArgumentException e) {

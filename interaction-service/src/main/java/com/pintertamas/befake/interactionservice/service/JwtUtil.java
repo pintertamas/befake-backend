@@ -3,7 +3,6 @@ package com.pintertamas.befake.interactionservice.service;
 import com.amazonaws.services.cloudtrail.model.InvalidTokenException;
 import com.amazonaws.services.mq.model.NotFoundException;
 import com.pintertamas.befake.interactionservice.model.Post;
-import com.pintertamas.befake.interactionservice.model.Reaction;
 import com.pintertamas.befake.interactionservice.model.User;
 import com.pintertamas.befake.interactionservice.repository.CommentRepository;
 import com.pintertamas.befake.interactionservice.repository.PostRepository;
@@ -45,6 +44,12 @@ public class JwtUtil {
         Optional<Post> post = postRepository.findById(postId);
         if (post.isEmpty()) throw new NotFoundException("Could not find post with this id");
         return post.get().getUserId().equals(user.getId());
+    }
+
+    public Long getPostOwnerId(Long postId) {
+        Optional<Post> post = postRepository.findById(postId);
+        if (post.isEmpty()) throw new NotFoundException("Could not find post with this id");
+        return post.get().getUserId();
     }
 
     private User getUserFromToken(HttpHeaders headers) throws InvalidTokenException {

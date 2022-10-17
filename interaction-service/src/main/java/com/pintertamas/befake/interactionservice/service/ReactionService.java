@@ -8,14 +8,11 @@ import com.amazonaws.services.s3.model.S3Object;
 import com.amazonaws.services.s3.model.S3ObjectInputStream;
 import com.amazonaws.util.IOUtils;
 import com.pintertamas.befake.interactionservice.exception.WrongFormatException;
-import com.pintertamas.befake.interactionservice.model.Post;
 import com.pintertamas.befake.interactionservice.model.Reaction;
-import com.pintertamas.befake.interactionservice.model.User;
 import com.pintertamas.befake.interactionservice.repository.ReactionRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.tomcat.util.http.fileupload.FileUploadException;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
@@ -67,13 +64,28 @@ public class ReactionService {
         return StringUtils.getFilenameExtension(file.getOriginalFilename());
     }
 
-    public void deleteReactionOnPost(Long postId, Long userId) throws NotFoundException {
-        Optional<Reaction> reaction = reactionRepository.findByPostIdAndUserId(postId, userId);
+    public void deleteReactionOnPost(Long reactionId) throws NotFoundException {
+        Optional<Reaction> reaction = reactionRepository.findById(reactionId);
         if (reaction.isEmpty()) throw new NotFoundException("Could not find reaction from this user on this post");
         String imageName;
         imageName = reaction.get().getImageName();
         deleteImage(imageName);
         reactionRepository.delete(reaction.get());
+    }
+
+    public void deleteEveryReactionOnPost(Long postId) throws NotFoundException {
+        Optional<List<Reaction>> reactions = reactionRepository.findAllByPostId(postId);
+        if (reactions.isEmpty()) throw new NotFoundException("Could not find reactions on this post");
+        reactions.get().forEach((reaction) -> {
+            deleteImage(reaction.getImageName());
+            reactionRepository.delete(reaction);
+        });
+    }
+
+    public Reaction getReactionById(Long reactionId) {
+        Optional<Reaction> reaction = reactionRepository.findById(reactionId);
+        if (reaction.isEmpty()) throw new NotFoundException("Could not find reaction with this id: " + reactionId);
+        return reaction.get();
     }
 
     private void uploadReaction(MultipartFile image, String fileName) throws IOException, WrongFormatException {
