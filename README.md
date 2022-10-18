@@ -12,6 +12,7 @@ Ports:
 | naming-server          | 8761        |
 | notification-service   | 8101        |
 | email-service          | 8100        |
+| time-generator         | 8081        |
 | authentication-service | 8080        |
 | user-service           | 8000        |
 | post-service           | 8001        |
