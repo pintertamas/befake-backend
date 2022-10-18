@@ -4,6 +4,7 @@ import com.amazonaws.services.drs.model.AccessDeniedException;
 import com.amazonaws.services.mq.model.NotFoundException;
 import com.pintertamas.befake.postservice.exception.WrongFormatException;
 import com.pintertamas.befake.postservice.model.Post;
+import com.pintertamas.befake.postservice.proxy.InteractionsProxy;
 import com.pintertamas.befake.postservice.service.JwtUtil;
 import com.pintertamas.befake.postservice.service.PostService;
 import lombok.extern.slf4j.Slf4j;
@@ -24,10 +25,12 @@ public class PostController {
 
     private final PostService postService;
     private final JwtUtil jwtUtil;
+    private final InteractionsProxy interactionsProxy;
 
-    public PostController(PostService postService, JwtUtil jwtUtil) {
+    public PostController(PostService postService, JwtUtil jwtUtil, InteractionsProxy interactionsProxy) {
         this.postService = postService;
         this.jwtUtil = jwtUtil;
+        this.interactionsProxy = interactionsProxy;
     }
 
     @PostMapping("/create")
@@ -94,26 +97,6 @@ public class PostController {
         }
     }
 
-    @DeleteMapping("/{postId}")
-    public ResponseEntity<String> deletePost(
-            @PathVariable Long postId,
-            @RequestHeader HttpHeaders headers) {
-        try {
-            if (jwtUtil.isNotPostOwner(headers, postId))
-                throw new AccessDeniedException("You are not the owner of this post");
-            postService.deletePost(postId);
-            return new ResponseEntity<>(postId + " successfully deleted", HttpStatus.OK);
-        } catch (NotFoundException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
-        } catch (IllegalArgumentException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
-        } catch (AccessDeniedException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.UNAUTHORIZED);
-        } catch (Exception e) {
-            return new ResponseEntity<>("Could not delete post", HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
-
     @GetMapping("/lastPosts/{userId}/{daysAgo}")
     public ResponseEntity<?> getLastPostsFromUser(
             @PathVariable Long userId,
@@ -138,6 +121,30 @@ public class PostController {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
         } catch (Exception e) {
             return new ResponseEntity<>("Could not query post", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @DeleteMapping("/{postId}")
+    public ResponseEntity<String> deletePost(
+            @PathVariable Long postId,
+            @RequestHeader HttpHeaders headers) {
+        try {
+            if (jwtUtil.isNotPostOwner(headers, postId))
+                throw new AccessDeniedException("You are not the owner of this post");
+            ResponseEntity<?> deleteCommentResponse = interactionsProxy.deleteAllCommentsOnPost(postId, headers);
+            ResponseEntity<?> deleteReactionResponse = interactionsProxy.deleteAllReactionsOnPost(postId, headers);
+            if (deleteCommentResponse.getStatusCode() == HttpStatus.OK
+                    && deleteReactionResponse.getStatusCode() == HttpStatus.OK)
+                postService.deletePost(postId);
+            return new ResponseEntity<>(postId + " successfully deleted", HttpStatus.OK);
+        } catch (NotFoundException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+        } catch (IllegalArgumentException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        } catch (AccessDeniedException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.UNAUTHORIZED);
+        } catch (Exception e) {
+            return new ResponseEntity<>("Could not delete post", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }

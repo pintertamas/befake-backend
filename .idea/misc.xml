@@ -10,6 +10,7 @@
         <option value="$PROJECT_DIR$/post-service/pom.xml" />
         <option value="$PROJECT_DIR$/friend-service/pom.xml" />
         <option value="$PROJECT_DIR$/interaction-service/pom.xml" />
+        <option value="$PROJECT_DIR$/time-generator/pom.xml" />
       </list>
     </option>
   </component>
