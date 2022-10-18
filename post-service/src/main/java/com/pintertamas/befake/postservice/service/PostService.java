@@ -145,6 +145,12 @@ public class PostService {
         return posts.get();
     }
 
+    public List<Post> getPosts() {
+        List<Post> posts = postRepository.findAll();
+        if (posts.isEmpty()) throw new NotFoundException("No posts could be found");
+        return posts;
+    }
+
     private boolean isAnImage(MultipartFile file) {
         try {
             String fileContentType = file.getContentType();

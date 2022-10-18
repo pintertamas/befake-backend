@@ -14,13 +14,17 @@ public class InteractionFallback implements FallbackFactory<InteractionsProxy> {
     public InteractionsProxy create(Throwable cause) {
         return new InteractionsProxy() {
             @Override
-            public ResponseEntity<?> deleteAllReactionsOnPost(Long postId, HttpHeaders headers) {
-                return null;
+            public ResponseEntity<String> deleteAllReactionsOnPost(Long postId, HttpHeaders headers) {
+                log.error("Using fallback option for deleteAllReactionsOnPost(Long postId, HttpHeaders headers)");
+                log.error("cause was: " + cause.getMessage());
+                return ResponseEntity.internalServerError().build();
             }
 
             @Override
-            public ResponseEntity<?> deleteAllCommentsOnPost(Long postId, HttpHeaders headers) {
-                return null;
+            public ResponseEntity<String> deleteAllCommentsOnPost(Long postId, HttpHeaders headers) {
+                log.error("Using fallback option for deleteAllCommentsOnPost(Long postId, HttpHeaders headers)");
+                log.error("cause was: " + cause.getMessage());
+                return ResponseEntity.internalServerError().build();
             }
         };
     }

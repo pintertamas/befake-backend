@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
@@ -77,6 +78,18 @@ public class PostController {
             return new ResponseEntity<>(posts, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>("Could not query posts by this user", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @GetMapping("/all")
+    public ResponseEntity<List<Post>> getPosts() {
+        try {
+            List<Post> posts = postService.getPosts();
+            return new ResponseEntity<>(posts, HttpStatus.OK);
+        } catch (NotFoundException e) {
+            return new ResponseEntity<>(new ArrayList<>(), HttpStatus.NOT_FOUND);
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
         }
     }
 
@@ -146,6 +159,7 @@ public class PostController {
         } catch (AccessDeniedException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.UNAUTHORIZED);
         } catch (Exception e) {
+            log.error(e.getMessage());
             return new ResponseEntity<>("Could not delete post", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }

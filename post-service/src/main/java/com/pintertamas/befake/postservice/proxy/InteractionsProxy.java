@@ -9,9 +9,9 @@ import org.springframework.web.bind.annotation.RequestHeader;
 
 @FeignClient(name = "interaction-service")
 public interface InteractionsProxy {
-    @DeleteMapping("reaction/{postId}/delete-all")
-    ResponseEntity<?> deleteAllReactionsOnPost(@PathVariable Long postId, @RequestHeader HttpHeaders headers);
+    @DeleteMapping("/reaction/{postId}/delete-all")
+    ResponseEntity<String> deleteAllReactionsOnPost(@PathVariable Long postId, @RequestHeader HttpHeaders headers);
 
-    @DeleteMapping("comment/{postId}/delete-all")
-    ResponseEntity<?> deleteAllCommentsOnPost(@PathVariable Long postId, @RequestHeader HttpHeaders headers);
+    @DeleteMapping("/comment/{postId}/delete-all")
+    ResponseEntity<String> deleteAllCommentsOnPost(@PathVariable Long postId, @RequestHeader HttpHeaders headers);
 }

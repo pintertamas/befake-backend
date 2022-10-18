@@ -101,7 +101,7 @@ public class ReactionController {
     }
 
     @DeleteMapping("/{postId}/delete-all")
-    public ResponseEntity<?> deleteAllReactionsOnPost(@PathVariable Long postId, @RequestHeader HttpHeaders headers) {
+    public ResponseEntity<String> deleteAllReactionsOnPost(@PathVariable Long postId, @RequestHeader HttpHeaders headers) {
         try {
             Long userId = jwtUtil.getUserIdFromToken(headers);
             Long postOwnerId = jwtUtil.getPostOwnerId(postId);

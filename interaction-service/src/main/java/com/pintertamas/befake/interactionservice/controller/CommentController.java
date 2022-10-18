@@ -77,7 +77,7 @@ public class CommentController {
     }
 
     @DeleteMapping("/{postId}/delete-all")
-    public ResponseEntity<?> deleteAllCommentsOnPost(@PathVariable Long postId, @RequestHeader HttpHeaders headers) {
+    public ResponseEntity<String> deleteAllCommentsOnPost(@PathVariable Long postId, @RequestHeader HttpHeaders headers) {
         try {
             Long userId = jwtUtil.getUserIdFromToken(headers);
             Long postOwnerId = jwtUtil.getPostOwnerId(postId);
