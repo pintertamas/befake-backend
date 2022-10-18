@@ -14,7 +14,7 @@ services:
       - befake-network
 
   api-gateway:
-    image: pintertamas/befake-api-gateway:0.0.1-SNAPSHOT
+    image: pintertamas/befake-api-gateway:latest
     mem_reservation: 700m
     ports:
       - "8765:8765"
@@ -31,7 +31,7 @@ services:
       SPRING_ZIPKIN_SENDER_TYPE: rabbit
 
   naming-server:
-    image: pintertamas/befake-naming-server:0.0.1-SNAPSHOT
+    image: pintertamas/befake-naming-server:latest
     mem_reservation: 700m
     ports:
       - "8761:8761"
