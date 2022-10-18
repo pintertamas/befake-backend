@@ -2,6 +2,8 @@ package com.pintertamas.befake.interactionservice.controller;
 
 import com.amazonaws.services.drs.model.AccessDeniedException;
 import com.amazonaws.services.mq.model.NotFoundException;
+import com.pintertamas.befake.interactionservice.exception.PostNotFoundException;
+import com.pintertamas.befake.interactionservice.exception.UserNotFoundException;
 import com.pintertamas.befake.interactionservice.exception.WrongFormatException;
 import com.pintertamas.befake.interactionservice.model.Reaction;
 import com.pintertamas.befake.interactionservice.service.JwtUtil;
@@ -40,7 +42,7 @@ public class ReactionController {
             if (jwtUtil.isPostOwner(headers, postId)) throw new WrongFormatException("You cant react to your own post");
             Reaction reaction = reactionService.react(userId, reactionPhoto, postId);
             return new ResponseEntity<>(reaction, HttpStatus.CREATED);
-        } catch (WrongFormatException e) {
+        } catch (UserNotFoundException | PostNotFoundException | WrongFormatException e) {
             log.error(e.getMessage());
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         } catch (IOException e) {

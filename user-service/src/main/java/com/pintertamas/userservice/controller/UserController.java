@@ -6,8 +6,6 @@ import com.pintertamas.userservice.model.User;
 import com.pintertamas.userservice.repository.UserRepository;
 import com.pintertamas.userservice.service.UserService;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,12 +18,9 @@ import java.util.List;
 @RequestMapping("/user")
 public class UserController {
 
-    final UserRepository userRepository;
-
     private final UserService userService;
 
-    public UserController(UserRepository userRepository, UserService userService) {
-        this.userRepository = userRepository;
+    public UserController(UserService userService) {
         this.userService = userService;
     }
 
@@ -69,4 +64,29 @@ public class UserController {
         }
     }
 
+    @GetMapping("/user-by-username/{username}")
+    ResponseEntity<User> findUserByUsername(@PathVariable String username) {
+        try {
+            User user = userService.findUserByUsername(username);
+            if (user == null) throw new UserNotFoundException();
+            return new ResponseEntity<>(user, HttpStatus.OK);
+        } catch (UserNotFoundException e) {
+            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+        } catch (Exception e) {
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @GetMapping("/user-by-userId/{userId}")
+    ResponseEntity<User> findUserByUserId(@PathVariable Long userId) {
+        try {
+            User user = userService.findUserById(userId);
+            if (user == null) throw new UserNotFoundException();
+            return new ResponseEntity<>(user, HttpStatus.OK);
+        } catch (UserNotFoundException e) {
+            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+        } catch (Exception e) {
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 }

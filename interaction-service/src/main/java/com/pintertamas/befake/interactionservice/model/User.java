@@ -12,17 +12,7 @@ import javax.persistence.*;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@EnableAutoConfiguration
-@Entity(name = "User")
-@Table(name = "users")
 public class User {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(unique = true, nullable = false)
     private Long id;
-
-    @Column
     String username;
-
 }

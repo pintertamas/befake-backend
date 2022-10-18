@@ -14,7 +14,7 @@ services:
       - befake-network
 
   api-gateway:
-    image: pintertamas/befake-api-gateway:latest
+    image: api-gateway:latest
     mem_reservation: 700m
     ports:
       - "8765:8765"
@@ -31,7 +31,7 @@ services:
       SPRING_ZIPKIN_SENDER_TYPE: rabbit
 
   naming-server:
-    image: pintertamas/befake-naming-server:latest
+    image: naming-server:latest
     mem_reservation: 700m
     ports:
       - "8761:8761"
@@ -61,7 +61,7 @@ services:
       - befake-network
 
   user-service:
-    image: pintertamas/befake-user-service:0.0.1-SNAPSHOT
+    image: user-service:latest
     restart: always
     ports:
       - "8000:8000"
@@ -75,9 +75,10 @@ services:
     environment:
       EUREKA.CLIENT.SERVICEURL.DEFAULTZONE: http://naming-server:8761/eureka
       SPRING.ZIPKIN.BASEURL: http://zipkin-server:9411
+      SPRING.DATASOURCE.URL: jdbc:postgresql://db:5432/user-service
 
   post-service:
-    image: pintertamas/befake-post-service:0.0.1-SNAPSHOT
+    image: post-service:latest
     restart: always
     ports:
       - "8001:8001"
@@ -90,9 +91,10 @@ services:
     environment:
       EUREKA.CLIENT.SERVICEURL.DEFAULTZONE: http://naming-server:8761/eureka
       SPRING.ZIPKIN.BASEURL: http://zipkin-server:9411
+      SPRING.DATASOURCE.URL: jdbc:postgresql://db:5432/post-service
 
   friend-service:
-    image: pintertamas/befake-friend-service:0.0.1-SNAPSHOT
+    image: friend-service:latest
     restart: always
     ports:
       - "8003:8003"
@@ -105,9 +107,10 @@ services:
     environment:
       EUREKA.CLIENT.SERVICEURL.DEFAULTZONE: http://naming-server:8761/eureka
       SPRING.ZIPKIN.BASEURL: http://zipkin-server:9411
+      SPRING.DATASOURCE.URL: jdbc:postgresql://db:5432/friend-service
 
   interaction-service:
-    image: pintertamas/befake-interaction-service:0.0.1-SNAPSHOT
+    image: interaction-service:latest
     restart: always
     ports:
       - "8002:8002"
@@ -120,16 +123,16 @@ services:
     environment:
       EUREKA.CLIENT.SERVICEURL.DEFAULTZONE: http://naming-server:8761/eureka
       SPRING.ZIPKIN.BASEURL: http://zipkin-server:9411
+      SPRING.DATASOURCE.URL: jdbc:postgresql://db:5432/interaction-service
 
   auth-service:
-    image: pintertamas/befake-authorization-service:0.0.1-SNAPSHOT
-    restart: always
+    image: authorization-service:latest
+    #restart: always
     ports:
       - "8080:8080"
     networks:
       - befake-network
     depends_on:
-      - db
       - naming-server
       - api-gateway
     environment:

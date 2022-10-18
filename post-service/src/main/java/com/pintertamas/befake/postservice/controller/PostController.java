@@ -2,6 +2,8 @@ package com.pintertamas.befake.postservice.controller;
 
 import com.amazonaws.services.drs.model.AccessDeniedException;
 import com.amazonaws.services.mq.model.NotFoundException;
+import com.pintertamas.befake.postservice.exception.PostNotFoundException;
+import com.pintertamas.befake.postservice.exception.UserNotFoundException;
 import com.pintertamas.befake.postservice.exception.WrongFormatException;
 import com.pintertamas.befake.postservice.model.Post;
 import com.pintertamas.befake.postservice.proxy.InteractionsProxy;
@@ -43,7 +45,7 @@ public class PostController {
             Long userId = jwtUtil.getUserIdFromToken(headers);
             Post post = postService.createPost(userId, main, selfie, location);
             return new ResponseEntity<>(post, HttpStatus.CREATED);
-        } catch (WrongFormatException e) {
+        } catch (UserNotFoundException | WrongFormatException e) {
             log.error(e.getMessage());
             return new ResponseEntity<>("Wrong format", HttpStatus.BAD_REQUEST);
         } catch (IOException e) {
@@ -145,6 +147,19 @@ public class PostController {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.UNAUTHORIZED);
         } catch (Exception e) {
             return new ResponseEntity<>("Could not delete post", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @GetMapping("/post-by-postId/{postId}")
+    ResponseEntity<Post> getPostByPostId(@PathVariable Long postId) {
+        try {
+            Post post = postService.findPostById(postId);
+            if (post == null) throw new PostNotFoundException(postId);
+            return new ResponseEntity<>(post, HttpStatus.OK);
+        } catch (PostNotFoundException e) {
+            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+        } catch (Exception e) {
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }

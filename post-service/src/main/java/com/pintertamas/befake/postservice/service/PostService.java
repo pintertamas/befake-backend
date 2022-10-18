@@ -169,4 +169,9 @@ public class PostService {
     public Post getLastPostBy(Long userId) {
         return getPostsFromLastXDays(userId, 1).get(0);
     }
+
+    public Post findPostById(Long postId) {
+        Optional<Post> post = postRepository.findById(postId);
+        return post.orElse(null);
+    }
 }

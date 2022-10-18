@@ -4,11 +4,11 @@ import com.pintertamas.befake.authorizationservice.component.JwtTokenUtil;
 import com.pintertamas.befake.authorizationservice.exception.UserNotFoundException;
 import com.pintertamas.befake.authorizationservice.model.JwtRequest;
 import com.pintertamas.befake.authorizationservice.model.User;
-import com.pintertamas.befake.authorizationservice.repository.UserRepository;
+import com.pintertamas.befake.authorizationservice.proxy.UserProxy;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
@@ -21,27 +21,23 @@ import org.springframework.stereotype.Service;
 @Service
 public class AuthService {
 
-    @Autowired
-    private AuthenticationManager authenticationManager;
+    private final AuthenticationManager authenticationManager;
+    private final UserDetailsService userDetailsService;
+    final UserProxy userProxy;
+    private final JwtTokenUtil jwtTokenUtil;
 
-    @Autowired
-    private UserDetailsService userDetailsService;
-
-    @Autowired
-    UserRepository userRepository;
-
-    @Autowired
-    private JwtTokenUtil jwtTokenUtil;
+    public AuthService(AuthenticationManager authenticationManager, UserDetailsService userDetailsService, UserProxy userProxy, JwtTokenUtil jwtTokenUtil) {
+        this.authenticationManager = authenticationManager;
+        this.userDetailsService = userDetailsService;
+        this.userProxy = userProxy;
+        this.jwtTokenUtil = jwtTokenUtil;
+    }
 
     public String generateToken(JwtRequest authenticationRequest) throws BadCredentialsException, UserNotFoundException {
-        User existingUser = userRepository.findUserByUsername(authenticationRequest.getUsername());
-        if (existingUser == null) {
-            log.info("User not found");
-            throw new UserNotFoundException(authenticationRequest.getUsername());
-        }
+        User existingUser = getUserByUsername(authenticationRequest.getUsername());
         authenticate(authenticationRequest.getUsername(), authenticationRequest.getPassword());
         final UserDetails userDetails = userDetailsService.loadUserByUsername(authenticationRequest.getUsername());
-        return jwtTokenUtil.generateToken(userDetails);
+        return jwtTokenUtil.generateToken(userDetails, existingUser.getId());
     }
 
     private void authenticate(String username, String password) throws BadCredentialsException {
@@ -55,8 +51,13 @@ public class AuthService {
         }
     }
 
-    public User getUserByUsername(String username) {
-        return userRepository.findUserByUsername(username);
+    public User getUserByUsername(String username) throws UserNotFoundException {
+        ResponseEntity<User> existingUser = userProxy.findUserByUsername(username);
+        if (!existingUser.getStatusCode().equals(HttpStatus.OK)
+                || existingUser.getBody() == null) {
+            log.info("User not found");
+            throw new UserNotFoundException(username);
+        }
+        return existingUser.getBody();
     }
-
 }
