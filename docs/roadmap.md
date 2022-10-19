@@ -23,12 +23,14 @@ GET:
 - [X] ```/user/{id} ``` -> visszaadja egy felhasználó adatait
 - [X] ```/post/{fileName} ``` -> visszaadja a kért képet
 - [X] ```/post/today/{userId} ``` -> visszaadja a felhasználó aznapi posztját
+- [X] ```/post/last/{userId} ``` -> visszaadja a felhasználó legutóbbi posztját
 - [X] ```/post/lastPosts/{userId}/{days} ``` -> visszaadja a felhasználó utolsó X napjának posztjait - itt az X egy paraméter lesz, amit ha nem adunk meg akkor az alapértelmezett érték 14 lesz
 - [X] ```/post/user/{userId} ``` -> visszaadjaa felhasználó addigi összes posztját
 - [X] ```/friendlist ``` -> visszaadjaa felhasználó barátait
 - [X] ```/friendlist/pending ``` -> visszaadjaa felhasználó bejövő barátkéréseit
 - [X] ```/comment/post/{postId} ``` -> visszaadjaa az összes kommentet a poszton
 - [X] ```/reaction/post/{postId} ``` -> visszaadjaa az összes reakciót a poszton
+- [ ] ```/getLastBeFakeTime``` -> visszaadja az utolsó BeFake idejét
 
 POST:
 - [X] ```/user/register ``` -> regisztrál egy felhasználót
@@ -40,6 +42,7 @@ POST:
 
 PATCH:
 - [ ] ```/user/{id} ``` -> szerkeszt egy felhasználót
+- [ ] ```/user/{id}/picture ``` -> feltölti a profilképet és beállítja a usernek
 - [X] ```/post/{id} ``` -> szerkeszti a kért poszt leírását
 - [X] ```/friendlist/accept/{userId} ``` -> elfogadja a barát kérést és a pending státuszt aktívra változtatja
 
@@ -62,4 +65,4 @@ notes>
 - a remove post is hívjon át az interactionbe és törölje a poszthoz tartozó dolgokat
 - egy reakció per user
 - ne lehessen a befake time előtt posztolni
-- naponta csak egyet lehessen posztolni
+- naponta csak egyet lehessen posztolni -> ha a legutolsó befake time után volt a user utolsó posztja, akkor nem szabad még újat posztolni
