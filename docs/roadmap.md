@@ -39,7 +39,7 @@ POST:
 - [X] ```/reaction ``` -> reagál egyet
 
 PATCH:
-- [ ] ```/user/{id} ``` -> szerkeszt egy felhasználót
+- [X] ```/user/{id} ``` -> szerkeszt egy felhasználót
 - [X] ```/post/{id} ``` -> szerkeszti a kért poszt leírását
 - [X] ```/friendlist/accept/{userId} ``` -> elfogadja a barát kérést és a pending státuszt aktívra változtatja
 
@@ -63,3 +63,5 @@ notes>
 - egy reakció per user
 - ne lehessen a befake time előtt posztolni
 - naponta csak egyet lehessen posztolni
+- delete user kuld egy hivast az osszes reakciojanak letorlesehez, osszes posztjanak torlesehez es azutan meg a usert torli
+- 

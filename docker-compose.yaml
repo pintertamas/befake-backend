@@ -1,18 +1,6 @@
 version: '3.8'
 
 services:
-  db:
-    container_name: postgres
-    image: 'postgres'
-    restart: always
-    environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
-    ports:
-      - "5432:5432"
-    networks:
-      - befake-network
-
   api-gateway:
     image: api-gateway:latest
     mem_reservation: 700m
@@ -68,14 +56,13 @@ services:
     networks:
       - befake-network
     depends_on:
-      - db
       - naming-server
       - api-gateway
       - friend-service
     environment:
       EUREKA.CLIENT.SERVICEURL.DEFAULTZONE: http://naming-server:8761/eureka
       SPRING.ZIPKIN.BASEURL: http://zipkin-server:9411
-      SPRING.DATASOURCE.URL: jdbc:postgresql://db:5432/user-service
+      SPRING.DATASOURCE.URL: jdbc:postgresql://lucky.db.elephantsql.com:5432/whdddskf?user=whdddskf&password=12kU7fMLNfuFSYto9MLcivaGsLvFf-E0&sslmode=require
 
   post-service:
     image: post-service:latest
@@ -85,13 +72,12 @@ services:
     networks:
       - befake-network
     depends_on:
-      - db
       - naming-server
       - api-gateway
     environment:
       EUREKA.CLIENT.SERVICEURL.DEFAULTZONE: http://naming-server:8761/eureka
       SPRING.ZIPKIN.BASEURL: http://zipkin-server:9411
-      SPRING.DATASOURCE.URL: jdbc:postgresql://db:5432/post-service
+      SPRING.DATASOURCE.URL: jdbc:postgresql://lucky.db.elephantsql.com:5432/jcapalgw?user=jcapalgw&password=c7EsSkbl4kwOfCkb7JaQCtjekq2Xw4dL&sslmode=require
 
   friend-service:
     image: friend-service:latest
@@ -101,13 +87,12 @@ services:
     networks:
       - befake-network
     depends_on:
-      - db
       - naming-server
       - api-gateway
     environment:
       EUREKA.CLIENT.SERVICEURL.DEFAULTZONE: http://naming-server:8761/eureka
       SPRING.ZIPKIN.BASEURL: http://zipkin-server:9411
-      SPRING.DATASOURCE.URL: jdbc:postgresql://db:5432/friend-service
+      SPRING.DATASOURCE.URL: jdbc:postgresql://mouse.db.elephantsql.com:5432/uussjasr?user=uussjasr&password=tacFU7jL_jE2zYxNVzNgkMeAUSKzLi4R&sslmode=require
 
   interaction-service:
     image: interaction-service:latest
@@ -117,13 +102,12 @@ services:
     networks:
       - befake-network
     depends_on:
-      - db
       - naming-server
       - api-gateway
     environment:
       EUREKA.CLIENT.SERVICEURL.DEFAULTZONE: http://naming-server:8761/eureka
       SPRING.ZIPKIN.BASEURL: http://zipkin-server:9411
-      SPRING.DATASOURCE.URL: jdbc:postgresql://db:5432/interaction-service
+      SPRING.DATASOURCE.URL: jdbc:postgresql://mouse.db.elephantsql.com:5432/mzgoaddl?user=mzgoaddl&password=8MFN1xNJJWL9eDdUwS8-tbjoVS4FFKvf&sslmode=require
 
   auth-service:
     image: authorization-service:latest

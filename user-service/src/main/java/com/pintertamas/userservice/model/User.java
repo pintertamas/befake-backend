@@ -43,9 +43,24 @@ public class User {
     private String location; // just the name of their city or something
 
     @Column()
-    private byte[] profilePicture;
+    private String profilePicture;
 
     @Column
     @CreatedDate
     private Timestamp registrationDate;
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "id=" + id +
+                ", username='" + username + '\'' +
+                ", password='" + password + '\'' +
+                ", fullName='" + fullName + '\'' +
+                ", email='" + email + '\'' +
+                ", biography='" + biography + '\'' +
+                ", location='" + location + '\'' +
+                ", profilePicture='" + profilePicture + '\'' +
+                ", registrationDate=" + registrationDate +
+                '}';
+    }
 }
