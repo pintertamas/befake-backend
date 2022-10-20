@@ -40,6 +40,7 @@ POST:
 
 PATCH:
 - [X] ```/user/{id} ``` -> szerkeszt egy felhasználót
+- [ ] ```/user/{id}/picture ``` -> feltölti a profilképet és beállítja a usernek
 - [X] ```/post/{id} ``` -> szerkeszti a kért poszt leírását
 - [X] ```/friendlist/accept/{userId} ``` -> elfogadja a barát kérést és a pending státuszt aktívra változtatja
 
@@ -62,6 +63,6 @@ notes>
 - a remove post is hívjon át az interactionbe és törölje a poszthoz tartozó dolgokat
 - egy reakció per user
 - ne lehessen a befake time előtt posztolni
-- naponta csak egyet lehessen posztolni
+- naponta csak egyet lehessen posztolni -> ha a legutolsó befake time után volt a user utolsó posztja, akkor nem szabad még újat posztolni
 - delete user kuld egy hivast az osszes reakciojanak letorlesehez, osszes posztjanak torlesehez es azutan meg a usert torli
 - 
