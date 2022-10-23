@@ -1,5 +1,6 @@
 package com.pintertamas.userservice.service;
 
+import com.amazonaws.services.memorydb.model.UserAlreadyExistsException;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.AmazonS3Exception;
 import com.amazonaws.services.s3.model.PutObjectRequest;
@@ -82,9 +83,6 @@ public class UserService {
             uploadImage(profilePicture, fileName);
             user.setProfilePicture(fileName);
             userRepository.save(user);
-        } catch (WrongFormatException e) {
-            deleteImage(fileName);
-            throw e;
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -96,6 +94,7 @@ public class UserService {
 
     public User updateProfile(User editedUser) {
         User user = userRepository.findUserById(editedUser.getId());
+        if (userRepository.findUserByUsername(editedUser.getUsername()) != null) throw new UserAlreadyExistsException("Username taken");
         editedUser.setPassword(user.getPassword());
         editedUser.setProfilePicture(user.getProfilePicture());
         editedUser.setRegistrationDate(user.getRegistrationDate());
@@ -105,6 +104,7 @@ public class UserService {
 
     public void editPassword(Long userId, String newPassword) throws WeakPasswordException {
         if (!newPassword.matches(regex)) throw new WeakPasswordException();
+        log.info("New password: " + newPassword);
         User user = userRepository.findUserById(userId);
         String encryptedPassword = bcryptEncoder.encode(newPassword);
         user.setPassword(encryptedPassword);

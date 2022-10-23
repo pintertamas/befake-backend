@@ -51,11 +51,6 @@ public class TimeGeneratorService {
         return new Timestamp(beFakeTimeInMillis);
     }
 
-    @Scheduled(cron = "* * */1 * * *") // runs every one hour
-    public void assureGeneratedTime() {
-        //todo: make sure the time will be generated every day, even if the service stops working for a while
-    }
-
     public Timestamp getBeFakeTime() {
         log.info(beFakeTime.toString());
         return beFakeTime;

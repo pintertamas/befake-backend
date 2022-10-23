@@ -2,6 +2,7 @@ package com.pintertamas.befake.interactionservice.controller;
 
 import com.amazonaws.services.drs.model.AccessDeniedException;
 import com.amazonaws.services.mq.model.NotFoundException;
+import com.pintertamas.befake.interactionservice.exception.UserNotFoundException;
 import com.pintertamas.befake.interactionservice.model.Comment;
 import com.pintertamas.befake.interactionservice.service.CommentService;
 import com.pintertamas.befake.interactionservice.service.JwtUtil;
@@ -62,7 +63,7 @@ public class CommentController {
             Long userId = jwtUtil.getUserIdFromToken(headers);
             Long postOwnerId = jwtUtil.getPostOwnerId(comment.getPostId());
             if (!comment.getUserId().equals(userId) && !userId.equals(postOwnerId))
-                throw new AccessDeniedException("You can't delete this reaction");
+                throw new AccessDeniedException("You can't delete this comment");
             commentService.deleteCommentOnPost(commentId);
             return new ResponseEntity<>(commentId + " successfully deleted", HttpStatus.OK);
         } catch (NotFoundException e) {
@@ -93,6 +94,21 @@ public class CommentController {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.UNAUTHORIZED);
         } catch (Exception e) {
             return new ResponseEntity<>("Could not delete reaction", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @DeleteMapping("/comment/delete-all-by-user")
+    ResponseEntity<String> deleteAllCommentsByUser(@RequestHeader HttpHeaders headers) {
+        try {
+            Long userId = jwtUtil.getUserIdFromToken(headers);
+            commentService.deleteCommentsByUser(userId);
+            return ResponseEntity.ok("Comments by " + userId.toString() + " deleted");
+        } catch (NotFoundException e) {
+            log.error(e.getMessage());
+            return ResponseEntity.notFound().build();
+        } catch (UserNotFoundException e) {
+            log.error(e.getMessage());
+            return ResponseEntity.internalServerError().build();
         }
     }
 }

@@ -1,9 +1,12 @@
 package com.pintertamas.userservice.controller;
 
+import com.amazonaws.services.memorydb.model.UserAlreadyExistsException;
 import com.pintertamas.userservice.exceptions.UserExistsException;
 import com.pintertamas.userservice.exceptions.UserNotFoundException;
 import com.pintertamas.userservice.exceptions.WeakPasswordException;
 import com.pintertamas.userservice.model.User;
+import com.pintertamas.userservice.proxy.InteractionsProxy;
+import com.pintertamas.userservice.proxy.PostProxy;
 import com.pintertamas.userservice.service.JwtUtil;
 import com.pintertamas.userservice.service.UserService;
 import lombok.extern.slf4j.Slf4j;
@@ -73,15 +76,21 @@ public class UserController {
     }
 
     @PatchMapping
-    public ResponseEntity<User> editUser(@Valid @RequestBody User editedUser, @RequestHeader HttpHeaders headers) {
+    public ResponseEntity<?> editUser(@Valid @RequestBody User editedUser, @RequestHeader HttpHeaders headers) {
         try {
             User user = jwtUtil.getUserFromToken(headers);
             editedUser.setId(user.getId());
             user = userService.updateProfile(editedUser);
             return new ResponseEntity<>(user, HttpStatus.OK);
+        } catch (UserAlreadyExistsException e) {
+            log.error(e.getMessage());
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        } catch (UserNotFoundException e) {
+            log.error(e.getMessage());
+            return new ResponseEntity<>("Could not find user, you might need to log in again", HttpStatus.NOT_FOUND);
         } catch (Exception e) {
             log.error(e.getMessage());
-            return ResponseEntity.internalServerError().build();
+            return new ResponseEntity<>("Could not edit user", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 

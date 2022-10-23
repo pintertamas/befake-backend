@@ -88,4 +88,16 @@ public class FriendService {
                 .filter((friendship) -> friendship.getStatus().equals(status))
                 .toList()));
     }
+
+    public List<Long> getListOfFriendIds(Long userId) {
+        List<Long> friends = new ArrayList<>();
+        getFriendListByStatus(userId, Status.ACCEPTED).forEach(friendship -> {
+            Long user1 = friendship.getUser1Id();
+            Long user2 = friendship.getUser2Id();
+            if (!user1.equals(userId)) friends.add(user1);
+            else friends.add(user2);
+                }
+        );
+        return friends;
+    }
 }

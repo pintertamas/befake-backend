@@ -59,4 +59,8 @@ public class CommentService {
         if (comments.isEmpty()) throw new NotFoundException("Could not find reactions on this post");
         commentRepository.deleteAll(comments.get());
     }
+
+    public void deleteCommentsByUser(Long userId) {
+        commentRepository.deleteAllByUserId(userId);
+    }
 }

@@ -42,4 +42,9 @@ public class Post {
     @Column
     @CreatedDate
     private Timestamp postingTime;
+
+    @Column
+    private Timestamp beFakeTime;
+
+    @Column boolean isDeleted;
 }

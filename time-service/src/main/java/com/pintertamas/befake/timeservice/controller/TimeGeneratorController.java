@@ -21,7 +21,7 @@ public class TimeGeneratorController {
         this.timeGeneratorService = timeGeneratorService;
     }
 
-    @GetMapping("/lastBeFakeTime")
+    @GetMapping("/last-befake-time")
     public ResponseEntity<Timestamp> getLastBeFakeTime() {
         try {
             Timestamp lastBeFakeTime = timeGeneratorService.getBeFakeTime();

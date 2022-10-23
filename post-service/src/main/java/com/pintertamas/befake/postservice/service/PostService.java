@@ -1,5 +1,6 @@
 package com.pintertamas.befake.postservice.service;
 
+import com.amazonaws.services.mq.model.BadRequestException;
 import com.amazonaws.services.mq.model.NotFoundException;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.AmazonS3Exception;
@@ -7,12 +8,20 @@ import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.amazonaws.services.s3.model.S3Object;
 import com.amazonaws.services.s3.model.S3ObjectInputStream;
 import com.amazonaws.util.IOUtils;
+import com.pintertamas.befake.postservice.exception.PostNotFoundException;
 import com.pintertamas.befake.postservice.exception.WrongFormatException;
 import com.pintertamas.befake.postservice.model.Post;
+import com.pintertamas.befake.postservice.model.User;
+import com.pintertamas.befake.postservice.proxy.FriendProxy;
+import com.pintertamas.befake.postservice.proxy.TimeServiceProxy;
+import com.pintertamas.befake.postservice.proxy.UserProxy;
 import com.pintertamas.befake.postservice.repository.PostRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.tomcat.util.http.fileupload.FileUploadException;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
@@ -25,6 +34,7 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -38,18 +48,30 @@ public class PostService {
 
     private final AmazonS3 s3;
     private final PostRepository postRepository;
+    private final TimeServiceProxy timeServiceProxy;
+    private final FriendProxy friendProxy;
 
-    public PostService(AmazonS3 s3, PostRepository postRepository) {
+    public PostService(AmazonS3 s3, PostRepository postRepository, FriendProxy friendProxy, TimeServiceProxy timeServiceProxy) {
         this.s3 = s3;
         this.postRepository = postRepository;
+        this.friendProxy = friendProxy;
+        this.timeServiceProxy = timeServiceProxy;
     }
 
-    public Post createPost(Long userId, MultipartFile mainPhoto, MultipartFile selfiePhoto, String location) throws IOException, WrongFormatException {
+    public Post createPost(User user, MultipartFile mainPhoto, MultipartFile selfiePhoto, String location) throws IOException, WrongFormatException, BadRequestException {
+        ResponseEntity<Timestamp> lastBeFakeTimeResponse = timeServiceProxy.getLastBeFakeTime();
+        if (lastBeFakeTimeResponse == null || !lastBeFakeTimeResponse.getStatusCode().equals(HttpStatus.OK)) {
+            throw new BadRequestException("Could not reach time service");
+        }
+        if (userAlreadyPostedToday(user, lastBeFakeTimeResponse.getBody()))
+            throw new BadRequestException("You already posted today");
+
         long now = System.currentTimeMillis();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MMM-dd_HH:mm:ss");
         Date date = new Date(now);
         String mainName = sdf.format(date) + "_main." + getExtensionOfFile(mainPhoto);
         String selfieName = sdf.format(date) + "_selfie." + getExtensionOfFile(selfiePhoto);
+
         try {
             uploadImage(mainPhoto, mainName);
             uploadImage(selfiePhoto, selfieName);
@@ -58,7 +80,9 @@ public class PostService {
             post.setSelfiePhoto(selfieName);
             post.setLocation(location);
             post.setPostingTime(new Timestamp(now));
-            post.setUserId(userId);
+            post.setBeFakeTime(lastBeFakeTimeResponse.getBody());
+            post.setUserId(user.getId());
+            post.setDeleted(false);
             return postRepository.save(post);
         } catch (WrongFormatException e) {
             deleteImage(mainName);
@@ -67,12 +91,24 @@ public class PostService {
         }
     }
 
+    private boolean userAlreadyPostedToday(User user, Timestamp beFakeTime) {
+        Timestamp postBeFakeTime;
+        try {
+            Post lastPost = getLastPostBy(user.getId());
+            if (lastPost == null) return false;
+            postBeFakeTime = lastPost.getBeFakeTime();
+        } catch (PostNotFoundException e) {
+            postBeFakeTime = new Timestamp(0);
+        }
+        return postBeFakeTime.compareTo(beFakeTime) >= 0;
+    }
+
     private String getExtensionOfFile(MultipartFile file) {
         return StringUtils.getFilenameExtension(file.getOriginalFilename());
     }
 
     public void addDescription(Long postId, String description) throws NotFoundException {
-        Optional<Post> post = postRepository.findById(postId);
+        Optional<Post> post = postRepository.findById(postId).filter(existingPost -> !existingPost.isDeleted());
         if (post.isPresent()) {
             post.get().setDescription(description);
             postRepository.save(post.get());
@@ -125,7 +161,12 @@ public class PostService {
         deleteImage(imageName);
         imageName = post.get().getSelfiePhoto();
         deleteImage(imageName);
-        postRepository.delete(post.get());
+        post.get().setMainPhoto(null);
+        post.get().setSelfiePhoto(null);
+        post.get().setDescription(null);
+        post.get().setLocation(null);
+        post.get().setDeleted(true);
+        postRepository.save(post.get()); // soft delete
     }
 
     private File convertMultipartFileToFile(MultipartFile multipartFile) throws IOException, WrongFormatException {
@@ -142,13 +183,24 @@ public class PostService {
     public List<Post> getPostsByUser(Long userId) {
         Optional<List<Post>> posts = postRepository.findAllByUserId(userId);
         if (posts.isEmpty()) throw new NotFoundException("No posts could be found");
-        return posts.get();
+        return posts.get()
+                .stream()
+                .filter(existingPost -> !existingPost.isDeleted())
+                .toList();
     }
 
     public List<Post> getPosts() {
         List<Post> posts = postRepository.findAll();
         if (posts.isEmpty()) throw new NotFoundException("No posts could be found");
         return posts;
+    }
+
+    public List<Post> getPostsFromFriends(HttpHeaders headers) {
+        ResponseEntity<List<Long>> friends = friendProxy.getListOfFriends(headers);
+        if (friends.getBody() == null || !friends.getStatusCode().equals(HttpStatus.OK)) throw new NotFoundException("Could not establish connection with friend-service");
+        List<Post> postsFromFriends = new ArrayList<>();
+        friends.getBody().forEach(friend -> postsFromFriends.add(getTodaysPostBy(friend)));
+        return postsFromFriends;
     }
 
     private boolean isAnImage(MultipartFile file) {
@@ -168,16 +220,45 @@ public class PostService {
         LocalDateTime xDaysAgoMidnight = LocalDateTime.of(xDaysAgo, midnight);
         log.info("x days ago midnight was: " + xDaysAgoMidnight);
         Optional<List<Post>> posts = postRepository.findAllByUserIdAndPostingTimeAfter(userId, Timestamp.valueOf(xDaysAgoMidnight));
-        if (posts.isEmpty()) throw new NotFoundException("Could not find posts belonging to this user");
-        return posts.get();
+        if (posts.isEmpty()) throw new NotFoundException("Could not query posts belonging to this user");
+        return posts.get()
+                .stream()
+                .filter(post -> post.getBeFakeTime()
+                        .after(Timestamp.valueOf(xDaysAgoMidnight))
+                ).toList();
     }
 
-    public Post getLastPostBy(Long userId) {
+    public Post getTodaysPostBy(Long userId) {
         return getPostsFromLastXDays(userId, 1).get(0);
+    }
+
+    public Post getLastPostBy(Long userId) throws PostNotFoundException {
+        Optional<List<Post>> posts = postRepository.findAllByUserId(userId);
+        if (posts.isEmpty()) throw new PostNotFoundException(userId);
+        if (posts.get().size() == 0) return null;
+        posts.get().sort((p1, p2) -> {
+            if (p1.getPostingTime().equals(p2.getPostingTime())) return 0;
+            else return p1.getPostingTime().after(p2.getPostingTime()) ? 1 : -1;
+        });
+        log.info(posts.get().toString());
+        posts.get().forEach((post) -> log.info(post.getPostingTime().toString()));
+        Post lastPost = posts.get().get(posts.get().size() - 1);
+        log.info(lastPost.getPostingTime().toString());
+        return lastPost;
     }
 
     public Post findPostById(Long postId) {
         Optional<Post> post = postRepository.findById(postId);
         return post.orElse(null);
+    }
+
+    public void removePostsByUser(Long userId) throws PostNotFoundException {
+        Optional<List<Post>> posts = postRepository.findAllByUserId(userId);
+        if (posts.isEmpty()) throw new PostNotFoundException(userId);
+        posts.get().forEach((post) -> {
+            deleteImage(post.getMainPhoto());
+            deleteImage(post.getSelfiePhoto());
+            postRepository.delete(post);
+        });
     }
 }

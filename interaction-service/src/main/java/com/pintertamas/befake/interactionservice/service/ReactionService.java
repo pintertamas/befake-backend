@@ -45,7 +45,7 @@ public class ReactionService {
         long now = System.currentTimeMillis();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MMM-dd_HH:mm:ss");
         Date date = new Date(now);
-        String fileName = sdf.format(date) + getExtensionOfFile(reactionPhoto);
+        String fileName = sdf.format(date) + "." + getExtensionOfFile(reactionPhoto);
         try {
             uploadReaction(reactionPhoto, fileName);
             Reaction reaction = new Reaction();
@@ -150,5 +150,18 @@ public class ReactionService {
         } catch (Exception e) {
             throw new IllegalArgumentException("Wrong fileName");
         }
+    }
+
+    public void deleteReactionsByUser(Long userId) throws NotFoundException {
+        Optional<List<Reaction>> reactions = reactionRepository.findAllByUserId(userId);
+        if (reactions.isEmpty()) throw new NotFoundException("Could not find reactions by this user");
+        reactions.get().forEach((reaction) -> {
+            deleteImage(reaction.getImageName());
+            reactionRepository.delete(reaction);
+        });
+    }
+
+    public boolean alreadyReacted(Long userId, Long postId) {
+        return reactionRepository.findByPostIdAndUserId(postId, userId).isPresent();
     }
 }

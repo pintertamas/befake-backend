@@ -40,6 +40,8 @@ public class ReactionController {
         try {
             Long userId = jwtUtil.getUserIdFromToken(headers);
             if (jwtUtil.isPostOwner(headers, postId)) throw new WrongFormatException("You cant react to your own post");
+            if (reactionService.alreadyReacted(userId, postId))
+                throw new WrongFormatException("You already reacted to this post");
             Reaction reaction = reactionService.react(userId, reactionPhoto, postId);
             return new ResponseEntity<>(reaction, HttpStatus.CREATED);
         } catch (UserNotFoundException | PostNotFoundException | WrongFormatException e) {
@@ -117,6 +119,21 @@ public class ReactionController {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.UNAUTHORIZED);
         } catch (Exception e) {
             return new ResponseEntity<>("Could not delete reaction", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @DeleteMapping("/reaction/delete-all-by-user")
+    ResponseEntity<String> deleteAllReactionsByUser(@RequestHeader HttpHeaders headers) {
+        try {
+            Long userId = jwtUtil.getUserIdFromToken(headers);
+            reactionService.deleteReactionsByUser(userId);
+            return ResponseEntity.ok("Reactions by " + userId + " deleted");
+        } catch (NotFoundException e) {
+            log.error(e.getMessage());
+            return ResponseEntity.notFound().build();
+        } catch (UserNotFoundException e) {
+            log.error(e.getMessage());
+            return ResponseEntity.internalServerError().build();
         }
     }
 }

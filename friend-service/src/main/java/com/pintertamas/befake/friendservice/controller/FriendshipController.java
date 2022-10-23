@@ -6,6 +6,7 @@ import com.pintertamas.befake.friendservice.model.Friendship;
 import com.pintertamas.befake.friendservice.model.Status;
 import com.pintertamas.befake.friendservice.service.FriendService;
 import com.pintertamas.befake.friendservice.service.JwtUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@Slf4j
 @RestController
 @RequestMapping("/friendlist")
 public class FriendshipController {
@@ -86,6 +88,18 @@ public class FriendshipController {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
         } catch (Exception e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @GetMapping("/friends")
+    public ResponseEntity<List<Long>> getListOfFriends(@RequestHeader HttpHeaders headers) {
+        try {
+            Long userId = jwtUtil.getUserIdFromToken(headers);
+            List<Long> friends = friendService.getListOfFriendIds(userId);
+            return new ResponseEntity<>(friends, HttpStatus.OK);
+        } catch (UserNotFoundException e) {
+            log.info(e.getMessage());
+            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
         }
     }
 
