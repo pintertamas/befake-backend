@@ -99,3 +99,6 @@ Most azt csinálom meg, hogy a servicek külön adatbázisokban és csak egyetle
 Megcsináltam az adatbázisok szétosztását, most ElephantSQL-en fut 4 egymástól független adatbázis és ezekre kapcsolódnak rá a servicek. Befejeztem a BeFake time generáló service-t is és az endpointok nagyrészének az implementálását is, már csak a user-service delete user funkciója van hátra, amihez majd kell az összes serviceben endpointokat létrehozni, amik a userhez tartozó összes adatukat letörlik. Ezeken kívül meg már csak a notification service van hátra, amihez majd Kafkát fogok használni. Olyan dolgok is vannak még hátra, mint a userek posztolásának korlátozása (csak akkor lehessen, ha már volt aznap BeFake time, vagy ha az az előtti napit még nem posztolta ki), vagy hogy ne lehessen többször reagálni egy posztra, hanem felahsználónként csak egyszer.
 
 ### 8.hét
+Végigteszteltem az endpointokat, majd néhány helyen korrigáltam a response-ok formátumát és fixáltam néhány kisebb edge-case bugot is. Visszaraktam az adatbázisokat lokálisra, hogy ne legyen probléma a tárhellyel és a kapcsolatok maximális számával.
+Ezek után nekiálltam megcsinálni a notification service-t ami az emailek kiküldéséért és a telefonos értesítések küldéséért felelős.
+A terv az, hogy amint ez kész van, elkezdem a mobilos appot készíteni.
