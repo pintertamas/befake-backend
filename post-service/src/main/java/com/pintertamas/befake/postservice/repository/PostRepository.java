@@ -12,9 +12,5 @@ import java.util.Optional;
 public interface PostRepository extends JpaRepository<Post, Long> {
     Optional<List<Post>> findAllByUserId(Long userId);
 
-    Optional<List<Post>> findAllByPostingTimeAfter(Timestamp pastTimestamp);
-
-    Optional<List<Post>> findAllByUserIdAndPostingTimeAfterAndPostingTimeBefore(Long userId, Timestamp afterTimestamp, Timestamp beforeTimestamp);
-
     Optional<List<Post>> findAllByUserIdAndPostingTimeAfter(Long userId, Timestamp pastTimestamp);
 }

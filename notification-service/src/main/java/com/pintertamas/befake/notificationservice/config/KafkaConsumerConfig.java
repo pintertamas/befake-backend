@@ -1,6 +1,6 @@
 package com.pintertamas.befake.notificationservice.config;
 
-import com.pintertamas.befake.notificationservice.KafkaListenerTest;
+import com.pintertamas.befake.notificationservice.listener.KafkaListenerTest;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.IntegerDeserializer;
 import org.apache.kafka.common.serialization.StringDeserializer;

@@ -35,7 +35,7 @@ public class TimeGeneratorService {
 
         ZonedDateTime nowZoned = ZonedDateTime.now();
         Instant midnight = nowZoned.toLocalDate().atStartOfDay(nowZoned.getZone()).toInstant();
-        Duration duration = Duration.between(midnight, Instant.now());
+        Duration duration = Duration.between(midnight, nowZoned.toInstant());
         long timeSinceMidnight = duration.getSeconds() * 1000;
         long now = nowZoned.toInstant().toEpochMilli();
 

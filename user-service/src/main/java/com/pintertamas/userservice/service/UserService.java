@@ -37,13 +37,11 @@ public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder bcryptEncoder;
     private final AmazonS3 s3;
-    private final KafkaService kafkaService;
 
-    public UserService(UserRepository userRepository, PasswordEncoder bcryptEncoder, AmazonS3 s3, KafkaService kafkaService) {
+    public UserService(UserRepository userRepository, PasswordEncoder bcryptEncoder, AmazonS3 s3) {
         this.userRepository = userRepository;
         this.bcryptEncoder = bcryptEncoder;
         this.s3 = s3;
-        this.kafkaService = kafkaService;
     }
 
     static final String regex = "^(?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$";
@@ -55,7 +53,6 @@ public class UserService {
         if (!newUser.getPassword().matches(regex)) throw new WeakPasswordException();
         newUser.setPassword(bcryptEncoder.encode(newUser.getPassword()));
         newUser.setRegistrationDate(new Timestamp(System.currentTimeMillis()));
-        kafkaService.sendEmailMessage(newUser.getEmail());
         return userRepository.save(newUser);
     }
 

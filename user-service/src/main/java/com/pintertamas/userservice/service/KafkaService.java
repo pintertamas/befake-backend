@@ -17,8 +17,8 @@ public class KafkaService {
         this.kafkaTemplate = kafkaTemplate;
     }
 
-    public void sendEmailMessage(String email) {
-        log.info("Message to " + topic + ": " + email);
-        kafkaTemplate.send(topic, email);
+    public void sendEmailMessage(String email, String username) {
+        log.info("Sending email to " + email + " with topic: " + topic);
+        kafkaTemplate.send(topic, email + "," + username);
     }
 }

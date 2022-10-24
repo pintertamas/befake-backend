@@ -35,7 +35,7 @@ public class UserController {
 
     @PostMapping("/kafka-test")
     public ResponseEntity<?> kafkaTest() {
-        kafkaService.sendEmailMessage("email_address");
+        kafkaService.sendEmailMessage("pintertamas99@gmail.com", "Tomi");
         return ResponseEntity.ok().build();
     }
 
@@ -65,9 +65,8 @@ public class UserController {
         try {
             User user = userService.register(newUser);
             log.info("USER CREATED: " + newUser);
-            // todo: send email with notification service (it is going to be implemented at the end of the project)
-            // if (!notificationService.sendRegistrationSuccessfulMessage(newUser.getEmail(), newUser.getUsername()))
-            //    throw new Exception("Could not send Email to: " + newUser.getEmail());
+            kafkaService.sendEmailMessage(newUser.getEmail(), newUser.getUsername());
+            log.info("EMAIL SENT: " + newUser.getEmail());
             return ResponseEntity.ok(user);
         } catch (UserExistsException exception) {
             log.error("USER ALREADY EXISTS: " + exception.getExistingUser());
