@@ -1,6 +1,32 @@
 version: '3.8'
 
 services:
+  zookeeper:
+    image: wurstmeister/zookeeper
+    ports:
+      - "2181:2181"
+    networks:
+      - befake-network
+    environment:
+      - ALLOW_ANONYMOUS_LOGIN=yes
+  kafka:
+    image: wurstmeister/kafka
+    links:
+      - zookeeper:zk
+    ports:
+      - '9092:9092'
+    networks:
+      - befake-network
+    environment:
+      KAFKA_ADVERTISED_HOST_NAME: localhost
+      KAFKA_ZOOKEEPER_CONNECT: zk:2181
+      KAFKA_MESSAGE_MAX_BYTES: 2000000
+      KAFKA_CREATE_TOPICS: "registration:1:3"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    depends_on:
+      - zookeeper
+
   api-gateway:
     image: api-gateway:latest
     mem_reservation: 700m

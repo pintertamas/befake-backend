@@ -5,9 +5,8 @@ import com.pintertamas.userservice.exceptions.UserExistsException;
 import com.pintertamas.userservice.exceptions.UserNotFoundException;
 import com.pintertamas.userservice.exceptions.WeakPasswordException;
 import com.pintertamas.userservice.model.User;
-import com.pintertamas.userservice.proxy.InteractionsProxy;
-import com.pintertamas.userservice.proxy.PostProxy;
 import com.pintertamas.userservice.service.JwtUtil;
+import com.pintertamas.userservice.service.KafkaService;
 import com.pintertamas.userservice.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
@@ -25,11 +24,19 @@ import java.util.List;
 public class UserController {
 
     private final UserService userService;
+    private final KafkaService kafkaService;
     private final JwtUtil jwtUtil;
 
-    public UserController(UserService userService, JwtUtil jwtUtil) {
+    public UserController(UserService userService, KafkaService kafkaService, JwtUtil jwtUtil) {
         this.userService = userService;
+        this.kafkaService = kafkaService;
         this.jwtUtil = jwtUtil;
+    }
+
+    @PostMapping("/kafka-test")
+    public ResponseEntity<?> kafkaTest() {
+        kafkaService.sendEmailMessage("email_address");
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping()

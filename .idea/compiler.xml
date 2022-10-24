@@ -13,6 +13,7 @@
         <module name="authorization-service" />
         <module name="user-service" />
         <module name="time-service" />
+        <module name="notification-service" />
         <module name="naming-server" />
         <module name="interaction-service" />
       </profile>
@@ -23,6 +24,7 @@
       <module name="friend-service" target="17" />
       <module name="interaction-service" target="17" />
       <module name="naming-server" target="17" />
+      <module name="notification-service" target="17" />
       <module name="post-service" target="17" />
       <module name="time-service" target="17" />
       <module name="user-service" target="17" />
@@ -35,6 +37,7 @@
       <module name="friend-service" options="-parameters" />
       <module name="interaction-service" options="-parameters" />
       <module name="naming-server" options="-parameters" />
+      <module name="notification-service" options="-parameters" />
       <module name="post-service" options="-parameters" />
       <module name="time-service" options="-parameters" />
       <module name="user-service" options="-parameters" />

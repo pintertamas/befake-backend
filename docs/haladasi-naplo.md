@@ -102,3 +102,6 @@ Megcsináltam az adatbázisok szétosztását, most ElephantSQL-en fut 4 egymás
 Végigteszteltem az endpointokat, majd néhány helyen korrigáltam a response-ok formátumát és fixáltam néhány kisebb edge-case bugot is. Visszaraktam az adatbázisokat lokálisra, hogy ne legyen probléma a tárhellyel és a kapcsolatok maximális számával.
 Ezek után nekiálltam megcsinálni a notification service-t ami az emailek kiküldéséért és a telefonos értesítések küldéséért felelős.
 A terv az, hogy amint ez kész van, elkezdem a mobilos appot készíteni.
+A Kafkát egy Docker image segítségével futtatom lokálban, aminek a konfigurációja a docker-compose.yml fileban található meg.
+Ehhez segítséget itt találtam: ```https://docs.spring.io/spring-kafka/reference/html/```
+Létrehoztam egy teszt enpointot amivel a user service-ből lehet üzenetet küldeni a Kafkának, a notification service pedig az ide érkező, registration topicra küldött üzeneteket feldolgozza.
