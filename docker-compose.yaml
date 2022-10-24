@@ -1,20 +1,34 @@
 version: '3.8'
 
 services:
-  db:
-    container_name: postgres
-    image: 'postgres'
-    restart: always
-    environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
+  zookeeper:
+    image: wurstmeister/zookeeper
     ports:
-      - "5432:5432"
+      - "2181:2181"
     networks:
       - befake-network
+    environment:
+      - ALLOW_ANONYMOUS_LOGIN=yes
+  kafka:
+    image: wurstmeister/kafka
+    links:
+      - zookeeper:zk
+    ports:
+      - '9092:9092'
+    networks:
+      - befake-network
+    environment:
+      KAFKA_ADVERTISED_HOST_NAME: localhost
+      KAFKA_ZOOKEEPER_CONNECT: zk:2181
+      KAFKA_MESSAGE_MAX_BYTES: 2000000
+      KAFKA_CREATE_TOPICS: "registration:1:3"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    depends_on:
+      - zookeeper
 
   api-gateway:
-    image: pintertamas/befake-api-gateway:latest
+    image: api-gateway:latest
     mem_reservation: 700m
     ports:
       - "8765:8765"
@@ -31,7 +45,7 @@ services:
       SPRING_ZIPKIN_SENDER_TYPE: rabbit
 
   naming-server:
-    image: pintertamas/befake-naming-server:latest
+    image: naming-server:latest
     mem_reservation: 700m
     ports:
       - "8761:8761"
@@ -61,75 +75,74 @@ services:
       - befake-network
 
   user-service:
-    image: pintertamas/befake-user-service:0.0.1-SNAPSHOT
+    image: user-service:latest
     restart: always
     ports:
       - "8000:8000"
     networks:
       - befake-network
     depends_on:
-      - db
       - naming-server
       - api-gateway
       - friend-service
     environment:
       EUREKA.CLIENT.SERVICEURL.DEFAULTZONE: http://naming-server:8761/eureka
       SPRING.ZIPKIN.BASEURL: http://zipkin-server:9411
+      SPRING.DATASOURCE.URL: jdbc:postgresql://lucky.db.elephantsql.com:5432/whdddskf?user=whdddskf&password=12kU7fMLNfuFSYto9MLcivaGsLvFf-E0&sslmode=require
 
   post-service:
-    image: pintertamas/befake-post-service:0.0.1-SNAPSHOT
+    image: post-service:latest
     restart: always
     ports:
       - "8001:8001"
     networks:
       - befake-network
     depends_on:
-      - db
       - naming-server
       - api-gateway
     environment:
       EUREKA.CLIENT.SERVICEURL.DEFAULTZONE: http://naming-server:8761/eureka
       SPRING.ZIPKIN.BASEURL: http://zipkin-server:9411
+      SPRING.DATASOURCE.URL: jdbc:postgresql://lucky.db.elephantsql.com:5432/jcapalgw?user=jcapalgw&password=c7EsSkbl4kwOfCkb7JaQCtjekq2Xw4dL&sslmode=require
 
   friend-service:
-    image: pintertamas/befake-friend-service:0.0.1-SNAPSHOT
+    image: friend-service:latest
     restart: always
     ports:
       - "8003:8003"
     networks:
       - befake-network
     depends_on:
-      - db
       - naming-server
       - api-gateway
     environment:
       EUREKA.CLIENT.SERVICEURL.DEFAULTZONE: http://naming-server:8761/eureka
       SPRING.ZIPKIN.BASEURL: http://zipkin-server:9411
+      SPRING.DATASOURCE.URL: jdbc:postgresql://mouse.db.elephantsql.com:5432/uussjasr?user=uussjasr&password=tacFU7jL_jE2zYxNVzNgkMeAUSKzLi4R&sslmode=require
 
   interaction-service:
-    image: pintertamas/befake-interaction-service:0.0.1-SNAPSHOT
+    image: interaction-service:latest
     restart: always
     ports:
       - "8002:8002"
     networks:
       - befake-network
     depends_on:
-      - db
       - naming-server
       - api-gateway
     environment:
       EUREKA.CLIENT.SERVICEURL.DEFAULTZONE: http://naming-server:8761/eureka
       SPRING.ZIPKIN.BASEURL: http://zipkin-server:9411
+      SPRING.DATASOURCE.URL: jdbc:postgresql://mouse.db.elephantsql.com:5432/mzgoaddl?user=mzgoaddl&password=8MFN1xNJJWL9eDdUwS8-tbjoVS4FFKvf&sslmode=require
 
   auth-service:
-    image: pintertamas/befake-authorization-service:0.0.1-SNAPSHOT
-    restart: always
+    image: authorization-service:latest
+    #restart: always
     ports:
       - "8080:8080"
     networks:
       - befake-network
     depends_on:
-      - db
       - naming-server
       - api-gateway
     environment:

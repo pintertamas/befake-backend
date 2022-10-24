@@ -41,6 +41,10 @@ public class ApiGatewayConfiguration {
                 .route("notification-service", r -> r.path("/notification/**")
                         .filters(f -> f.filter(filter))
                         .uri("lb://notification-service"))
+
+                .route("time-service", r -> r.path("/time/**")
+                        .filters(f -> f.filter(filter))
+                        .uri("lb://time-service"))
                 .build();
     }
 }

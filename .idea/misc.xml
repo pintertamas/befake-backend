@@ -11,6 +11,8 @@
         <option value="$PROJECT_DIR$/friend-service/pom.xml" />
         <option value="$PROJECT_DIR$/interaction-service/pom.xml" />
         <option value="$PROJECT_DIR$/time-generator/pom.xml" />
+        <option value="$PROJECT_DIR$/time-service/pom.xml" />
+        <option value="$PROJECT_DIR$/user-service/notification-service/pom.xml" />
       </list>
     </option>
   </component>

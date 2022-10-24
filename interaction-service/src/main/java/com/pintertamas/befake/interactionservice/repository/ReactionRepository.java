@@ -8,5 +8,8 @@ import java.util.Optional;
 
 public interface ReactionRepository extends JpaRepository<Reaction, Long> {
     Optional<List<Reaction>> findAllByPostId(Long postId);
+
     Optional<Reaction> findByPostIdAndUserId(Long postId, Long userId);
+
+    Optional<List<Reaction>>findAllByUserId(Long userId);
 }

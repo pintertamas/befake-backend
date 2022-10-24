@@ -4,10 +4,12 @@ import com.pintertamas.befake.friendservice.exception.FriendshipNotFoundExceptio
 import com.pintertamas.befake.friendservice.exception.UserNotFoundException;
 import com.pintertamas.befake.friendservice.model.Friendship;
 import com.pintertamas.befake.friendservice.model.User;
+import com.pintertamas.befake.friendservice.proxy.UserProxy;
 import com.pintertamas.befake.friendservice.repository.FriendshipRepository;
-import com.pintertamas.befake.friendservice.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.stereotype.Service;
 
@@ -20,12 +22,12 @@ import java.util.Optional;
 public class JwtUtil {
 
     final JwtDecoder jwtDecoder;
-    final UserRepository userRepository;
+    final UserProxy userProxy;
     final FriendshipRepository friendshipRepository;
 
-    public JwtUtil(JwtDecoder jwtDecoder, UserRepository userRepository, FriendshipRepository friendshipRepository) {
+    public JwtUtil(JwtDecoder jwtDecoder, UserProxy userProxy, FriendshipRepository friendshipRepository) {
         this.jwtDecoder = jwtDecoder;
-        this.userRepository = userRepository;
+        this.userProxy = userProxy;
         this.friendshipRepository = friendshipRepository;
     }
 
@@ -41,19 +43,31 @@ public class JwtUtil {
         return !(friendship.getUser1Id().equals(user.getId()) || friendship.getUser2Id().equals(user.getId()));
     }
 
-    private User getUserFromToken(HttpHeaders headers) throws UserNotFoundException {
+    private String getClaimFromTokenByTag(HttpHeaders headers, String tag) {
         String token = getTokenFromHeader(headers);
         token = token.split(" ")[1].trim();
-        log.info(token);
-        String username = this.getAllClaimsFromToken(token).getOrDefault("sub", false).toString();
-        User user = userRepository.findUserByUsername(username);
-        if (user == null) throw new UserNotFoundException("This token does not belong to an existing user!");
-        return user;
+        Map<String, Object> claims = this.getAllClaimsFromToken(token);
+        log.info(claims.toString());
+        return claims.getOrDefault(tag, false).toString();
+    }
+
+    private User getUserFromToken(HttpHeaders headers) throws UserNotFoundException {
+        String username = getClaimFromTokenByTag(headers, "sub");
+        ResponseEntity<User> user = userProxy.findUserByUsername(username);
+        if (user.getBody() == null || !user.getStatusCode().equals(HttpStatus.OK)) {
+            throw new UserNotFoundException(username);
+        }
+        return user.getBody();
     }
 
     public Long getUserIdFromToken(HttpHeaders headers) throws UserNotFoundException {
-        User user = getUserFromToken(headers);
-        return user.getId();
+        String userIdString = null;
+        try {
+            userIdString = getClaimFromTokenByTag(headers, "userId");
+            return Long.valueOf(userIdString);
+        } catch (NumberFormatException e) {
+            throw new UserNotFoundException(userIdString);
+        }
     }
 
     public Map<String, Object> getAllClaimsFromToken(String token) {

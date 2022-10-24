@@ -1,16 +1,19 @@
 package com.pintertamas.userservice.controller;
 
+import com.amazonaws.services.memorydb.model.UserAlreadyExistsException;
 import com.pintertamas.userservice.exceptions.UserExistsException;
 import com.pintertamas.userservice.exceptions.UserNotFoundException;
+import com.pintertamas.userservice.exceptions.WeakPasswordException;
 import com.pintertamas.userservice.model.User;
-import com.pintertamas.userservice.repository.UserRepository;
+import com.pintertamas.userservice.service.JwtUtil;
+import com.pintertamas.userservice.service.KafkaService;
 import com.pintertamas.userservice.service.UserService;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -20,13 +23,20 @@ import java.util.List;
 @RequestMapping("/user")
 public class UserController {
 
-    final UserRepository userRepository;
-
     private final UserService userService;
+    private final KafkaService kafkaService;
+    private final JwtUtil jwtUtil;
 
-    public UserController(UserRepository userRepository, UserService userService) {
-        this.userRepository = userRepository;
+    public UserController(UserService userService, KafkaService kafkaService, JwtUtil jwtUtil) {
         this.userService = userService;
+        this.kafkaService = kafkaService;
+        this.jwtUtil = jwtUtil;
+    }
+
+    @PostMapping("/kafka-test")
+    public ResponseEntity<?> kafkaTest() {
+        kafkaService.sendEmailMessage("email_address");
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping()
@@ -62,6 +72,9 @@ public class UserController {
         } catch (UserExistsException exception) {
             log.error("USER ALREADY EXISTS: " + exception.getExistingUser());
             return ResponseEntity.badRequest().body(exception.getMessage());
+        } catch (WeakPasswordException exception) {
+            log.error(exception.getMessage());
+            return ResponseEntity.badRequest().body(exception.getMessage());
         } catch (Exception exception) {
             log.error("Something went wrong during registration...");
             log.error(exception.getMessage());
@@ -69,4 +82,80 @@ public class UserController {
         }
     }
 
+    @PatchMapping
+    public ResponseEntity<?> editUser(@Valid @RequestBody User editedUser, @RequestHeader HttpHeaders headers) {
+        try {
+            User user = jwtUtil.getUserFromToken(headers);
+            editedUser.setId(user.getId());
+            user = userService.updateProfile(editedUser);
+            return new ResponseEntity<>(user, HttpStatus.OK);
+        } catch (UserAlreadyExistsException e) {
+            log.error(e.getMessage());
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        } catch (UserNotFoundException e) {
+            log.error(e.getMessage());
+            return new ResponseEntity<>("Could not find user, you might need to log in again", HttpStatus.NOT_FOUND);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return new ResponseEntity<>("Could not edit user", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @PatchMapping("/edit-password")
+    public ResponseEntity<String> editPassword(@RequestBody String password, @RequestHeader HttpHeaders headers) {
+        try {
+            User user = jwtUtil.getUserFromToken(headers);
+            log.info(user.toString());
+            userService.editPassword(user.getId(), password);
+            return new ResponseEntity<>(user.getPassword(), HttpStatus.OK);
+        } catch (WeakPasswordException e) {
+            log.error(e.getMessage());
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
+    @PatchMapping("/upload-profile-picture")
+    public ResponseEntity<?> uploadProfilePicture(
+            @RequestParam(value = "picture") MultipartFile profilePicture,
+            @RequestHeader HttpHeaders headers
+    ) {
+        try {
+            User user = jwtUtil.getUserFromToken(headers);
+            userService.updateProfilePicture(user.getId(), profilePicture);
+            return ResponseEntity.ok(user);
+        } catch (Exception exception) {
+            log.error("Something went wrong during registration...");
+            log.error(exception.getMessage());
+            return ResponseEntity.badRequest().body(exception.getMessage());
+        }
+    }
+
+    @GetMapping("/user-by-username/{username}")
+    ResponseEntity<User> findUserByUsername(@PathVariable String username) {
+        try {
+            User user = userService.findUserByUsername(username);
+            if (user == null) throw new UserNotFoundException();
+            return new ResponseEntity<>(user, HttpStatus.OK);
+        } catch (UserNotFoundException e) {
+            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+        } catch (Exception e) {
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @GetMapping("/user-by-userId/{userId}")
+    ResponseEntity<User> findUserByUserId(@PathVariable Long userId) {
+        try {
+            User user = userService.findUserById(userId);
+            if (user == null) throw new UserNotFoundException();
+            return new ResponseEntity<>(user, HttpStatus.OK);
+        } catch (UserNotFoundException e) {
+            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+        } catch (Exception e) {
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 }

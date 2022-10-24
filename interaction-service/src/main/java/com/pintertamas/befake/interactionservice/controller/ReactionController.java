@@ -2,6 +2,8 @@ package com.pintertamas.befake.interactionservice.controller;
 
 import com.amazonaws.services.drs.model.AccessDeniedException;
 import com.amazonaws.services.mq.model.NotFoundException;
+import com.pintertamas.befake.interactionservice.exception.PostNotFoundException;
+import com.pintertamas.befake.interactionservice.exception.UserNotFoundException;
 import com.pintertamas.befake.interactionservice.exception.WrongFormatException;
 import com.pintertamas.befake.interactionservice.model.Reaction;
 import com.pintertamas.befake.interactionservice.service.JwtUtil;
@@ -38,9 +40,11 @@ public class ReactionController {
         try {
             Long userId = jwtUtil.getUserIdFromToken(headers);
             if (jwtUtil.isPostOwner(headers, postId)) throw new WrongFormatException("You cant react to your own post");
+            if (reactionService.alreadyReacted(userId, postId))
+                throw new WrongFormatException("You already reacted to this post");
             Reaction reaction = reactionService.react(userId, reactionPhoto, postId);
             return new ResponseEntity<>(reaction, HttpStatus.CREATED);
-        } catch (WrongFormatException e) {
+        } catch (UserNotFoundException | PostNotFoundException | WrongFormatException e) {
             log.error(e.getMessage());
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         } catch (IOException e) {
@@ -99,7 +103,7 @@ public class ReactionController {
     }
 
     @DeleteMapping("/{postId}/delete-all")
-    public ResponseEntity<?> deleteAllReactionsOnPost(@PathVariable Long postId, @RequestHeader HttpHeaders headers) {
+    public ResponseEntity<String> deleteAllReactionsOnPost(@PathVariable Long postId, @RequestHeader HttpHeaders headers) {
         try {
             Long userId = jwtUtil.getUserIdFromToken(headers);
             Long postOwnerId = jwtUtil.getPostOwnerId(postId);
@@ -115,6 +119,21 @@ public class ReactionController {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.UNAUTHORIZED);
         } catch (Exception e) {
             return new ResponseEntity<>("Could not delete reaction", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @DeleteMapping("/reaction/delete-all-by-user")
+    ResponseEntity<String> deleteAllReactionsByUser(@RequestHeader HttpHeaders headers) {
+        try {
+            Long userId = jwtUtil.getUserIdFromToken(headers);
+            reactionService.deleteReactionsByUser(userId);
+            return ResponseEntity.ok("Reactions by " + userId + " deleted");
+        } catch (NotFoundException e) {
+            log.error(e.getMessage());
+            return ResponseEntity.notFound().build();
+        } catch (UserNotFoundException e) {
+            log.error(e.getMessage());
+            return ResponseEntity.internalServerError().build();
         }
     }
 }

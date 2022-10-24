@@ -5,8 +5,11 @@ import com.pintertamas.befake.friendservice.exception.UserNotFoundException;
 import com.pintertamas.befake.friendservice.model.Friendship;
 import com.pintertamas.befake.friendservice.model.Status;
 import com.pintertamas.befake.friendservice.model.User;
+import com.pintertamas.befake.friendservice.proxy.UserProxy;
 import com.pintertamas.befake.friendservice.repository.FriendshipRepository;
-import com.pintertamas.befake.friendservice.repository.UserRepository;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
@@ -18,20 +21,22 @@ import java.util.Optional;
 public class FriendService {
 
     private final FriendshipRepository friendshipRepository;
-    private final UserRepository userRepository;
+    private final UserProxy userProxy;
 
-    public FriendService(FriendshipRepository friendshipRepository, UserRepository userRepository) {
+    public FriendService(FriendshipRepository friendshipRepository, UserProxy userProxy) {
         this.friendshipRepository = friendshipRepository;
-        this.userRepository = userRepository;
+        this.userProxy = userProxy;
     }
 
     public Friendship sendFriendRequest(Long userId, Long friendId) throws FriendshipException, UserNotFoundException {
         Optional<Friendship> outgoingFriendship = friendshipRepository.findByUser1IdAndUser2Id(userId, friendId);
         Optional<Friendship> incomingFriendship = friendshipRepository.findByUser1IdAndUser2Id(friendId, userId);
-        Optional<User> friend = userRepository.findById(friendId);
+        ResponseEntity<User> friend = userProxy.findUserByUserId(friendId);
 
         if (userId.equals(friendId)) throw new FriendshipException("You can't send request to yourself");
-        if (friend.isEmpty()) throw new UserNotFoundException(friendId.toString());
+        if (friend.getBody() == null || !friend.getStatusCode().equals(HttpStatus.OK)) {
+            throw new UsernameNotFoundException("User not found by: " + userId);
+        }
         if (outgoingFriendship.isPresent())
             throw new FriendshipException("Request already sent");
         if (incomingFriendship.isPresent())
@@ -45,26 +50,25 @@ public class FriendService {
         return friendshipRepository.save(friendship);
     }
 
-    public Friendship acceptFriendRequest(Long userId, Long friendId) throws UserNotFoundException, FriendshipException {
+    private Friendship getFriendshipByUserIdAndFriendId(Long userId, Long friendId) throws FriendshipException {
         Optional<Friendship> incomingFriendship = friendshipRepository.findByUser1IdAndUser2Id(friendId, userId);
-        Optional<User> friend = userRepository.findById(friendId);
+        ResponseEntity<User> friend = userProxy.findUserByUserId(friendId);
+        if (friend.getBody() == null || !friend.getStatusCode().equals(HttpStatus.OK)) {
+            throw new UsernameNotFoundException("User not found by: " + userId);
+        }
+        if (incomingFriendship.isEmpty()) throw new FriendshipException("There is no relation between the two users");
+        return incomingFriendship.get();
+    }
 
-        if (friend.isEmpty()) throw new UserNotFoundException(friendId.toString());
-        if (incomingFriendship.isEmpty()) throw new FriendshipException("There is no invitation to accept");
-
-        incomingFriendship.get().setStatus(Status.ACCEPTED);
-        incomingFriendship.get().setSince(new Timestamp(System.currentTimeMillis()));
-        return friendshipRepository.save(incomingFriendship.get());
+    public Friendship acceptFriendRequest(Long userId, Long friendId) throws UserNotFoundException, FriendshipException {
+        Friendship incomingFriendship = getFriendshipByUserIdAndFriendId(userId, friendId);
+        incomingFriendship.setStatus(Status.ACCEPTED);
+        incomingFriendship.setSince(new Timestamp(System.currentTimeMillis()));
+        return friendshipRepository.save(incomingFriendship);
     }
 
     public void rejectFriendRequest(Long userId, Long friendId) throws UserNotFoundException, FriendshipException {
-        Optional<Friendship> incomingFriendship = friendshipRepository.findByUser1IdAndUser2Id(friendId, userId);
-        Optional<User> friend = userRepository.findById(friendId);
-
-        if (friend.isEmpty()) throw new UserNotFoundException(friendId.toString());
-        if (incomingFriendship.isEmpty()) throw new FriendshipException("There is no invitation to accept");
-
-        friendshipRepository.delete(incomingFriendship.get());
+        friendshipRepository.delete(getFriendshipByUserIdAndFriendId(userId, friendId));
     }
 
     public List<Friendship> getFriendListByStatus(Long userId, Status status) {
@@ -83,5 +87,17 @@ public class FriendService {
                 .stream()
                 .filter((friendship) -> friendship.getStatus().equals(status))
                 .toList()));
+    }
+
+    public List<Long> getListOfFriendIds(Long userId) {
+        List<Long> friends = new ArrayList<>();
+        getFriendListByStatus(userId, Status.ACCEPTED).forEach(friendship -> {
+            Long user1 = friendship.getUser1Id();
+            Long user2 = friendship.getUser2Id();
+            if (!user1.equals(userId)) friends.add(user1);
+            else friends.add(user2);
+                }
+        );
+        return friends;
     }
 }

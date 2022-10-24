@@ -1,12 +1,20 @@
 package com.pintertamas.befake.postservice.controller;
 
 import com.amazonaws.services.drs.model.AccessDeniedException;
+import com.amazonaws.services.mq.model.BadRequestException;
 import com.amazonaws.services.mq.model.NotFoundException;
+import com.pintertamas.befake.postservice.exception.PostNotFoundException;
+import com.pintertamas.befake.postservice.exception.UserNotFoundException;
 import com.pintertamas.befake.postservice.exception.WrongFormatException;
 import com.pintertamas.befake.postservice.model.Post;
+import com.pintertamas.befake.postservice.model.User;
 import com.pintertamas.befake.postservice.proxy.InteractionsProxy;
 import com.pintertamas.befake.postservice.service.JwtUtil;
 import com.pintertamas.befake.postservice.service.PostService;
+import io.github.resilience4j.bulkhead.annotation.Bulkhead;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
+import io.github.resilience4j.retry.annotation.Retry;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpHeaders;
@@ -16,6 +24,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
@@ -40,9 +49,12 @@ public class PostController {
             @RequestParam(value = "location") String location,
             @RequestHeader HttpHeaders headers) {
         try {
-            Long userId = jwtUtil.getUserIdFromToken(headers);
-            Post post = postService.createPost(userId, main, selfie, location);
+            User user = jwtUtil.getUserFromToken(headers);
+            Post post = postService.createPost(user, main, selfie, location);
             return new ResponseEntity<>(post, HttpStatus.CREATED);
+        } catch (UserNotFoundException | BadRequestException e) {
+            log.error(e.getMessage());
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         } catch (WrongFormatException e) {
             log.error(e.getMessage());
             return new ResponseEntity<>("Wrong format", HttpStatus.BAD_REQUEST);
@@ -75,6 +87,18 @@ public class PostController {
             return new ResponseEntity<>(posts, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>("Could not query posts by this user", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @GetMapping("/all")
+    public ResponseEntity<List<Post>> getPosts() {
+        try {
+            List<Post> posts = postService.getPosts();
+            return new ResponseEntity<>(posts, HttpStatus.OK);
+        } catch (NotFoundException e) {
+            return new ResponseEntity<>(new ArrayList<>(), HttpStatus.NOT_FOUND);
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
         }
     }
 
@@ -112,6 +136,19 @@ public class PostController {
     }
 
     @GetMapping("/today/{userId}")
+    public ResponseEntity<?> getTodaysPostBy(
+            @PathVariable Long userId) {
+        try {
+            Post post = postService.getTodaysPostBy(userId);
+            return new ResponseEntity<>(post, HttpStatus.OK);
+        } catch (NotFoundException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+        } catch (Exception e) {
+            return new ResponseEntity<>("Could not query post", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @GetMapping("/last/{userId}")
     public ResponseEntity<?> getLastPostBy(
             @PathVariable Long userId) {
         try {
@@ -124,6 +161,21 @@ public class PostController {
         }
     }
 
+    @GetMapping("/friends")
+    public ResponseEntity<List<Post>> getTodaysPostsFromFriends(@RequestHeader HttpHeaders headers) {
+        try {
+            List<Post> postsFromFriends = postService.getPostsFromFriends(headers);
+            return new ResponseEntity<>(postsFromFriends, HttpStatus.OK);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return new ResponseEntity<>(new ArrayList<>(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @RateLimiter(name = "delete-post")
+    @Bulkhead(name = "delete-post")
+    @Retry(name = "delete-post", fallbackMethod = "deletePostFallback")
+    @CircuitBreaker(name = "delete-post", fallbackMethod = "deletePostFallback")
     @DeleteMapping("/{postId}")
     public ResponseEntity<String> deletePost(
             @PathVariable Long postId,
@@ -136,6 +188,7 @@ public class PostController {
             if (deleteCommentResponse.getStatusCode() == HttpStatus.OK
                     && deleteReactionResponse.getStatusCode() == HttpStatus.OK)
                 postService.deletePost(postId);
+            else return deletePostFallback(new Exception("Could not completely delete posts"));
             return new ResponseEntity<>(postId + " successfully deleted", HttpStatus.OK);
         } catch (NotFoundException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
@@ -144,7 +197,38 @@ public class PostController {
         } catch (AccessDeniedException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.UNAUTHORIZED);
         } catch (Exception e) {
+            log.error(e.getMessage());
             return new ResponseEntity<>("Could not delete post", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    private ResponseEntity<String> deletePostFallback(Exception e) {
+        log.error(e.getMessage());
+        return ResponseEntity.internalServerError().body("CircuitBreaker: Could not delete post");
+    }
+
+    @GetMapping("/post-by-postId/{postId}")
+    ResponseEntity<Post> getPostByPostId(@PathVariable Long postId) {
+        try {
+            Post post = postService.findPostById(postId);
+            if (post == null) throw new PostNotFoundException(postId);
+            return new ResponseEntity<>(post, HttpStatus.OK);
+        } catch (PostNotFoundException e) {
+            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+        } catch (Exception e) {
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @GetMapping("/remove-posts-by-user")
+    ResponseEntity<String> removePostsByUser(@RequestHeader HttpHeaders headers) {
+        try {
+            Long userId = jwtUtil.getUserIdFromToken(headers);
+            postService.removePostsByUser(userId);
+            return new ResponseEntity<>("Reactions removed by user " + userId, HttpStatus.OK);
+        } catch (UserNotFoundException | PostNotFoundException e) {
+            log.error(e.getMessage());
+            return ResponseEntity.badRequest().build();
         }
     }
 }

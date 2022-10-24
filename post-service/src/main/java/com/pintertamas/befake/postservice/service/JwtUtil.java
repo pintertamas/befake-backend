@@ -2,12 +2,15 @@ package com.pintertamas.befake.postservice.service;
 
 import com.amazonaws.services.cloudtrail.model.InvalidTokenException;
 import com.amazonaws.services.mq.model.NotFoundException;
+import com.pintertamas.befake.postservice.exception.UserNotFoundException;
 import com.pintertamas.befake.postservice.model.Post;
 import com.pintertamas.befake.postservice.model.User;
+import com.pintertamas.befake.postservice.proxy.UserProxy;
 import com.pintertamas.befake.postservice.repository.PostRepository;
-import com.pintertamas.befake.postservice.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.stereotype.Service;
 
@@ -20,12 +23,12 @@ import java.util.Optional;
 public class JwtUtil {
 
     final JwtDecoder jwtDecoder;
-    final UserRepository userRepository;
+    final UserProxy userProxy;
     final PostRepository postRepository;
 
-    public JwtUtil(JwtDecoder jwtDecoder, UserRepository userRepository, PostRepository postRepository) {
+    public JwtUtil(JwtDecoder jwtDecoder, UserProxy userProxy, PostRepository postRepository) {
         this.jwtDecoder = jwtDecoder;
-        this.userRepository = userRepository;
+        this.userProxy = userProxy;
         this.postRepository = postRepository;
     }
 
@@ -33,24 +36,25 @@ public class JwtUtil {
         return headers.getOrDefault("Authorization", new ArrayList<>()).get(0);
     }
 
-    public boolean isNotPostOwner(HttpHeaders headers, Long postId) {
+    public boolean isNotPostOwner(HttpHeaders headers, Long postId) throws UserNotFoundException {
         User user = getUserFromToken(headers);
         Optional<Post> post = postRepository.findById(postId);
         if (post.isEmpty()) throw new NotFoundException("Could not find post with this id");
         return !post.get().getUserId().equals(user.getId());
     }
 
-    private User getUserFromToken(HttpHeaders headers) throws InvalidTokenException {
+    public User getUserFromToken(HttpHeaders headers) throws UserNotFoundException {
         String token = getTokenFromHeader(headers);
         token = token.split(" ")[1].trim();
-        log.info(token);
         String username = this.getAllClaimsFromToken(token).getOrDefault("sub", false).toString();
-        User user = userRepository.findUserByUsername(username);
-        if (user == null) throw new InvalidTokenException("This token does not belong to an existing user!");
-        return user;
+        ResponseEntity<User> user = userProxy.findUserByUsername(username);
+        if (user.getBody() == null || !user.getStatusCode().equals(HttpStatus.OK)) {
+            throw new UserNotFoundException(username);
+        }
+        return user.getBody();
     }
 
-    public Long getUserIdFromToken(HttpHeaders headers) throws InvalidTokenException {
+    public Long getUserIdFromToken(HttpHeaders headers) throws UserNotFoundException {
         User user = getUserFromToken(headers);
         return user.getId();
     }
