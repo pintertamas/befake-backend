@@ -104,4 +104,18 @@ Ezek után nekiálltam megcsinálni a notification service-t ami az emailek kik�
 A terv az, hogy amint ez kész van, elkezdem a mobilos appot készíteni.
 A Kafkát egy Docker image segítségével futtatom lokálban, aminek a konfigurációja a docker-compose.yml fileban található meg.
 Ehhez segítséget itt találtam: ```https://docs.spring.io/spring-kafka/reference/html/```
-Létrehoztam egy teszt enpointot amivel a user service-ből lehet üzenetet küldeni a Kafkának, a notification service pedig az ide érkező, registration topicra küldött üzeneteket feldolgozza.
+Létrehoztam egy teszt enpointot amivel a user service-ből lehet üzenetet küldeni a Kafkának, a notification service pedig az ide érkező, registration topic-ra küldött üzeneteket feldolgozza.
+Megcsináltam a többi Kafka kommunikációs featuret is a többi service-ben és csináltam ezekhez is teszt endpointokat.
+A Kafka integrációnál volt egy elég érdekes probléma, amibe belfutottam. Amíg egy topic-ot használtam minden működött jól, viszont amint beleraktam új topic-okat és újraindítottam a konténert a compose fájlból, látszott a változás a konzolban is (pl. hogy vannak új topic-ok), de nem működött a kommunikáció egyáltalán még annál a service-nél sem, aminél addig működött.
+Úgy sikerült ezt megoldani hosszas debugolás meg refactor után, hogy kitöröltem a Kafka konténert meg imaget és újraindítottam ugyan úgy, ezek után már működött ugyan az a kód ami addig nem.
+Azt vettem észre, hogy a konténerizálásnál mindig valami errort adnak a servicek annak ellenére, hogy lokálisan működnek, de rájöttem hogy azért, mert nem maven projektként futtatom őket és a pom.xml se volt egységes a serviceknél (volt ami packeto-val buildelt imaget installkor, volt ami nem csinált ilyet, stb).
+Ezeknek a hibáknak az elkerülése érdekében csináltam egy ```docker-script.bat``` nevű fájlt is, amivel dockerizálni tudom az alkalmazásomat mindenféle hiba nélkül.
+Úgy működik, hogy futtatáskor kipucolja az összes éppen nem futó konténert, volume-ot, imaget, majd végigmegy a servicek mappáin és futtat egy maven package clean install-t, ezek után pedig készít egy imaget a servicekből és buildeli őket.
+Ennek segítségével most futtatható az egész alkalmazás Dockerből, amit majd meg kell még csinálnom az a Notification service azon része, ami ténylegesen elküldi az értesítést a firebase-re.
+Minden mással kész vagyok, ami a backenddel kapcsolatos.
+A továbbiakban a tervema  mobil alkalmazás elkezdése, majd az után a hostolás és az azt követő load balance-olás.
+Létrehoztam egy Android projektet a mobilos repositoryban, ami itt található meg:
+
+```https://github.com/pintertamas/befake-mobile```
+
+
