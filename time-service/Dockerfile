@@ -1,4 +1,16 @@
+#
+# Build stage
+#
+FROM maven:3.6.3-openjdk-17-slim AS build
+COPY src /home/app/src
+COPY pom.xml /home/app
+RUN mvn -f /home/app/pom.xml clean package
+RUN mvn -f /home/app/pom.xml install
+
+#
+# Package stage
+#
 FROM openjdk:17-alpine
 MAINTAINER pintertamas
-COPY target/time-generator-0.0.1-SNAPSHOT.jar time-generator-0.0.1-SNAPSHOT.jar
-ENTRYPOINT ["java","-jar","/time-generator-0.0.1-SNAPSHOT.jar"]
+COPY target/time-generator-latest.jar time-generator-latest.jar
+ENTRYPOINT ["java","-jar","/time-generator-latest.jar"]

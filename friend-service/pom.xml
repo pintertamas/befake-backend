@@ -10,7 +10,7 @@
     </parent>
     <groupId>com.pintertamas.befake</groupId>
     <artifactId>friend-service</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>latest</version>
     <name>friend-service</name>
     <description>This service is responsible for the user-user connections in the BeFake app</description>
     <properties>
@@ -110,10 +110,6 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <version>${project.parent.version}</version>
                 <configuration>
-                    <image>
-                        <name>pintertamas/befake-${project.artifactId}:${project.version}</name>
-                    </image>
-                    <pullPolicy>IF_NOT_PRESENT</pullPolicy>
                     <excludes>
                         <exclude>
                             <groupId>org.projectlombok</groupId>
@@ -121,15 +117,6 @@
                         </exclude>
                     </excludes>
                 </configuration>
-                <executions>
-                    <execution>
-                        <id>build-image</id>
-                        <goals>
-                            <goal>build-image</goal>
-                        </goals>
-                        <phase>install</phase>
-                    </execution>
-                </executions>
             </plugin>
         </plugins>
     </build>

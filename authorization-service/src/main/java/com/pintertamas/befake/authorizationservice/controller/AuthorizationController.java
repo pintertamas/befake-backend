@@ -41,6 +41,7 @@ public class AuthorizationController {
             return ResponseEntity.badRequest().build();
         } catch (Exception e) {
             log.error("ERROR AT LOGIN");
+            log.error(e.getMessage());
             return ResponseEntity.internalServerError().build();
         }
     }
