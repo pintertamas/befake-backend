@@ -6,7 +6,6 @@ import com.pintertamas.befake.authorizationservice.model.User;
 import com.pintertamas.befake.authorizationservice.model.UserResponse;
 import com.pintertamas.befake.authorizationservice.service.AuthService;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -32,12 +31,13 @@ public class AuthorizationController {
             User user = authService.getUserByUsername(authRequest.getUsername());
             log.info("NEW LOGIN");
             return new ResponseEntity<>(new UserResponse(user, token), HttpStatus.OK);
-        } catch (UserNotFoundException exception) {
-            log.info("USER NOT FOUND");
-            log.info(exception.getMessage());
+        } catch (UserNotFoundException e) {
+            log.error("USER NOT FOUND");
+            log.error(e.getMessage());
             return ResponseEntity.notFound().build();
         } catch (BadCredentialsException e) {
             log.error("BAD CREDENTIALS");
+            log.error(e.getMessage());
             return ResponseEntity.badRequest().build();
         } catch (Exception e) {
             log.error("ERROR AT LOGIN");

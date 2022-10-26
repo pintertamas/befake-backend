@@ -26,6 +26,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
     depends_on:
       - zookeeper
+    restart: always
 
   api-gateway:
     image: api-gateway:latest
@@ -88,8 +89,10 @@ services:
     environment:
       EUREKA.CLIENT.SERVICEURL.DEFAULTZONE: http://naming-server:8761/eureka
       SPRING.ZIPKIN.BASEURL: http://zipkin-server:9411
-      SPRING.DATASOURCE.URL: jdbc:postgresql://lucky.db.elephantsql.com:5432/whdddskf?user=whdddskf&password=12kU7fMLNfuFSYto9MLcivaGsLvFf-E0&sslmode=require
-
+      #SPRING.DATASOURCE.URL: jdbc:postgresql://lucky.db.elephantsql.com:5432/whdddskf?user=whdddskf&password=12kU7fMLNfuFSYto9MLcivaGsLvFf-E0&sslmode=require
+      SPRING.DATASOURCE.URL: jdbc:postgresql://host.docker.internal:5432/user-service
+      SPRING.DATASOURCE.USERNAME: postgres
+      SPRING:DATASOURCE:PASSWORD: postgres
   post-service:
     image: post-service:latest
     restart: always
@@ -103,8 +106,10 @@ services:
     environment:
       EUREKA.CLIENT.SERVICEURL.DEFAULTZONE: http://naming-server:8761/eureka
       SPRING.ZIPKIN.BASEURL: http://zipkin-server:9411
-      SPRING.DATASOURCE.URL: jdbc:postgresql://lucky.db.elephantsql.com:5432/jcapalgw?user=jcapalgw&password=c7EsSkbl4kwOfCkb7JaQCtjekq2Xw4dL&sslmode=require
-
+      #SPRING.DATASOURCE.URL: jdbc:postgresql://lucky.db.elephantsql.com:5432/jcapalgw?user=jcapalgw&password=c7EsSkbl4kwOfCkb7JaQCtjekq2Xw4dL&sslmode=require
+      SPRING.DATASOURCE.URL: jdbc:postgresql://host.docker.internal:5432/post-service
+      SPRING.DATASOURCE.USERNAME: postgres
+      SPRING:DATASOURCE:PASSWORD: postgres
   friend-service:
     image: friend-service:latest
     restart: always
@@ -118,7 +123,10 @@ services:
     environment:
       EUREKA.CLIENT.SERVICEURL.DEFAULTZONE: http://naming-server:8761/eureka
       SPRING.ZIPKIN.BASEURL: http://zipkin-server:9411
-      SPRING.DATASOURCE.URL: jdbc:postgresql://mouse.db.elephantsql.com:5432/uussjasr?user=uussjasr&password=tacFU7jL_jE2zYxNVzNgkMeAUSKzLi4R&sslmode=require
+      #SPRING.DATASOURCE.URL: jdbc:postgresql://mouse.db.elephantsql.com:5432/uussjasr?user=uussjasr&password=tacFU7jL_jE2zYxNVzNgkMeAUSKzLi4R&sslmode=require
+      SPRING.DATASOURCE.URL: jdbc:postgresql://host.docker.internal:5432/friend-service
+      SPRING.DATASOURCE.USERNAME: postgres
+      SPRING:DATASOURCE:PASSWORD: postgres
 
   interaction-service:
     image: interaction-service:latest
@@ -133,7 +141,10 @@ services:
     environment:
       EUREKA.CLIENT.SERVICEURL.DEFAULTZONE: http://naming-server:8761/eureka
       SPRING.ZIPKIN.BASEURL: http://zipkin-server:9411
-      SPRING.DATASOURCE.URL: jdbc:postgresql://mouse.db.elephantsql.com:5432/mzgoaddl?user=mzgoaddl&password=8MFN1xNJJWL9eDdUwS8-tbjoVS4FFKvf&sslmode=require
+      #SPRING.DATASOURCE.URL: jdbc:postgresql://mouse.db.elephantsql.com:5432/mzgoaddl?user=mzgoaddl&password=8MFN1xNJJWL9eDdUwS8-tbjoVS4FFKvf&sslmode=require
+      SPRING.DATASOURCE.URL: jdbc:postgresql://host.docker.internal:5432/interaction-service
+      SPRING.DATASOURCE.USERNAME: postgres
+      SPRING:DATASOURCE:PASSWORD: postgres
 
   auth-service:
     image: authorization-service:latest
