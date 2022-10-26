@@ -22,6 +22,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -35,10 +36,12 @@ public class ReactionService {
 
     private final AmazonS3 s3;
     private final ReactionRepository reactionRepository;
+    private final InteractionService interactionService;
 
-    public ReactionService(AmazonS3 s3, ReactionRepository reactionRepository) {
+    public ReactionService(AmazonS3 s3, ReactionRepository reactionRepository, InteractionService interactionService) {
         this.s3 = s3;
         this.reactionRepository = reactionRepository;
+        this.interactionService = interactionService;
     }
 
     public Reaction react(Long userId, MultipartFile reactionPhoto, Long postId) throws IOException, WrongFormatException {
@@ -76,7 +79,7 @@ public class ReactionService {
     public void deleteEveryReactionOnPost(Long postId) throws NotFoundException {
         Optional<List<Reaction>> reactions = reactionRepository.findAllByPostId(postId);
         if (reactions.isEmpty()) throw new NotFoundException("Could not find reactions on this post");
-        reactions.get().forEach((reaction) -> {
+        reactions.get().forEach(reaction -> {
             deleteImage(reaction.getImageName());
             reactionRepository.delete(reaction);
         });
@@ -86,6 +89,13 @@ public class ReactionService {
         Optional<Reaction> reaction = reactionRepository.findById(reactionId);
         if (reaction.isEmpty()) throw new NotFoundException("Could not find reaction with this id: " + reactionId);
         return reaction.get();
+    }
+
+    public List<Long> getAffectedUserIdsByPost(Long postId) {
+        List<Long> affectedIds = new ArrayList<>();
+        getReactionsByPost(postId).forEach(post -> affectedIds.add(post.getUserId()));
+        affectedIds.add(interactionService.getPostOwnerByPost(postId));
+        return affectedIds;
     }
 
     private void uploadReaction(MultipartFile image, String fileName) throws IOException, WrongFormatException {
@@ -121,10 +131,11 @@ public class ReactionService {
     private boolean isAnImage(MultipartFile file) {
         try {
             String fileContentType = file.getContentType();
-            System.out.println(fileContentType);
-            if (fileContentType == null || !fileContentType.startsWith("image/")) throw new Exception();
+            if (fileContentType == null || !fileContentType.startsWith("image/"))
+                throw new WrongFormatException("Not an image");
             return true;
         } catch (Exception e) {
+            log.error(e.getMessage());
             return false;
         }
     }
@@ -141,7 +152,7 @@ public class ReactionService {
         } catch (Exception e) {
             log.error("Exception - Wrong API call", e);
         }
-        return null;
+        return new byte[]{};
     }
 
     private void deleteImage(String imageName) throws IllegalArgumentException {
@@ -155,7 +166,7 @@ public class ReactionService {
     public void deleteReactionsByUser(Long userId) throws NotFoundException {
         Optional<List<Reaction>> reactions = reactionRepository.findAllByUserId(userId);
         if (reactions.isEmpty()) throw new NotFoundException("Could not find reactions by this user");
-        reactions.get().forEach((reaction) -> {
+        reactions.get().forEach(reaction -> {
             deleteImage(reaction.getImageName());
             reactionRepository.delete(reaction);
         });

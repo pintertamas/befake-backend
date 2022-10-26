@@ -7,6 +7,7 @@ import com.pintertamas.befake.interactionservice.exception.UserNotFoundException
 import com.pintertamas.befake.interactionservice.exception.WrongFormatException;
 import com.pintertamas.befake.interactionservice.model.Reaction;
 import com.pintertamas.befake.interactionservice.service.JwtUtil;
+import com.pintertamas.befake.interactionservice.service.KafkaService;
 import com.pintertamas.befake.interactionservice.service.ReactionService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.ByteArrayResource;
@@ -25,15 +26,17 @@ import java.util.List;
 public class ReactionController {
 
     private final ReactionService reactionService;
+    private final KafkaService kafkaService;
     private final JwtUtil jwtUtil;
 
-    public ReactionController(ReactionService reactionService, JwtUtil jwtUtil) {
+    public ReactionController(ReactionService reactionService, KafkaService kafkaService, JwtUtil jwtUtil) {
         this.reactionService = reactionService;
+        this.kafkaService = kafkaService;
         this.jwtUtil = jwtUtil;
     }
 
     @PostMapping
-    public ResponseEntity<?> reactToPost(
+    public ResponseEntity<Reaction> reactToPost(
             @RequestParam(value = "reaction") MultipartFile reactionPhoto,
             @RequestParam(value = "post") Long postId,
             @RequestHeader HttpHeaders headers) {
@@ -43,18 +46,20 @@ public class ReactionController {
             if (reactionService.alreadyReacted(userId, postId))
                 throw new WrongFormatException("You already reacted to this post");
             Reaction reaction = reactionService.react(userId, reactionPhoto, postId);
+            List<Long> affectedUsers = reactionService.getAffectedUserIdsByPost(postId);
+            kafkaService.sendNewReactionNotification(reaction.getId(), affectedUsers);
             return new ResponseEntity<>(reaction, HttpStatus.CREATED);
         } catch (UserNotFoundException | PostNotFoundException | WrongFormatException e) {
             log.error(e.getMessage());
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+            return ResponseEntity.badRequest().build();
         } catch (IOException e) {
             log.error(e.getMessage());
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+            return ResponseEntity.internalServerError().build();
         }
     }
 
     @GetMapping("/{fileName}")
-    public ResponseEntity<?> downloadImage(@PathVariable String fileName) {
+    public ResponseEntity<ByteArrayResource> downloadImage(@PathVariable String fileName) {
         try {
             byte[] image = reactionService.downloadImage(fileName);
             ByteArrayResource resource = new ByteArrayResource(image);
@@ -65,17 +70,19 @@ public class ReactionController {
                     .header("Content-disposition", "attachment; filename=\"" + fileName + "\"")
                     .body(resource);
         } catch (Exception e) {
-            return new ResponseEntity<>("Image download error", HttpStatus.INTERNAL_SERVER_ERROR);
+            log.error(e.getMessage());
+            return ResponseEntity.internalServerError().build();
         }
     }
 
     @GetMapping("/post/{postId}")
-    public ResponseEntity<?> getReactionsByPost(@PathVariable Long postId) {
+    public ResponseEntity<List<Reaction>> getReactionsByPost(@PathVariable Long postId) {
         try {
             List<Reaction> reactions = reactionService.getReactionsByPost(postId);
             return new ResponseEntity<>(reactions, HttpStatus.OK);
         } catch (Exception e) {
-            return new ResponseEntity<>("Could not query posts by this user", HttpStatus.INTERNAL_SERVER_ERROR);
+            log.error(e.getMessage());
+            return ResponseEntity.internalServerError().build();
         }
     }
 
@@ -135,5 +142,11 @@ public class ReactionController {
             log.error(e.getMessage());
             return ResponseEntity.internalServerError().build();
         }
+    }
+
+    @PostMapping("/kafka-test")
+    public ResponseEntity<String> kafkaReactionTest() {
+        kafkaService.sendNewReactionNotification(101L, List.of(6L, 7L, 8L, 9L, 10L));
+        return ResponseEntity.ok().build();
     }
 }

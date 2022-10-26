@@ -15,7 +15,7 @@ public class PostFallback implements FallbackFactory<PostProxy> {
         return username -> {
             log.error("Using fallback option for removePostsByUser(@RequestHeader HttpHeaders headers)");
             log.error("cause was: " + cause.getMessage());
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+            return ResponseEntity.internalServerError().build();
         };
     }
 }

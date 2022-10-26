@@ -1,4 +1,4 @@
-package com.pintertamas.userservice.config.kafka;
+package com.pintertamas.befake.postservice.config.kafka;
 
 import org.apache.kafka.clients.admin.AdminClientConfig;
 import org.apache.kafka.clients.admin.NewTopic;
@@ -13,7 +13,7 @@ import java.util.Map;
 public class KafkaTopicConfig {
 
     private static final String BOOTSTRAP_ADDRESS = "localhost:9092";
-    private static final String TOPIC = "registration";
+    private static final String TOPIC = "post";
 
     @Bean
     public KafkaAdmin kafkaAdmin() {
@@ -23,7 +23,7 @@ public class KafkaTopicConfig {
     }
     
     @Bean
-    public NewTopic registrationTopic() {
+    public NewTopic postTopic() {
          return new NewTopic(TOPIC, 2, (short) 3);
     }
 }

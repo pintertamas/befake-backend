@@ -6,6 +6,7 @@ import com.pintertamas.befake.interactionservice.exception.UserNotFoundException
 import com.pintertamas.befake.interactionservice.model.Comment;
 import com.pintertamas.befake.interactionservice.service.CommentService;
 import com.pintertamas.befake.interactionservice.service.JwtUtil;
+import com.pintertamas.befake.interactionservice.service.KafkaService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -20,37 +21,43 @@ import java.util.List;
 public class CommentController {
 
     private final CommentService commentService;
+    private final KafkaService kafkaService;
     private final JwtUtil jwtUtil;
 
-    public CommentController(CommentService commentService, JwtUtil jwtUtil) {
+    public CommentController(CommentService commentService, KafkaService kafkaService, JwtUtil jwtUtil) {
         this.commentService = commentService;
+        this.kafkaService = kafkaService;
         this.jwtUtil = jwtUtil;
     }
 
     @PostMapping
-    public ResponseEntity<?> commentToPost(
+    public ResponseEntity<Comment> commentToPost(
             @RequestParam(value = "comment") String text,
             @RequestParam(value = "post") Long postId,
             @RequestHeader HttpHeaders headers) {
         try {
             Long userId = jwtUtil.getUserIdFromToken(headers);
             Comment comment = commentService.comment(userId, text, postId);
+            List<Long> affectedUsers = commentService.getAffectedUserIdsByPost(postId);
+            kafkaService.sendNewCommentNotification(comment.getId(), affectedUsers);
             return new ResponseEntity<>(comment, HttpStatus.CREATED);
         } catch (Exception e) {
             log.error(e.getMessage());
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+            return ResponseEntity.internalServerError().build();
         }
     }
 
     @GetMapping("/post/{postId}")
-    public ResponseEntity<?> getCommentsByPost(@PathVariable Long postId) {
+    public ResponseEntity<List<Comment>> getCommentsByPost(@PathVariable Long postId) {
         try {
             List<Comment> comments = commentService.getCommentsByPost(postId);
             return new ResponseEntity<>(comments, HttpStatus.OK);
         } catch (NotFoundException e) {
-            return new ResponseEntity<>("Could not find comments on this post", HttpStatus.NOT_FOUND);
+            log.error(e.getMessage());
+            return ResponseEntity.notFound().build();
         } catch (Exception e) {
-            return new ResponseEntity<>("Could not query posts by this user", HttpStatus.INTERNAL_SERVER_ERROR);
+            log.error(e.getMessage());
+            return ResponseEntity.internalServerError().build();
         }
     }
 
@@ -67,13 +74,17 @@ public class CommentController {
             commentService.deleteCommentOnPost(commentId);
             return new ResponseEntity<>(commentId + " successfully deleted", HttpStatus.OK);
         } catch (NotFoundException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+            log.error(e.getMessage());
+            return ResponseEntity.notFound().build();
         } catch (IllegalArgumentException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+            log.error(e.getMessage());
+            return ResponseEntity.badRequest().build();
         } catch (AccessDeniedException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.UNAUTHORIZED);
+            log.error(e.getMessage());
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         } catch (Exception e) {
-            return new ResponseEntity<>("Could not delete reaction", HttpStatus.INTERNAL_SERVER_ERROR);
+            log.error(e.getMessage());
+            return ResponseEntity.internalServerError().build();
         }
     }
 
@@ -87,18 +98,22 @@ public class CommentController {
             commentService.deleteEveryCommentOnPost(postId);
             return new ResponseEntity<>("Successfully deleted every comment on post " + postId, HttpStatus.OK);
         } catch (NotFoundException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+            log.error(e.getMessage());
+            return ResponseEntity.notFound().build();
         } catch (IllegalArgumentException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+            log.error(e.getMessage());
+            return ResponseEntity.badRequest().build();
         } catch (AccessDeniedException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.UNAUTHORIZED);
+            log.error(e.getMessage());
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         } catch (Exception e) {
-            return new ResponseEntity<>("Could not delete reaction", HttpStatus.INTERNAL_SERVER_ERROR);
+            log.error(e.getMessage());
+            return ResponseEntity.internalServerError().build();
         }
     }
 
     @DeleteMapping("/comment/delete-all-by-user")
-    ResponseEntity<String> deleteAllCommentsByUser(@RequestHeader HttpHeaders headers) {
+    public ResponseEntity<String> deleteAllCommentsByUser(@RequestHeader HttpHeaders headers) {
         try {
             Long userId = jwtUtil.getUserIdFromToken(headers);
             commentService.deleteCommentsByUser(userId);
@@ -110,5 +125,11 @@ public class CommentController {
             log.error(e.getMessage());
             return ResponseEntity.internalServerError().build();
         }
+    }
+
+    @PostMapping("/kafka-test")
+    public ResponseEntity<String> kafkaCommentTest() {
+        kafkaService.sendNewCommentNotification(100L, List.of(1L, 2L, 3L, 4L, 5L));
+        return ResponseEntity.ok().build();
     }
 }

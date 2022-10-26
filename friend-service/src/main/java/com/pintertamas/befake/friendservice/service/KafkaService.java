@@ -1,7 +1,6 @@
-package com.pintertamas.userservice.service;
+package com.pintertamas.befake.friendservice.service;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
@@ -9,7 +8,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class KafkaService {
 
-    private static final String TOPIC = "registration";
+    private static final String TOPIC = "friend";
 
     private final KafkaTemplate<String, String> kafkaTemplate;
 
@@ -17,8 +16,8 @@ public class KafkaService {
         this.kafkaTemplate = kafkaTemplate;
     }
 
-    public void sendEmailMessage(String email, String username) {
-        log.info("Sending email to " + email + " with topic: " + TOPIC);
-        kafkaTemplate.send(TOPIC, email + "," + username);
+    public void sendFriendRequestNotification(Long friendId) {
+        log.info("Sending notification to friend with id: " + friendId + " with topic: " + TOPIC);
+        kafkaTemplate.send(TOPIC, friendId.toString());
     }
 }

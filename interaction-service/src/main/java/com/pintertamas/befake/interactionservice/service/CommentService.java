@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -15,9 +16,11 @@ import java.util.Optional;
 public class CommentService {
 
     private final CommentRepository commentRepository;
+    private final InteractionService interactionService;
 
-    public CommentService(CommentRepository commentRepository) {
+    public CommentService(CommentRepository commentRepository, InteractionService interactionService) {
         this.commentRepository = commentRepository;
+        this.interactionService = interactionService;
     }
 
     public Comment comment(Long userId, String text, Long postId) {
@@ -34,6 +37,13 @@ public class CommentService {
         Optional<List<Comment>> reactions = commentRepository.findAllByPostId(postId);
         if (reactions.isEmpty()) throw new NotFoundException("No comments could be found");
         return reactions.get();
+    }
+
+    public List<Long> getAffectedUserIdsByPost(Long postId) {
+        List<Long> affectedIds = new ArrayList<>();
+        getCommentsByPost(postId).forEach(post -> affectedIds.add(post.getUserId()));
+        affectedIds.add(interactionService.getPostOwnerByPost(postId));
+        return affectedIds;
     }
 
     public void removeComment(Long commentId) {

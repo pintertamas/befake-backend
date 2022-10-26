@@ -24,7 +24,7 @@ public class AuthorizationController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> createAuthenticationToken(
+    public ResponseEntity<UserResponse> createAuthenticationToken(
             @RequestBody JwtRequest authRequest) {
         try {
             log.info("Authenticating user with credentials: " + authRequest.toString());
@@ -34,13 +34,14 @@ public class AuthorizationController {
             return new ResponseEntity<>(new UserResponse(user, token), HttpStatus.OK);
         } catch (UserNotFoundException exception) {
             log.info("USER NOT FOUND");
-            return new ResponseEntity<>(exception.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+            log.info(exception.getMessage());
+            return ResponseEntity.notFound().build();
         } catch (BadCredentialsException e) {
             log.error("BAD CREDENTIALS");
-            return new ResponseEntity<>("Bad credentials", HttpStatus.BAD_REQUEST);
+            return ResponseEntity.badRequest().build();
         } catch (Exception e) {
             log.error("ERROR AT LOGIN");
-            return new ResponseEntity<>("Could not reach database", HttpStatus.INTERNAL_SERVER_ERROR);
+            return ResponseEntity.internalServerError().build();
         }
     }
 }

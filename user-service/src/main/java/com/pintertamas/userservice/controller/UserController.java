@@ -1,6 +1,7 @@
 package com.pintertamas.userservice.controller;
 
 import com.amazonaws.services.memorydb.model.UserAlreadyExistsException;
+import com.pintertamas.userservice.dto.UserDTO;
 import com.pintertamas.userservice.exceptions.UserExistsException;
 import com.pintertamas.userservice.exceptions.UserNotFoundException;
 import com.pintertamas.userservice.exceptions.WeakPasswordException;
@@ -34,35 +35,38 @@ public class UserController {
     }
 
     @PostMapping("/kafka-test")
-    public ResponseEntity<?> kafkaTest() {
+    public ResponseEntity<String> kafkaTest() {
         kafkaService.sendEmailMessage("pintertamas99@gmail.com", "Tomi");
         return ResponseEntity.ok().build();
     }
 
     @GetMapping()
-    public ResponseEntity<?> getUserData(@RequestParam Long userId) {
+    public ResponseEntity<User> getUserData(@RequestParam Long userId) {
         try {
             User user = userService.getUserData(userId);
             if (user == null) throw new UserNotFoundException(userId);
             return new ResponseEntity<>(user, HttpStatus.OK);
         } catch (UserNotFoundException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+            log.error(e.getMessage());
+            return ResponseEntity.notFound().build();
         }
     }
 
     @GetMapping("/list")
-    public ResponseEntity<?> getUserList() {
+    public ResponseEntity<List<User>> getUserList() {
         try {
             List<User> users = userService.getListOfUsers();
             return new ResponseEntity<>(users, HttpStatus.OK);
         } catch (UserNotFoundException e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+            log.error(e.getMessage());
+            return ResponseEntity.notFound().build();
         }
     }
 
     @PostMapping("/register")
-    public ResponseEntity<?> register(@Valid @RequestBody User newUser) {
+    public ResponseEntity<User> register(@Valid @RequestBody UserDTO newUserDTO) {
         try {
+            User newUser = newUserDTO.userFromDTO();
             User user = userService.register(newUser);
             log.info("USER CREATED: " + newUser);
             kafkaService.sendEmailMessage(newUser.getEmail(), newUser.getUsername());
@@ -70,33 +74,35 @@ public class UserController {
             return ResponseEntity.ok(user);
         } catch (UserExistsException exception) {
             log.error("USER ALREADY EXISTS: " + exception.getExistingUser());
-            return ResponseEntity.badRequest().body(exception.getMessage());
+            log.error(exception.getMessage());
+            return ResponseEntity.badRequest().build();
         } catch (WeakPasswordException exception) {
             log.error(exception.getMessage());
-            return ResponseEntity.badRequest().body(exception.getMessage());
+            return ResponseEntity.badRequest().build();
         } catch (Exception exception) {
             log.error("Something went wrong during registration...");
             log.error(exception.getMessage());
-            return ResponseEntity.badRequest().body(exception.getMessage());
+            return ResponseEntity.badRequest().build();
         }
     }
 
     @PatchMapping
-    public ResponseEntity<?> editUser(@Valid @RequestBody User editedUser, @RequestHeader HttpHeaders headers) {
+    public ResponseEntity<User> editUser(@Valid @RequestBody UserDTO editedUserDTO, @RequestHeader HttpHeaders headers) {
         try {
             User user = jwtUtil.getUserFromToken(headers);
-            editedUser.setId(user.getId());
+            User editedUser = editedUserDTO.userFromDTOWithId(user.getId());
             user = userService.updateProfile(editedUser);
             return new ResponseEntity<>(user, HttpStatus.OK);
         } catch (UserAlreadyExistsException e) {
             log.error(e.getMessage());
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+            return ResponseEntity.badRequest().build();
         } catch (UserNotFoundException e) {
             log.error(e.getMessage());
-            return new ResponseEntity<>("Could not find user, you might need to log in again", HttpStatus.NOT_FOUND);
+            log.error("Could not find user, you might need to log in again");
+            return ResponseEntity.notFound().build();
         } catch (Exception e) {
             log.error(e.getMessage());
-            return new ResponseEntity<>("Could not edit user", HttpStatus.INTERNAL_SERVER_ERROR);
+            return ResponseEntity.internalServerError().build();
         }
     }
 
@@ -109,7 +115,7 @@ public class UserController {
             return new ResponseEntity<>(user.getPassword(), HttpStatus.OK);
         } catch (WeakPasswordException e) {
             log.error(e.getMessage());
-            return ResponseEntity.badRequest().body(e.getMessage());
+            return ResponseEntity.badRequest().build();
         } catch (Exception e) {
             log.error(e.getMessage());
             return ResponseEntity.internalServerError().build();
@@ -117,7 +123,7 @@ public class UserController {
     }
 
     @PatchMapping("/upload-profile-picture")
-    public ResponseEntity<?> uploadProfilePicture(
+    public ResponseEntity<User> uploadProfilePicture(
             @RequestParam(value = "picture") MultipartFile profilePicture,
             @RequestHeader HttpHeaders headers
     ) {
@@ -128,7 +134,7 @@ public class UserController {
         } catch (Exception exception) {
             log.error("Something went wrong during registration...");
             log.error(exception.getMessage());
-            return ResponseEntity.badRequest().body(exception.getMessage());
+            return ResponseEntity.badRequest().build();
         }
     }
 
@@ -139,9 +145,9 @@ public class UserController {
             if (user == null) throw new UserNotFoundException();
             return new ResponseEntity<>(user, HttpStatus.OK);
         } catch (UserNotFoundException e) {
-            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+            return ResponseEntity.notFound().build();
         } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+            return ResponseEntity.internalServerError().build();
         }
     }
 
@@ -152,9 +158,11 @@ public class UserController {
             if (user == null) throw new UserNotFoundException();
             return new ResponseEntity<>(user, HttpStatus.OK);
         } catch (UserNotFoundException e) {
-            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+            log.error(e.getMessage());
+            return ResponseEntity.notFound().build();
         } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+            log.error(e.getMessage());
+            return ResponseEntity.internalServerError().build();
         }
     }
 }

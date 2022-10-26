@@ -3,6 +3,7 @@ package com.pintertamas.befake.notificationservice.listener;
 import com.pintertamas.befake.notificationservice.config.CustomPropertyConfig;
 import com.pintertamas.befake.notificationservice.model.Mail;
 import com.pintertamas.befake.notificationservice.service.EmailService;
+import com.pintertamas.befake.notificationservice.service.NotificationService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaListener;
@@ -12,17 +13,19 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Slf4j
-public class KafkaListenerTest {
+public class KafkaUserEventListener {
 
     @Autowired
     private EmailService emailService;
 
     @Autowired
+    private NotificationService notificationService;
+
+    @Autowired
     private CustomPropertyConfig customPropertyConfig;
 
-
     @KafkaListener(topics = "registration")
-    public void listen(String message) {
+    public void listenToRegistrations(String message) {
         log.info("Message received: " + message);
         String email = message.split(",")[0];
         log.info("email: " + email);
@@ -47,4 +50,17 @@ public class KafkaListenerTest {
         mail.setProps(model);
         return mail;
     }
+
+    @KafkaListener(topics = "friend")
+    public void listenToFriendRequests(String message) {
+        log.info("Message received: " + message);
+
+        try {
+            Long friendId = Long.valueOf(message);
+            notificationService.sendFriendRequestNotification(friendId);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+        }
+    }
+
 }

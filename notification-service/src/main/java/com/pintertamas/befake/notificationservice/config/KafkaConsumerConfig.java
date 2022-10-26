@@ -1,6 +1,8 @@
 package com.pintertamas.befake.notificationservice.config;
 
-import com.pintertamas.befake.notificationservice.listener.KafkaListenerTest;
+import com.pintertamas.befake.notificationservice.listener.KafkaInteractionEventListener;
+import com.pintertamas.befake.notificationservice.listener.KafkaPostEventListener;
+import com.pintertamas.befake.notificationservice.listener.KafkaUserEventListener;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.IntegerDeserializer;
 import org.apache.kafka.common.serialization.StringDeserializer;
@@ -8,7 +10,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.annotation.EnableKafka;
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
-import org.springframework.kafka.core.*;
+import org.springframework.kafka.core.ConsumerFactory;
+import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -16,6 +19,8 @@ import java.util.Map;
 @Configuration
 @EnableKafka
 public class KafkaConsumerConfig {
+
+    private static final String BOOTSTRAP_ADDRESS = "localhost:9092";
 
     @Bean
     ConcurrentKafkaListenerContainerFactory<Integer, String>
@@ -26,9 +31,14 @@ public class KafkaConsumerConfig {
         return factory;
     }
 
+    @Bean
+    public ConsumerFactory<Integer, String> consumerFactory() {
+        return new DefaultKafkaConsumerFactory<>(consumerProps());
+    }
+
     private Map<String, Object> consumerProps() {
         Map<String, Object> props = new HashMap<>();
-        props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
+        props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, BOOTSTRAP_ADDRESS);
         props.put(ConsumerConfig.GROUP_ID_CONFIG, "group");
         props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, IntegerDeserializer.class);
         props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
@@ -37,12 +47,17 @@ public class KafkaConsumerConfig {
     }
 
     @Bean
-    public KafkaListenerTest listener() {
-        return new KafkaListenerTest();
+    public KafkaUserEventListener userEventListener() {
+        return new KafkaUserEventListener();
     }
 
     @Bean
-    public ConsumerFactory<Integer, String> consumerFactory() {
-        return new DefaultKafkaConsumerFactory<>(consumerProps());
+    public KafkaPostEventListener postEventListener() {
+        return new KafkaPostEventListener();
+    }
+
+    @Bean
+    public KafkaInteractionEventListener interactionEventListener() {
+        return new KafkaInteractionEventListener();
     }
 }
