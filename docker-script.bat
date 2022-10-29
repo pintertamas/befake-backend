@@ -64,4 +64,4 @@ cd ..
 echo 'Docker containers created successfully'
 
 echo 'Running containers'
-docker compose up
+#docker compose up

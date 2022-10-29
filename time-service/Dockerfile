@@ -12,5 +12,5 @@ RUN mvn -f /home/app/pom.xml install
 #
 FROM openjdk:17-alpine
 MAINTAINER pintertamas
-COPY target/time-generator-latest.jar time-generator-latest.jar
-ENTRYPOINT ["java","-jar","/time-generator-latest.jar"]
+COPY target/time-service-latest.jar time-service-latest.jar
+ENTRYPOINT ["java","-jar","/time-service-latest.jar"]
