@@ -1,12 +1,10 @@
 package com.pintertamas.befake.postservice.service;
 
+import com.amazonaws.HttpMethod;
 import com.amazonaws.services.mq.model.BadRequestException;
 import com.amazonaws.services.mq.model.NotFoundException;
 import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.model.AmazonS3Exception;
-import com.amazonaws.services.s3.model.PutObjectRequest;
-import com.amazonaws.services.s3.model.S3Object;
-import com.amazonaws.services.s3.model.S3ObjectInputStream;
+import com.amazonaws.services.s3.model.*;
 import com.amazonaws.util.IOUtils;
 import com.pintertamas.befake.postservice.exception.PostNotFoundException;
 import com.pintertamas.befake.postservice.exception.WrongFormatException;
@@ -14,7 +12,6 @@ import com.pintertamas.befake.postservice.model.Post;
 import com.pintertamas.befake.postservice.model.User;
 import com.pintertamas.befake.postservice.proxy.FriendProxy;
 import com.pintertamas.befake.postservice.proxy.TimeServiceProxy;
-import com.pintertamas.befake.postservice.proxy.UserProxy;
 import com.pintertamas.befake.postservice.repository.PostRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.tomcat.util.http.fileupload.FileUploadException;
@@ -29,6 +26,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.URL;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
@@ -142,7 +140,20 @@ public class PostService {
         } catch (Exception e) {
             log.error("Exception - Wrong API call", e);
         }
-        return null;
+        return new byte[0];
+    }
+
+    public String getImageUrl(String filename) {
+        java.util.Date expiration = new java.util.Date();
+        long expTimeMillis = expiration.getTime();
+        expTimeMillis += 1000 * 60;
+        expiration.setTime(expTimeMillis);
+        log.info("Generating pre-signed URL.");
+        GeneratePresignedUrlRequest generatePresignedUrlRequest = new GeneratePresignedUrlRequest(bucketName, filename)
+                .withMethod(HttpMethod.GET)
+                .withExpiration(expiration);
+        URL url = s3.generatePresignedUrl(generatePresignedUrlRequest);
+        return url.toString();
     }
 
     private void deleteImage(String imageName) throws IllegalArgumentException {
@@ -197,7 +208,8 @@ public class PostService {
 
     public List<Post> getPostsFromFriends(HttpHeaders headers) {
         ResponseEntity<List<Long>> friends = friendProxy.getListOfFriends(headers);
-        if (friends.getBody() == null || !friends.getStatusCode().equals(HttpStatus.OK)) throw new NotFoundException("Could not establish connection with friend-service");
+        if (friends.getBody() == null || !friends.getStatusCode().equals(HttpStatus.OK))
+            throw new NotFoundException("Could not establish connection with friend-service");
         List<Post> postsFromFriends = new ArrayList<>();
         friends.getBody().forEach(friend -> postsFromFriends.add(getTodaysPostBy(friend)));
         return postsFromFriends;

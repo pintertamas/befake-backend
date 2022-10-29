@@ -69,7 +69,7 @@ public class PostController {
         }
     }
 
-    @GetMapping("/{fileName}")
+    @GetMapping("/download/{fileName}")
     public ResponseEntity<ByteArrayResource> downloadImage(@PathVariable String fileName) {
         try {
             byte[] image = postService.downloadImage(fileName);
@@ -80,6 +80,17 @@ public class PostController {
                     .header("Content-type", "application/octet-stream")
                     .header("Content-disposition", "attachment; filename=\"" + fileName + "\"")
                     .body(resource);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
+    @GetMapping("/{fileName}")
+    public ResponseEntity<String> getImageUrl(@PathVariable String fileName) {
+        try {
+            String url = postService.getImageUrl(fileName);
+            return new ResponseEntity<>(url, HttpStatus.OK);
         } catch (Exception e) {
             log.error(e.getMessage());
             return ResponseEntity.internalServerError().build();
