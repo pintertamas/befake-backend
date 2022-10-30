@@ -46,7 +46,7 @@ public class ReactionController {
             if (reactionService.alreadyReacted(userId, postId))
                 throw new WrongFormatException("You already reacted to this post");
             Reaction reaction = reactionService.react(userId, reactionPhoto, postId);
-            List<Long> affectedUsers = reactionService.getAffectedUserIdsByPost(postId);
+            List<Long> affectedUsers = List.of(reaction.getUserId());
             kafkaService.sendNewReactionNotification(reaction.getId(), affectedUsers);
             return new ResponseEntity<>(reaction, HttpStatus.CREATED);
         } catch (UserNotFoundException | PostNotFoundException | WrongFormatException e) {
@@ -71,6 +71,20 @@ public class ReactionController {
                     .body(resource);
         } catch (Exception e) {
             log.error(e.getMessage());
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
+    @GetMapping("/image/{reactionId}")
+    ResponseEntity<String> findUserByUsername(@PathVariable Long reactionId) {
+        try {
+            Reaction reaction = reactionService.getReactionById(reactionId);
+            if (reaction == null) throw new NotFoundException("Could not find reaction");
+            String reactionImageUrl = reactionService.getReactionUrl(reaction.getImageName());
+            return new ResponseEntity<>(reactionImageUrl, HttpStatus.OK);
+        } catch (NotFoundException e) {
+            return ResponseEntity.notFound().build();
+        } catch (Exception e) {
             return ResponseEntity.internalServerError().build();
         }
     }

@@ -138,6 +138,20 @@ public class UserController {
         }
     }
 
+    @GetMapping("/profile-picture/{userId}")
+    ResponseEntity<String> findUserByUsername(@PathVariable Long userId) {
+        try {
+            User user = userService.findUserById(userId);
+            if (user == null) throw new UserNotFoundException();
+            String profilePictureUrl = userService.getImageUrl(user.getProfilePicture());
+            return new ResponseEntity<>(profilePictureUrl, HttpStatus.OK);
+        } catch (UserNotFoundException e) {
+            return ResponseEntity.notFound().build();
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
     @GetMapping("/user-by-username/{username}")
     ResponseEntity<User> findUserByUsername(@PathVariable String username) {
         try {

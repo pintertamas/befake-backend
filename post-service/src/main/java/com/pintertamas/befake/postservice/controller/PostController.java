@@ -27,6 +27,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @RestController
@@ -80,6 +81,23 @@ public class PostController {
                     .header("Content-type", "application/octet-stream")
                     .header("Content-disposition", "attachment; filename=\"" + fileName + "\"")
                     .body(resource);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
+    @GetMapping("/user-can-post")
+    public ResponseEntity<Boolean> userCanPost(
+            @RequestHeader HttpHeaders headers
+    ) {
+        try {
+            User user = jwtUtil.getUserFromToken(headers);
+            Boolean userCanPost = postService.userCanPost(user);
+            return new ResponseEntity<>(userCanPost, HttpStatus.OK);
+        } catch (BadRequestException e) {
+            log.error(e.getMessage());
+            return ResponseEntity.badRequest().build();
         } catch (Exception e) {
             log.error(e.getMessage());
             return ResponseEntity.internalServerError().build();
@@ -165,8 +183,9 @@ public class PostController {
     public ResponseEntity<Post> getTodaysPostBy(
             @PathVariable Long userId) {
         try {
-            Post post = postService.getTodaysPostBy(userId);
-            return new ResponseEntity<>(post, HttpStatus.OK);
+            Optional<Post> post = postService.getTodaysPostBy(userId);
+            if (post.isEmpty()) throw new NotFoundException("Post could not be found");
+            return new ResponseEntity<>(post.get(), HttpStatus.OK);
         } catch (NotFoundException e) {
             log.error(e.getMessage());
             return ResponseEntity.notFound().build();

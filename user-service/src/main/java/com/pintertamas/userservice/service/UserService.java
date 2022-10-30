@@ -1,11 +1,9 @@
 package com.pintertamas.userservice.service;
 
+import com.amazonaws.HttpMethod;
 import com.amazonaws.services.memorydb.model.UserAlreadyExistsException;
 import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.model.AmazonS3Exception;
-import com.amazonaws.services.s3.model.PutObjectRequest;
-import com.amazonaws.services.s3.model.S3Object;
-import com.amazonaws.services.s3.model.S3ObjectInputStream;
+import com.amazonaws.services.s3.model.*;
 import com.amazonaws.util.IOUtils;
 import com.pintertamas.userservice.exceptions.UserExistsException;
 import com.pintertamas.userservice.exceptions.UserNotFoundException;
@@ -24,6 +22,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.URL;
 import java.sql.Timestamp;
 import java.util.List;
 
@@ -86,6 +85,19 @@ public class UserService {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public String getImageUrl(String filename) {
+        java.util.Date expiration = new java.util.Date();
+        long expTimeMillis = expiration.getTime();
+        expTimeMillis += 1000 * 60;
+        expiration.setTime(expTimeMillis);
+        log.info("Generating pre-signed URL.");
+        GeneratePresignedUrlRequest generatePresignedUrlRequest = new GeneratePresignedUrlRequest(bucketName, filename)
+                .withMethod(HttpMethod.GET)
+                .withExpiration(expiration);
+        URL url = s3.generatePresignedUrl(generatePresignedUrlRequest);
+        return url.toString();
     }
 
     private String getExtensionOfFile(MultipartFile file) {

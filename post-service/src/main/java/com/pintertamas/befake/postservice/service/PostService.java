@@ -61,7 +61,7 @@ public class PostService {
         if (lastBeFakeTimeResponse == null || !lastBeFakeTimeResponse.getStatusCode().equals(HttpStatus.OK)) {
             throw new BadRequestException("Could not reach time service");
         }
-        if (userAlreadyPostedToday(user, lastBeFakeTimeResponse.getBody()))
+        if (Boolean.FALSE.equals(userCanPost(user)))
             throw new BadRequestException("You already posted today");
 
         long now = System.currentTimeMillis();
@@ -87,6 +87,14 @@ public class PostService {
             deleteImage(selfieName);
             throw e;
         }
+    }
+
+    public Boolean userCanPost(User user) throws BadRequestException {
+        ResponseEntity<Timestamp> lastBeFakeTimeResponse = timeServiceProxy.getLastBeFakeTime();
+        if (lastBeFakeTimeResponse == null || !lastBeFakeTimeResponse.getStatusCode().equals(HttpStatus.OK)) {
+            throw new BadRequestException("Could not reach time service");
+        }
+        return !userAlreadyPostedToday(user, lastBeFakeTimeResponse.getBody());
     }
 
     private boolean userAlreadyPostedToday(User user, Timestamp beFakeTime) {
@@ -211,14 +219,16 @@ public class PostService {
         if (friends.getBody() == null || !friends.getStatusCode().equals(HttpStatus.OK))
             throw new NotFoundException("Could not establish connection with friend-service");
         List<Post> postsFromFriends = new ArrayList<>();
-        friends.getBody().forEach(friend -> postsFromFriends.add(getTodaysPostBy(friend)));
+        for (Long friend : friends.getBody()) {
+            Optional<Post> friendPost = getTodaysPostBy(friend);
+            friendPost.ifPresent(postsFromFriends::add);
+        }
         return postsFromFriends;
     }
 
     private boolean isAnImage(MultipartFile file) {
         try {
             String fileContentType = file.getContentType();
-            System.out.println(fileContentType);
             if (fileContentType == null || !fileContentType.startsWith("image/")) throw new Exception();
             return true;
         } catch (Exception e) {
@@ -228,7 +238,7 @@ public class PostService {
 
     public List<Post> getPostsFromLastXDays(Long userId, int days) {
         LocalTime midnight = LocalTime.MIDNIGHT;
-        LocalDate xDaysAgo = LocalDate.now().minusDays(days - 1);
+        LocalDate xDaysAgo = LocalDate.now().minusDays(days - 1L);
         LocalDateTime xDaysAgoMidnight = LocalDateTime.of(xDaysAgo, midnight);
         log.info("x days ago midnight was: " + xDaysAgoMidnight);
         Optional<List<Post>> posts = postRepository.findAllByUserIdAndPostingTimeAfter(userId, Timestamp.valueOf(xDaysAgoMidnight));
@@ -240,14 +250,18 @@ public class PostService {
                 ).toList();
     }
 
-    public Post getTodaysPostBy(Long userId) {
-        return getPostsFromLastXDays(userId, 1).get(0);
+    public Optional<Post> getTodaysPostBy(Long userId) {
+        try {
+            return Optional.of(getPostsFromLastXDays(userId, 1).get(0));
+        } catch (Exception e) {
+            return Optional.empty();
+        }
     }
 
     public Post getLastPostBy(Long userId) throws PostNotFoundException {
         Optional<List<Post>> posts = postRepository.findAllByUserId(userId);
         if (posts.isEmpty()) throw new PostNotFoundException(userId);
-        if (posts.get().size() == 0) return null;
+        if (posts.get().isEmpty()) return null;
         posts.get().sort((p1, p2) -> {
             if (p1.getPostingTime().equals(p2.getPostingTime())) return 0;
             else return p1.getPostingTime().after(p2.getPostingTime()) ? 1 : -1;
