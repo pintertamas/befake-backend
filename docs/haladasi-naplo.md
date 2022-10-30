@@ -118,4 +118,5 @@ Létrehoztam egy Android projektet a mobilos repositoryban, ami itt található 
 
 ```https://github.com/pintertamas/befake-mobile```
 
-
+### 9. hét
+Elkészítettem a mobil oldalon a login és register Activity-ket, raktam beléjük egy kis validációt is, így nem lehet úgy elküldeni a kéréseket, hogy formai hiba van bennük.
