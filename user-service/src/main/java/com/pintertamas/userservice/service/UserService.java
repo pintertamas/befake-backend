@@ -3,7 +3,6 @@ package com.pintertamas.userservice.service;
 import com.amazonaws.HttpMethod;
 import com.amazonaws.services.memorydb.model.UserAlreadyExistsException;
 import com.amazonaws.services.mq.model.BadRequestException;
-import com.amazonaws.services.mq.model.NotFoundException;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.*;
 import com.amazonaws.util.IOUtils;
@@ -109,7 +108,8 @@ public class UserService {
 
     public User updateProfile(User editedUser) {
         User user = userRepository.findUserById(editedUser.getId());
-        if (userRepository.findUserByUsername(editedUser.getUsername()) != null)
+        User existingUser = userRepository.findUserByUsername(editedUser.getUsername());
+        if (existingUser != null && !existingUser.getId().equals(user.getId()))
             throw new UserAlreadyExistsException("Username taken");
         editedUser.setPassword(user.getPassword());
         editedUser.setProfilePicture(user.getProfilePicture());
