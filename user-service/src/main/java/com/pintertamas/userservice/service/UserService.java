@@ -2,6 +2,8 @@ package com.pintertamas.userservice.service;
 
 import com.amazonaws.HttpMethod;
 import com.amazonaws.services.memorydb.model.UserAlreadyExistsException;
+import com.amazonaws.services.mq.model.BadRequestException;
+import com.amazonaws.services.mq.model.NotFoundException;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.*;
 import com.amazonaws.util.IOUtils;
@@ -87,7 +89,8 @@ public class UserService {
         }
     }
 
-    public String getImageUrl(String filename) {
+    public String getImageUrl(String filename) throws BadRequestException {
+        if (filename == null) throw new BadRequestException("User does not have a profile picture");
         java.util.Date expiration = new java.util.Date();
         long expTimeMillis = expiration.getTime();
         expTimeMillis += 1000 * 60;

@@ -11,16 +11,12 @@ A
 docker-script.bat,b\b\bb5a3558cf6885e6360f34f0d1a12b667d1491f7
 ù
 mnotification-service/src/main/java/com/pintertamas/befake/notificationservice/config/KafkaConsumerConfig.java,f\b\fbdfce2229f8b6fc0b935ebad19b6c05accc62d6
-ó
-gfriend-service/src/main/java/com/pintertamas/befake/friendservice/config/kafka/KafkaProducerConfig.java,b\3\b34c4bd2229adc14a51da56343a7494b893b2c6b
 °
 qinteraction-service/src/main/java/com/pintertamas/befake/interactionservice/config/kafka/KafkaProducerConfig.java,c\f\cfbaddd6c14a2527705d0b50e5c690200604e00d
 ì
 cpost-service/src/main/java/com/pintertamas/befake/postservice/config/kafka/KafkaProducerConfig.java,c\5\c5ca2c2b9a3776d461911121471c434272d56111
 å
 \user-service/src/main/java/com/pintertamas/userservice/config/kafka/KafkaProducerConfig.java,a\d\ad2a72944bda52662b1be16e825d05d6a3de99b3
-î
-dfriend-service/src/main/java/com/pintertamas/befake/friendservice/config/kafka/KafkaTopicConfig.java,5\f\5f8505b1e6140c5ca3116bf2effd46427d36e64f
 û
 ninteraction-service/src/main/java/com/pintertamas/befake/interactionservice/config/kafka/KafkaTopicConfig.java,f\5\f524df6350f3ebd7509d736cac6c79900acf2459
 ê
@@ -29,3 +25,5 @@ ninteraction-service/src/main/java/com/pintertamas/befake/interactionservice/con
 Yuser-service/src/main/java/com/pintertamas/userservice/config/kafka/KafkaTopicConfig.java,f\9\f917acc3d72ee9aae8a6de97bbf642cf001abc68
 D
 time-service/pom.xml,6\8\68d58b82b5080a696f33673aea6ebd307cf6e779
+9
+	README.md,8\e\8ec9a00bfd09b3190ac6b22251dbb1aa95a0579d

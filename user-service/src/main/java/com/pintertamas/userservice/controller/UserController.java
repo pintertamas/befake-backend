@@ -1,6 +1,7 @@
 package com.pintertamas.userservice.controller;
 
 import com.amazonaws.services.memorydb.model.UserAlreadyExistsException;
+import com.amazonaws.services.mq.model.BadRequestException;
 import com.pintertamas.userservice.dto.UserDTO;
 import com.pintertamas.userservice.exceptions.UserExistsException;
 import com.pintertamas.userservice.exceptions.UserNotFoundException;
@@ -147,6 +148,8 @@ public class UserController {
             return new ResponseEntity<>(profilePictureUrl, HttpStatus.OK);
         } catch (UserNotFoundException e) {
             return ResponseEntity.notFound().build();
+        } catch (BadRequestException e) {
+            return ResponseEntity.badRequest().build();
         } catch (Exception e) {
             return ResponseEntity.internalServerError().build();
         }

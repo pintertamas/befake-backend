@@ -27,6 +27,9 @@ public class Post {
     @Column(name = "user_id", nullable = false, updatable = false)
     private Long userId;
 
+    @Column
+    private String username;
+
     @Column(nullable = false, updatable = false, unique = true)
     private String mainPhoto;
 

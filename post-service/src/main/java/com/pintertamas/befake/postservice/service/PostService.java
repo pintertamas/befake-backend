@@ -80,6 +80,7 @@ public class PostService {
             post.setPostingTime(new Timestamp(now));
             post.setBeFakeTime(lastBeFakeTimeResponse.getBody());
             post.setUserId(user.getId());
+            post.setUsername(user.getUsername());
             post.setDeleted(false);
             return postRepository.save(post);
         } catch (WrongFormatException e) {
