@@ -92,7 +92,7 @@ public class UserService {
         if (filename == null) throw new BadRequestException("User does not have a profile picture");
         java.util.Date expiration = new java.util.Date();
         long expTimeMillis = expiration.getTime();
-        expTimeMillis += 1000 * 60;
+        expTimeMillis += 86_400_000;
         expiration.setTime(expTimeMillis);
         log.info("Generating pre-signed URL.");
         GeneratePresignedUrlRequest generatePresignedUrlRequest = new GeneratePresignedUrlRequest(bucketName, filename)

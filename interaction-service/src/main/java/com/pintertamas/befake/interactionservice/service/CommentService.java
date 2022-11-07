@@ -2,6 +2,7 @@ package com.pintertamas.befake.interactionservice.service;
 
 import com.amazonaws.services.mq.model.NotFoundException;
 import com.pintertamas.befake.interactionservice.model.Comment;
+import com.pintertamas.befake.interactionservice.model.User;
 import com.pintertamas.befake.interactionservice.repository.CommentRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -23,11 +24,12 @@ public class CommentService {
         this.interactionService = interactionService;
     }
 
-    public Comment comment(Long userId, String text, Long postId) {
+    public Comment comment(User user, String text, Long postId) {
         long now = System.currentTimeMillis();
         Comment comment = new Comment();
         comment.setPostId(postId);
-        comment.setUserId(userId);
+        comment.setUserId(user.getId());
+        comment.setUsername(user.getUsername());
         comment.setText(text);
         comment.setCommentTime(new Timestamp(now));
         return commentRepository.save(comment);

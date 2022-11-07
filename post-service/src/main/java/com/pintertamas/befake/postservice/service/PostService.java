@@ -155,7 +155,7 @@ public class PostService {
     public String getImageUrl(String filename) {
         java.util.Date expiration = new java.util.Date();
         long expTimeMillis = expiration.getTime();
-        expTimeMillis += 1000 * 60;
+        expTimeMillis += 86_400_000;
         expiration.setTime(expTimeMillis);
         log.info("Generating pre-signed URL.");
         GeneratePresignedUrlRequest generatePresignedUrlRequest = new GeneratePresignedUrlRequest(bucketName, filename)
@@ -253,8 +253,13 @@ public class PostService {
 
     public Optional<Post> getTodaysPostBy(Long userId) {
         try {
-            return Optional.of(getPostsFromLastXDays(userId, 1).get(0));
+            ResponseEntity<Timestamp> lastBeFakeTime = timeServiceProxy.getLastBeFakeTime();
+            Post lastPost = getLastPostBy(userId);
+            if (lastPost == null) return Optional.empty();
+            if (lastPost.getBeFakeTime().before(lastBeFakeTime.getBody())) return Optional.empty();
+            return Optional.of(lastPost);
         } catch (Exception e) {
+            log.error(e.getMessage());
             return Optional.empty();
         }
     }

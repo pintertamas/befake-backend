@@ -4,6 +4,7 @@ import com.amazonaws.services.drs.model.AccessDeniedException;
 import com.amazonaws.services.mq.model.NotFoundException;
 import com.pintertamas.befake.interactionservice.exception.UserNotFoundException;
 import com.pintertamas.befake.interactionservice.model.Comment;
+import com.pintertamas.befake.interactionservice.model.User;
 import com.pintertamas.befake.interactionservice.service.CommentService;
 import com.pintertamas.befake.interactionservice.service.JwtUtil;
 import com.pintertamas.befake.interactionservice.service.KafkaService;
@@ -36,8 +37,8 @@ public class CommentController {
             @RequestParam(value = "post") Long postId,
             @RequestHeader HttpHeaders headers) {
         try {
-            Long userId = jwtUtil.getUserIdFromToken(headers);
-            Comment comment = commentService.comment(userId, text, postId);
+            User user = jwtUtil.getUserFromToken(headers);
+            Comment comment = commentService.comment(user, text, postId);
             List<Long> affectedUsers = commentService.getAffectedUserIdsByPost(postId);
             kafkaService.sendNewCommentNotification(comment.getId(), affectedUsers);
             return new ResponseEntity<>(comment, HttpStatus.CREATED);

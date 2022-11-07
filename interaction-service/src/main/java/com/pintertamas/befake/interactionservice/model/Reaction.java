@@ -27,6 +27,9 @@ public class Reaction {
     @Column(name = "user_id", nullable = false, updatable = false)
     private Long userId;
 
+    @Column(name = "username", updatable = false)
+    private String username;
+
     @Column(name = "post_id", nullable = false, updatable = false)
     private Long postId;
 

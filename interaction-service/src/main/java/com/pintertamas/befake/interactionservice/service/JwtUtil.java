@@ -53,7 +53,7 @@ public class JwtUtil {
         return postResponse.getBody().getUserId();
     }
 
-    private User getUserFromToken(HttpHeaders headers) throws UserNotFoundException {
+    public User getUserFromToken(HttpHeaders headers) throws UserNotFoundException {
         String token = getTokenFromHeader(headers);
         token = token.split(" ")[1].trim();
         String username = this.getAllClaimsFromToken(token).getOrDefault("sub", false).toString();

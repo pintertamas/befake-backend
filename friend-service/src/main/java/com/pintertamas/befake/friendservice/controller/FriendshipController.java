@@ -72,19 +72,16 @@ public class FriendshipController {
     }
 
     @PatchMapping("/reject/{friendId}")
-    public ResponseEntity<String> rejectFriendRequest(
+    public ResponseEntity<Boolean> rejectFriendRequest(
             @PathVariable Long friendId,
             @RequestHeader HttpHeaders headers) {
         try {
             Long userId = jwtUtil.getUserIdFromToken(headers);
             friendService.rejectFriendRequest(userId, friendId);
-            return new ResponseEntity<>("Friendship rejected", HttpStatus.OK);
+            return new ResponseEntity<>(true, HttpStatus.OK);
         } catch (UserNotFoundException e) {
             log.error(e.getMessage());
             return ResponseEntity.notFound().build();
-        } catch (FriendshipException e) {
-            log.error(e.getMessage());
-            return ResponseEntity.badRequest().build();
         } catch (Exception e) {
             log.error(e.getMessage());
             return ResponseEntity.internalServerError().build();

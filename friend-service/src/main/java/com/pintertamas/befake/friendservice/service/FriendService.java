@@ -7,6 +7,7 @@ import com.pintertamas.befake.friendservice.model.Status;
 import com.pintertamas.befake.friendservice.model.User;
 import com.pintertamas.befake.friendservice.proxy.UserProxy;
 import com.pintertamas.befake.friendservice.repository.FriendshipRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -17,6 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+@Slf4j
 @Service
 public class FriendService {
 
@@ -67,8 +69,11 @@ public class FriendService {
         return friendshipRepository.save(incomingFriendship);
     }
 
-    public void rejectFriendRequest(Long userId, Long friendId) throws UserNotFoundException, FriendshipException {
-        friendshipRepository.delete(getFriendshipByUserIdAndFriendId(userId, friendId));
+    public void rejectFriendRequest(Long userId, Long friendId) {
+        Optional<Friendship> friendship = friendshipRepository.findByUser1IdAndUser2Id(userId, friendId);
+        friendship.ifPresent(friendshipRepository::delete);
+        friendship = friendshipRepository.findByUser1IdAndUser2Id(friendId, userId);
+        friendship.ifPresent(friendshipRepository::delete);
     }
 
     public List<Friendship> getFriendListByStatus(Long userId, Status status) {
@@ -92,10 +97,10 @@ public class FriendService {
     public List<Long> getListOfFriendIds(Long userId) {
         List<Long> friends = new ArrayList<>();
         getFriendListByStatus(userId, Status.ACCEPTED).forEach(friendship -> {
-            Long user1 = friendship.getUser1Id();
-            Long user2 = friendship.getUser2Id();
-            if (!user1.equals(userId)) friends.add(user1);
-            else friends.add(user2);
+                    Long user1 = friendship.getUser1Id();
+                    Long user2 = friendship.getUser2Id();
+                    if (!user1.equals(userId)) friends.add(user1);
+                    else friends.add(user2);
                 }
         );
         return friends;

@@ -7,6 +7,7 @@ import com.amazonaws.services.s3.model.*;
 import com.amazonaws.util.IOUtils;
 import com.pintertamas.befake.interactionservice.exception.WrongFormatException;
 import com.pintertamas.befake.interactionservice.model.Reaction;
+import com.pintertamas.befake.interactionservice.model.User;
 import com.pintertamas.befake.interactionservice.repository.ReactionRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.tomcat.util.http.fileupload.FileUploadException;
@@ -43,7 +44,7 @@ public class ReactionService {
         this.interactionService = interactionService;
     }
 
-    public Reaction react(Long userId, MultipartFile reactionPhoto, Long postId) throws IOException, WrongFormatException {
+    public Reaction react(User user, MultipartFile reactionPhoto, Long postId) throws IOException, WrongFormatException {
         long now = System.currentTimeMillis();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MMM-dd_HH:mm:ss");
         Date date = new Date(now);
@@ -52,7 +53,8 @@ public class ReactionService {
             uploadReaction(reactionPhoto, fileName);
             Reaction reaction = new Reaction();
             reaction.setPostId(postId);
-            reaction.setUserId(userId);
+            reaction.setUserId(user.getId());
+            reaction.setUsername(user.getUsername());
             reaction.setImageName(fileName);
             reaction.setReactionTime(new Timestamp(now));
             return reactionRepository.save(reaction);
@@ -113,7 +115,7 @@ public class ReactionService {
     public String getReactionUrl(String filename) {
         java.util.Date expiration = new java.util.Date();
         long expTimeMillis = expiration.getTime();
-        expTimeMillis += 1000 * 60;
+        expTimeMillis += 86_400_000;
         expiration.setTime(expTimeMillis);
         log.info("Generating pre-signed URL.");
         GeneratePresignedUrlRequest generatePresignedUrlRequest = new GeneratePresignedUrlRequest(bucketName, filename)

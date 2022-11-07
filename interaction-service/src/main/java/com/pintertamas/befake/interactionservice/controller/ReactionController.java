@@ -6,6 +6,7 @@ import com.pintertamas.befake.interactionservice.exception.PostNotFoundException
 import com.pintertamas.befake.interactionservice.exception.UserNotFoundException;
 import com.pintertamas.befake.interactionservice.exception.WrongFormatException;
 import com.pintertamas.befake.interactionservice.model.Reaction;
+import com.pintertamas.befake.interactionservice.model.User;
 import com.pintertamas.befake.interactionservice.service.JwtUtil;
 import com.pintertamas.befake.interactionservice.service.KafkaService;
 import com.pintertamas.befake.interactionservice.service.ReactionService;
@@ -41,11 +42,11 @@ public class ReactionController {
             @RequestParam(value = "post") Long postId,
             @RequestHeader HttpHeaders headers) {
         try {
-            Long userId = jwtUtil.getUserIdFromToken(headers);
+            User user = jwtUtil.getUserFromToken(headers);
             if (jwtUtil.isPostOwner(headers, postId)) throw new WrongFormatException("You cant react to your own post");
-            if (reactionService.alreadyReacted(userId, postId))
+            if (reactionService.alreadyReacted(user.getId(), postId))
                 throw new WrongFormatException("You already reacted to this post");
-            Reaction reaction = reactionService.react(userId, reactionPhoto, postId);
+            Reaction reaction = reactionService.react(user, reactionPhoto, postId);
             List<Long> affectedUsers = List.of(reaction.getUserId());
             kafkaService.sendNewReactionNotification(reaction.getId(), affectedUsers);
             return new ResponseEntity<>(reaction, HttpStatus.CREATED);
