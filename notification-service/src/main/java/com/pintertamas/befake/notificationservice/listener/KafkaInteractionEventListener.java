@@ -17,6 +17,7 @@ public class KafkaInteractionEventListener {
     public void listenToComments(String message) {
         listen(message, (commentId, affectedUserIds) -> {
             try {
+                log.info("comment with id: " + commentId + " sending to this many people: " + affectedUserIds.size());
                 notificationService.sendCommentNotification(commentId, affectedUserIds);
             } catch (Exception e) {
                 log.error(e.getMessage());
@@ -28,6 +29,7 @@ public class KafkaInteractionEventListener {
     public void listenToReactions(String message) {
         listen(message, (reactionId, affectedUserIds) -> {
             try {
+                log.info("reaction with id: " + reactionId + " sending to this many people: " + affectedUserIds.size());
                 notificationService.sendReactionNotification(reactionId, affectedUserIds);
             } catch (Exception e) {
                 log.error(e.getMessage());

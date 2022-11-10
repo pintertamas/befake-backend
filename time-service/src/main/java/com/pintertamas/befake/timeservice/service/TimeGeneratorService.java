@@ -15,15 +15,28 @@ import java.util.Random;
 @Component
 public class TimeGeneratorService {
 
+    private final KafkaService kafkaService;
+
+    private Timestamp previousBeFakeTime = new Timestamp(System.currentTimeMillis());
     private Timestamp beFakeTime = new Timestamp(System.currentTimeMillis());
 
     @Scheduled(cron = "0 0 0 * * *") // runs daily at 0:0:0
     //@Scheduled(cron = "*/1 * * * * *") // runs every second
     public void scheduleFixedDelayTask() {
+        this.previousBeFakeTime = beFakeTime;
         this.beFakeTime = generateTime();
     }
 
-    TimeGeneratorService() {
+    @Scheduled(cron = "0 * * * * *") // runs every minute
+    public void checkBeFakeTime() {
+        Timestamp now = new Timestamp(System.currentTimeMillis());
+        if (now.after(beFakeTime)) {
+            kafkaService.sendBeFakeTimeNotification();
+        }
+    }
+
+    TimeGeneratorService(KafkaService kafkaService) {
+        this.kafkaService = kafkaService;
         scheduleFixedDelayTask();
     }
 
@@ -52,7 +65,11 @@ public class TimeGeneratorService {
     }
 
     public Timestamp getBeFakeTime() {
-        log.info(beFakeTime.toString());
-        return beFakeTime;
+        Timestamp currentBeFakeTime;
+        Timestamp now = new Timestamp(System.currentTimeMillis());
+        if (beFakeTime.after(now)) currentBeFakeTime = previousBeFakeTime;
+        else currentBeFakeTime = beFakeTime;
+        log.info(currentBeFakeTime.toString());
+        return currentBeFakeTime;
     }
 }

@@ -57,6 +57,7 @@ public class KafkaUserEventListener {
 
         try {
             Long friendId = Long.valueOf(message);
+            log.info("friend request to id: " + friendId);
             notificationService.sendFriendRequestNotification(friendId);
         } catch (Exception e) {
             log.error(e.getMessage());

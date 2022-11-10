@@ -1,5 +1,6 @@
 package com.pintertamas.befake.notificationservice.config;
 
+import com.pintertamas.befake.notificationservice.listener.KafkaBeFakeEventListener;
 import com.pintertamas.befake.notificationservice.listener.KafkaInteractionEventListener;
 import com.pintertamas.befake.notificationservice.listener.KafkaPostEventListener;
 import com.pintertamas.befake.notificationservice.listener.KafkaUserEventListener;
@@ -61,5 +62,10 @@ public class KafkaConsumerConfig {
     @Bean
     public KafkaInteractionEventListener interactionEventListener() {
         return new KafkaInteractionEventListener();
+    }
+
+    @Bean
+    public KafkaBeFakeEventListener beFakeEventListener() {
+        return new KafkaBeFakeEventListener();
     }
 }

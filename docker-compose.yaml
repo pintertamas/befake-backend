@@ -24,7 +24,7 @@ services:
       #BROKER_ID_COMMAND: "hostname | awk -F'-' '{print $$2}'"
       KAFKA_ZOOKEEPER_CONNECT: zk:2181
       KAFKA_MESSAGE_MAX_BYTES: 2000000
-      KAFKA_CREATE_TOPICS: "registration:2:3,post:2:3,comment:2:3,reaction:2:3,friend:2:3"
+      KAFKA_CREATE_TOPICS: "befake:2:3,registration:2:3,post:2:3,comment:2:3,reaction:2:3,friend:2:3"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     depends_on:
@@ -179,9 +179,11 @@ services:
     depends_on:
       - naming-server
       - api-gateway
+      - kafka
     environment:
       EUREKA.CLIENT.SERVICEURL.DEFAULTZONE: http://naming-server:8761/eureka
       SPRING.ZIPKIN.BASEURL: http://zipkin-server:9411
+      KAFKA.URL: kafka:9092
 
   user-service:
     image: user-service:latest

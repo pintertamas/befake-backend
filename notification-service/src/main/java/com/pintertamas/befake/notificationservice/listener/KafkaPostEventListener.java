@@ -17,6 +17,7 @@ public class KafkaPostEventListener {
     public void listenToPosts(String message) {
         listen(message, (postId, friendIds) -> {
             try {
+                log.info("posted with id: " + postId + " sending to this many people: " + friendIds.size());
                 notificationService.sendPostNotification(postId, friendIds);
             } catch (Exception e) {
                 log.error(e.getMessage());
