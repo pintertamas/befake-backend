@@ -119,4 +119,11 @@ Létrehoztam egy Android projektet a mobilos repositoryban, ami itt található 
 ```https://github.com/pintertamas/befake-mobile```
 
 ### 9. hét
-Elkészítettem a mobil oldalon a login és register Activity-ket, raktam beléjük egy kis validációt is, így nem lehet úgy elküldeni a kéréseket, hogy formai hiba van bennük.
+Elkészítettem a mobil oldalon a login és register Activity-ket, raktam beléjük egy kis validációt is, így nem lehet úgy elküldeni a kéréseket, hogy formai hiba van bennük. Elkészítettem a profil nézetet is meg a barát nézetet, ezeknél még van kicsi teendő viszont.
+
+### 10. hét
+Elkészítettem mobil oldalon a barátlistákat kezelő nézeteket, itt lehet barátokat bejelölni, visszaigazolni, törölni és elutasítani barát kéréseket.
+Megcsináltam a profil nézetet is, amit lehet szerkeszteni is egy másik nézeten, majd a posztolást segítő nézetet is megcsináltam. Miután a felhasználó posztol, átirányítódik a barátai posztjainak listájához, ahol ennek az elemeire tud reagálni és kommentelni is. Ehhez léétrehoztam egy újabb nézetet, amiben ezeket lehet megtekinteni.
+Ami még hátra van, az az, hogy a lokációt lekérjem a posztoláskor és azt küldjem el a szervernek, ne egy hard codeolt Budapest plain textet, valamint az, hogy az értesítéseket kiküldje a szerver és ezekre reagáljon is a mobil.
+Ha lesz még időm, meg szeretném majd csinálni még azt, hogy a navigáció a képernyők között Navigation Components segítségével működjön, mert most az az egyetlen dolog, amit egészen előnytelen módon csinálok és néha becsúszik egy nem várt eredmény, legfőképp a vissza gomb megnyomásakor, mivel annak a viselkedését nem sikerült tökéletesen lekódolnom. Ezek mellett jó lenne megcsinálni a kép cachelést úgy, ahogy a héten megbeszéltük, csak már nme kezdtem abba bele, mert az a gyanúm hogy nagyon sok időt vesz el én meg annak szűkében vagyok. Ezek mellett jó lenne a kódot kicsit megszépíteni, mert pár helyen (leginkább a navigációnál, tehát ez a két feladat nagyjából ugyan az) még elég sok kódismétlés van. Amit még így utólag vettem észre problémaként az az, hogy mivel még azt se tanultam egészen tegnapig és későn hallottam róla, nem használtam se coroutine-okat vagy EventBus-okat, pedig most, hogy már találkoztam velük, elég sok helyen megkönnyíthették volna a kódírást.
+A jövő héten szeretném elkezdeni az írásbeli részét a szakdolgozatnak és a kuberneteses feladatokat is, hogy utána kirakhassam élesre az egészet az azt követő héten.
