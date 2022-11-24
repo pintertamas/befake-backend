@@ -1,6 +1,8 @@
 package com.pintertamas.befake.notificationservice.service;
 
+import com.google.firebase.FirebaseException;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -8,6 +10,9 @@ import java.util.List;
 @Slf4j
 @Service
 public class NotificationService {
+
+    @Autowired
+    private FirebaseMessagingService firebaseMessagingService;
 
     public void sendPostNotification(Long postId, List<Long> friendIds) {
         log.info("sending post notification");
@@ -35,5 +40,10 @@ public class NotificationService {
     public void sendBeFakeNotification(String message) {
         log.info("sending befake time notification");
         System.out.println("Sending notification about BeFakeTime to every user: " + message);
+        try {
+            firebaseMessagingService.sendBeFakeTime();
+        } catch (FirebaseException e) {
+            log.error(e.getMessage());
+        }
     }
 }

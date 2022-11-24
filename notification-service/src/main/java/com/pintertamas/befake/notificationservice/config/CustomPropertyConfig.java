@@ -16,4 +16,7 @@ public class CustomPropertyConfig {
 
   @Value("${awsSecretKey}")
   public String awsSecretKey;
+
+  @Value("${app.firebase-configuration-file}")
+  public String firebaseConfigFile;
 }
