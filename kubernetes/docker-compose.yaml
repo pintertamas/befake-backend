@@ -98,7 +98,7 @@ services:
       #SPRING.DATASOURCE.URL: jdbc:postgresql://mouse.db.elephantsql.com:5432/uussjasr?user=uussjasr&password=tacFU7jL_jE2zYxNVzNgkMeAUSKzLi4R&sslmode=require
       SPRING.DATASOURCE.URL: jdbc:postgresql://host.docker.internal:5432/friend-service
       SPRING.DATASOURCE.USERNAME: postgres
-      SPRING:DATASOURCE:PASSWORD: postgres
+      SPRING.DATASOURCE.PASSWORD: postgres
       KAFKA.URL: kafka:9092
 
   interaction-service:
@@ -116,7 +116,7 @@ services:
       SPRING.ZIPKIN.BASEURL: http://zipkin-server:9411
       SPRING.DATASOURCE.URL: jdbc:postgresql://host.docker.internal:5432/interaction-service
       SPRING.DATASOURCE.USERNAME: postgres
-      SPRING:DATASOURCE:PASSWORD: postgres
+      SPRING.DATASOURCE.PASSWORD: postgres
       KAFKA.URL: kafka:9092
 
   notification-service:
@@ -149,7 +149,7 @@ services:
       SPRING.ZIPKIN.BASEURL: http://zipkin-server:9411
       SPRING.DATASOURCE.URL: jdbc:postgresql://host.docker.internal:5432/post-service
       SPRING.DATASOURCE.USERNAME: postgres
-      SPRING:DATASOURCE:PASSWORD: postgres
+      SPRING.DATASOURCE.PASSWORD: postgres
       KAFKA.URL: kafka:9092
 
   time-service:
@@ -182,7 +182,7 @@ services:
       SPRING.ZIPKIN.BASEURL: http://zipkin-server:9411
       SPRING.DATASOURCE.URL: jdbc:postgresql://host.docker.internal:5432/user-service
       SPRING.DATASOURCE.USERNAME: postgres
-      SPRING:DATASOURCE:PASSWORD: postgres
+      SPRING.DATASOURCE.PASSWORD: postgres
       KAFKA.URL: kafka:9092
 
 networks:

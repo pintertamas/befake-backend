@@ -34,7 +34,7 @@ spec:
               value: postgres
             - name: SPRING.ZIPKIN.BASEURL
               value: http://zipkin-server:9411
-            - name: SPRING:DATASOURCE:PASSWORD
+            - name: SPRING.DATASOURCE.PASSWORD
               value: postgres
           image: post-service:latest
           name: post-service

@@ -12,17 +12,19 @@ services:
   kafka:
     image: wurstmeister/kafka
     links:
-      - zookeeper:zk
+      - zookeeper:zookeeper
     ports:
       - '9092:9092'
     networks:
       - befake-network
     environment:
+      #KAFKA_ADVERTISED_PORT: 9092
+      #KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
       #KAFKA_ADVERTISED_HOST_NAME: localhost
       #HOSTNAME_COMMAND: "ifconfig eth0 | grep 'inet addr:' | cut -d: -f2 | awk '{ print $$1}'"
       HOSTNAME_COMMAND: "route -n | awk '/UG[ \t]/{print $$2}'"
       #BROKER_ID_COMMAND: "hostname | awk -F'-' '{print $$2}'"
-      KAFKA_ZOOKEEPER_CONNECT: zk:2181
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
       KAFKA_MESSAGE_MAX_BYTES: 2000000
       KAFKA_CREATE_TOPICS: "befake:2:3,registration:2:3,post:2:3,comment:2:3,reaction:2:3,friend:2:3"
     volumes:
@@ -106,7 +108,7 @@ services:
       #SPRING.DATASOURCE.URL: jdbc:postgresql://mouse.db.elephantsql.com:5432/uussjasr?user=uussjasr&password=tacFU7jL_jE2zYxNVzNgkMeAUSKzLi4R&sslmode=require
       SPRING.DATASOURCE.URL: jdbc:postgresql://host.docker.internal:5432/friend-service
       SPRING.DATASOURCE.USERNAME: postgres
-      SPRING:DATASOURCE:PASSWORD: postgres
+      SPRING.DATASOURCE.PASSWORD: postgres
       KAFKA.URL: kafka:9092
 
   interaction-service:
@@ -126,7 +128,7 @@ services:
       #SPRING.DATASOURCE.URL: jdbc:postgresql://mouse.db.elephantsql.com:5432/mzgoaddl?user=mzgoaddl&password=8MFN1xNJJWL9eDdUwS8-tbjoVS4FFKvf&sslmode=require
       SPRING.DATASOURCE.URL: jdbc:postgresql://host.docker.internal:5432/interaction-service
       SPRING.DATASOURCE.USERNAME: postgres
-      SPRING:DATASOURCE:PASSWORD: postgres
+      SPRING.DATASOURCE.PASSWORD: postgres
       KAFKA.URL: kafka:9092
 
   notification-service:
@@ -162,7 +164,7 @@ services:
       #SPRING.DATASOURCE.URL: jdbc:postgresql://lucky.db.elephantsql.com:5432/jcapalgw?user=jcapalgw&password=c7EsSkbl4kwOfCkb7JaQCtjekq2Xw4dL&sslmode=require
       SPRING.DATASOURCE.URL: jdbc:postgresql://host.docker.internal:5432/post-service
       SPRING.DATASOURCE.USERNAME: postgres
-      SPRING:DATASOURCE:PASSWORD: postgres
+      SPRING.DATASOURCE.PASSWORD: postgres
       KAFKA.URL: kafka:9092
 
   time-service:
@@ -198,7 +200,7 @@ services:
       #SPRING.DATASOURCE.URL: jdbc:postgresql://lucky.db.elephantsql.com:5432/whdddskf?user=whdddskf&password=12kU7fMLNfuFSYto9MLcivaGsLvFf-E0&sslmode=require
       SPRING.DATASOURCE.URL: jdbc:postgresql://host.docker.internal:5432/user-service
       SPRING.DATASOURCE.USERNAME: postgres
-      SPRING:DATASOURCE:PASSWORD: postgres
+      SPRING.DATASOURCE.PASSWORD: postgres
       KAFKA.URL: kafka:9092
 
 networks:
