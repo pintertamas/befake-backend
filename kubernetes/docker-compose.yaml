@@ -20,8 +20,8 @@ services:
     environment:
       #KAFKA_ADVERTISED_HOST_NAME: localhost
       #HOSTNAME_COMMAND: "ifconfig eth0 | grep 'inet addr:' | cut -d: -f2 | awk '{ print $$1}'"
-      HOSTNAME_COMMAND: "route -n | awk '/UG[ \t]/{print $$2}'"
       #BROKER_ID_COMMAND: "hostname | awk -F'-' '{print $$2}'"
+      HOSTNAME_COMMAND: "route -n | awk '/UG[ \t]/{print $$2}'"
       KAFKA_ZOOKEEPER_CONNECT: zk:2181
       KAFKA_MESSAGE_MAX_BYTES: 2000000
       KAFKA_CREATE_TOPICS: "befake:2:3,registration:2:3,post:2:3,comment:2:3,reaction:2:3,friend:2:3"
@@ -41,18 +41,10 @@ services:
       - naming-server
       - rabbitmq
     environment:
-      EUREKA.CLIENT.SERVICEURL.DEFAULTZONE: http://naming-server:8761/eureka
       SPRING.ZIPKIN.BASEURL: http://zipkin-server:9411
       RABBIT_URI: amqp://guest@rabbitmq:5672
       SPRING_RABBITMQ_HOST: rabbitmq
       SPRING_ZIPKIN_SENDER_TYPE: rabbit
-
-  naming-server:
-    image: naming-server:latest
-    ports:
-      - "8761:8761"
-    networks:
-      - befake-network
 
   zipkin-server:
     image: openzipkin/zipkin:2.23
@@ -121,9 +113,7 @@ services:
       - api-gateway
       - kafka
     environment:
-      EUREKA.CLIENT.SERVICEURL.DEFAULTZONE: http://naming-server:8761/eureka
       SPRING.ZIPKIN.BASEURL: http://zipkin-server:9411
-      #SPRING.DATASOURCE.URL: jdbc:postgresql://mouse.db.elephantsql.com:5432/mzgoaddl?user=mzgoaddl&password=8MFN1xNJJWL9eDdUwS8-tbjoVS4FFKvf&sslmode=require
       SPRING.DATASOURCE.URL: jdbc:postgresql://host.docker.internal:5432/interaction-service
       SPRING.DATASOURCE.USERNAME: postgres
       SPRING:DATASOURCE:PASSWORD: postgres
@@ -141,7 +131,6 @@ services:
       - api-gateway
       - kafka
     environment:
-      EUREKA.CLIENT.SERVICEURL.DEFAULTZONE: http://naming-server:8761/eureka
       SPRING.ZIPKIN.BASEURL: http://zipkin-server:9411
       KAFKA.URL: kafka:9092
 
@@ -157,9 +146,7 @@ services:
       - api-gateway
       - kafka
     environment:
-      EUREKA.CLIENT.SERVICEURL.DEFAULTZONE: http://naming-server:8761/eureka
       SPRING.ZIPKIN.BASEURL: http://zipkin-server:9411
-      #SPRING.DATASOURCE.URL: jdbc:postgresql://lucky.db.elephantsql.com:5432/jcapalgw?user=jcapalgw&password=c7EsSkbl4kwOfCkb7JaQCtjekq2Xw4dL&sslmode=require
       SPRING.DATASOURCE.URL: jdbc:postgresql://host.docker.internal:5432/post-service
       SPRING.DATASOURCE.USERNAME: postgres
       SPRING:DATASOURCE:PASSWORD: postgres
@@ -177,7 +164,6 @@ services:
       - api-gateway
       - kafka
     environment:
-      EUREKA.CLIENT.SERVICEURL.DEFAULTZONE: http://naming-server:8761/eureka
       SPRING.ZIPKIN.BASEURL: http://zipkin-server:9411
       KAFKA.URL: kafka:9092
 
@@ -193,9 +179,7 @@ services:
       - api-gateway
       - kafka
     environment:
-      EUREKA.CLIENT.SERVICEURL.DEFAULTZONE: http://naming-server:8761/eureka
       SPRING.ZIPKIN.BASEURL: http://zipkin-server:9411
-      #SPRING.DATASOURCE.URL: jdbc:postgresql://lucky.db.elephantsql.com:5432/whdddskf?user=whdddskf&password=12kU7fMLNfuFSYto9MLcivaGsLvFf-E0&sslmode=require
       SPRING.DATASOURCE.URL: jdbc:postgresql://host.docker.internal:5432/user-service
       SPRING.DATASOURCE.USERNAME: postgres
       SPRING:DATASOURCE:PASSWORD: postgres
