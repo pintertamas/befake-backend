@@ -13,4 +13,4 @@ RUN mvn -f /home/app/pom.xml install
 FROM openjdk:17-alpine
 MAINTAINER pintertamas
 COPY target/friend-service-latest.jar friend-service-latest.jar
-ENTRYPOINT ["java","-jar","pintertamas/friend-service-latest.jar"]
+ENTRYPOINT ["java","-jar","/friend-service-latest.jar"]

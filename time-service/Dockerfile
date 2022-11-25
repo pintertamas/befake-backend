@@ -13,4 +13,4 @@ RUN mvn -f /home/app/pom.xml install
 FROM openjdk:17-alpine
 MAINTAINER pintertamas
 COPY target/time-service-latest.jar time-service-latest.jar
-ENTRYPOINT ["java","-jar","pintertamas/time-service-latest.jar"]
+ENTRYPOINT ["java","-jar","/time-service-latest.jar"]

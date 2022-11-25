@@ -13,4 +13,4 @@ RUN mvn -f /home/app/pom.xml install
 FROM openjdk:17-alpine
 MAINTAINER pintertamas
 COPY target/notification-service-latest.jar notification-service-latest.jar
-ENTRYPOINT ["java","-jar","pintertamas/notification-service-latest.jar"]
+ENTRYPOINT ["java","-jar","/notification-service-latest.jar"]
