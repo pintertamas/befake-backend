@@ -9,6 +9,7 @@ services:
       - befake-network
     environment:
       - ALLOW_ANONYMOUS_LOGIN=yes
+
   kafka:
     image: wurstmeister/kafka
     links:
