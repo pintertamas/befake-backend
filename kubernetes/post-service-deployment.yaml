@@ -28,15 +28,15 @@ spec:
         - env:
             - name: KAFKA.URL
               value: kafka:9092
+            - name: SPRING.DATASOURCE.PASSWORD
+              value: postgres
             - name: SPRING.DATASOURCE.URL
               value: jdbc:postgresql://host.docker.internal:5432/post-service
             - name: SPRING.DATASOURCE.USERNAME
               value: postgres
             - name: SPRING.ZIPKIN.BASEURL
               value: http://zipkin-server:9411
-            - name: SPRING.DATASOURCE.PASSWORD
-              value: postgres
-          image: post-service:latest
+          image: pintertamas/post-service:SNAPSHOT-0.0.1
           name: post-service
           ports:
             - containerPort: 8001

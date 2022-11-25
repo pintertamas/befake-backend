@@ -32,13 +32,12 @@ services:
     restart: always
 
   api-gateway:
-    image: api-gateway:latest
+    image: pintertamas/api-gateway:SNAPSHOT-0.0.1
     ports:
       - "8765:8765"
     networks:
       - befake-network
     depends_on:
-      - naming-server
       - rabbitmq
     environment:
       SPRING.ZIPKIN.BASEURL: http://zipkin-server:9411
@@ -67,49 +66,43 @@ services:
       - befake-network
 
   auth-service:
-    image: authorization-service:latest
+    image: pintertamas/authorization-service:SNAPSHOT-0.0.1
     restart: always
     ports:
       - "8080:8080"
     networks:
       - befake-network
     depends_on:
-      - naming-server
       - api-gateway
       - user-service
     environment:
-      EUREKA.CLIENT.SERVICEURL.DEFAULTZONE: http://naming-server:8761/eureka
       SPRING.ZIPKIN.BASEURL: http://zipkin-server:9411
 
   friend-service:
-    image: friend-service:latest
+    image: pintertamas/friend-service:SNAPSHOT-0.0.1
     restart: always
     ports:
       - "8003:8003"
     networks:
       - befake-network
     depends_on:
-      - naming-server
       - api-gateway
       - kafka
     environment:
-      EUREKA.CLIENT.SERVICEURL.DEFAULTZONE: http://naming-server:8761/eureka
       SPRING.ZIPKIN.BASEURL: http://zipkin-server:9411
-      #SPRING.DATASOURCE.URL: jdbc:postgresql://mouse.db.elephantsql.com:5432/uussjasr?user=uussjasr&password=tacFU7jL_jE2zYxNVzNgkMeAUSKzLi4R&sslmode=require
       SPRING.DATASOURCE.URL: jdbc:postgresql://host.docker.internal:5432/friend-service
       SPRING.DATASOURCE.USERNAME: postgres
       SPRING.DATASOURCE.PASSWORD: postgres
       KAFKA.URL: kafka:9092
 
   interaction-service:
-    image: interaction-service:latest
+    image: pintertamas/interaction-service:SNAPSHOT-0.0.1
     restart: always
     ports:
       - "8002:8002"
     networks:
       - befake-network
     depends_on:
-      - naming-server
       - api-gateway
       - kafka
     environment:
@@ -120,14 +113,13 @@ services:
       KAFKA.URL: kafka:9092
 
   notification-service:
-    image: notification-service:latest
+    image: pintertamas/notification-service:SNAPSHOT-0.0.1
     restart: always
     ports:
       - "8101:8101"
     networks:
       - befake-network
     depends_on:
-      - naming-server
       - api-gateway
       - kafka
     environment:
@@ -135,14 +127,13 @@ services:
       KAFKA.URL: kafka:9092
 
   post-service:
-    image: post-service:latest
+    image: pintertamas/post-service:SNAPSHOT-0.0.1
     restart: always
     ports:
       - "8001:8001"
     networks:
       - befake-network
     depends_on:
-      - naming-server
       - api-gateway
       - kafka
     environment:
@@ -153,14 +144,13 @@ services:
       KAFKA.URL: kafka:9092
 
   time-service:
-    image: time-service:latest
+    image: pintertamas/time-service:SNAPSHOT-0.0.1
     restart: always
     ports:
       - "8081:8081"
     networks:
       - befake-network
     depends_on:
-      - naming-server
       - api-gateway
       - kafka
     environment:
@@ -168,14 +158,13 @@ services:
       KAFKA.URL: kafka:9092
 
   user-service:
-    image: user-service:latest
+    image: pintertamas/user-service:SNAPSHOT-0.0.1
     restart: always
     ports:
       - "8000:8000"
     networks:
       - befake-network
     depends_on:
-      - naming-server
       - api-gateway
       - kafka
     environment:

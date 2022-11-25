@@ -26,19 +26,17 @@ spec:
     spec:
       containers:
         - env:
-            - name: EUREKA.CLIENT.SERVICEURL.DEFAULTZONE
-              value: http://naming-server:8761/eureka
             - name: KAFKA.URL
               value: kafka:9092
+            - name: SPRING.DATASOURCE.PASSWORD
+              value: postgres
             - name: SPRING.DATASOURCE.URL
               value: jdbc:postgresql://host.docker.internal:5432/friend-service
             - name: SPRING.DATASOURCE.USERNAME
               value: postgres
             - name: SPRING.ZIPKIN.BASEURL
               value: http://zipkin-server:9411
-            - name: SPRING.DATASOURCE.PASSWORD
-              value: postgres
-          image: friend-service:latest
+          image: pintertamas/friend-service:SNAPSHOT-0.0.1
           name: friend-service
           ports:
             - containerPort: 8003

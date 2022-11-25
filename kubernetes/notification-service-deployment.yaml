@@ -30,7 +30,7 @@ spec:
               value: kafka:9092
             - name: SPRING.ZIPKIN.BASEURL
               value: http://zipkin-server:9411
-          image: notification-service:latest
+          image: pintertamas/notification-service:SNAPSHOT-0.0.1
           name: notification-service
           ports:
             - containerPort: 8101

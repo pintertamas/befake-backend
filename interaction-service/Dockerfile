@@ -13,4 +13,4 @@ RUN mvn -f /home/app/pom.xml install
 FROM openjdk:17-alpine
 MAINTAINER pintertamas
 COPY target/interaction-service-latest.jar interaction-service-latest.jar
-ENTRYPOINT ["java","-jar","/interaction-service-latest.jar"]
+ENTRYPOINT ["java","-jar","pintertamas/interaction-service-latest.jar"]

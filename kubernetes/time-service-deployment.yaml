@@ -30,7 +30,7 @@ spec:
               value: kafka:9092
             - name: SPRING.ZIPKIN.BASEURL
               value: http://zipkin-server:9411
-          image: time-service:latest
+          image: pintertamas/time-service:SNAPSHOT-0.0.1
           name: time-service
           ports:
             - containerPort: 8081

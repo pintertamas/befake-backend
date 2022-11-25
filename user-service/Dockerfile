@@ -13,4 +13,4 @@ RUN mvn -f /home/app/pom.xml install
 FROM openjdk:17-alpine
 MAINTAINER pintertamas
 COPY target/user-service-latest.jar user-service-latest.jar
-ENTRYPOINT ["java","-jar","/user-service-latest.jar"]
+ENTRYPOINT ["java","-jar","pintertamas/user-service-latest.jar"]

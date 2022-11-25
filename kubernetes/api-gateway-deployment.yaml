@@ -34,7 +34,7 @@ spec:
               value: rabbitmq
             - name: SPRING_ZIPKIN_SENDER_TYPE
               value: rabbit
-          image: api-gateway:latest
+          image: pintertamas/api-gateway:SNAPSHOT-0.0.1
           name: api-gateway
           ports:
             - containerPort: 8765

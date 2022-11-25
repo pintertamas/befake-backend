@@ -23,8 +23,9 @@ service_list=(
 for service_name in "${service_list[@]}"; do
   echo "--------------------$service_name--------------------"
   cd "$service_name" || break
-  #mvn clean install package
-  docker build --tag="$service_name":latest .
+  mvn clean install package
+  docker build --tag="pintertamas/$service_name":SNAPSHOT-0.0.1 .
+  docker push pintertamas/"$service_name":SNAPSHOT-0.0.1
   cd ..
 done
 

@@ -26,11 +26,9 @@ spec:
     spec:
       containers:
         - env:
-            - name: EUREKA.CLIENT.SERVICEURL.DEFAULTZONE
-              value: http://naming-server:8761/eureka
             - name: SPRING.ZIPKIN.BASEURL
               value: http://zipkin-server:9411
-          image: authorization-service:latest
+          image: pintertamas/authorization-service:SNAPSHOT-0.0.1
           name: auth-service
           ports:
             - containerPort: 8080

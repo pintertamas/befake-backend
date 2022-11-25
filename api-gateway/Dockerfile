@@ -12,4 +12,4 @@ RUN mvn -f /home/app/pom.xml clean package
 FROM openjdk:17-alpine
 MAINTAINER pintertamas
 COPY target/api-gateway-latest.jar api-gateway-latest.jar
-ENTRYPOINT ["java","-jar","/api-gateway-latest.jar"]
+ENTRYPOINT ["java","-jar","pintertamas/api-gateway-latest.jar"]
