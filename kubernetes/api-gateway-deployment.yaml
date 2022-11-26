@@ -26,14 +26,10 @@ spec:
     spec:
       containers:
         - env:
-            - name: RABBIT_URI
-              value: amqp://guest@rabbitmq:5672
-            - name: SPRING.ZIPKIN.BASEURL
-              value: http://zipkin-server:9411
-            - name: SPRING_RABBITMQ_HOST
-              value: rabbitmq
-            - name: SPRING_ZIPKIN_SENDER_TYPE
-              value: rabbit
+            - name: EUREKA.CLIENT.ENABLED
+              value: "false"
+            - name: SPRING.ZIPKIN.ENABLED
+              value: "false"
           image: pintertamas/api-gateway:SNAPSHOT-0.0.1
           name: api-gateway
           ports:

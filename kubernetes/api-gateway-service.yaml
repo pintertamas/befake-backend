@@ -15,5 +15,6 @@ spec:
       targetPort: 8765
   selector:
     io.kompose.service: api-gateway
+    run: api-gateway
 status:
   loadBalancer: {}

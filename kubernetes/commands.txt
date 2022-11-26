@@ -4,3 +4,11 @@ kompose convert
 
 kubectl apply -f api-gateway-deployment.yaml,api-gateway-service.yaml,auth-service-deployment.yaml,auth-service-service.yaml,befake-network-networkpolicy.yaml,friend-service-deployment.yaml,friend-service-service.yaml,interaction-service-deployment.yaml,interaction-service-service.yaml,kafka-claim0-persistentvolumeclaim.yaml,kafka-deployment.yaml,kafka-service.yaml,notification-service-deployment.yaml,notification-service-service.yaml,post-service-deployment.yaml,post-service-service.yaml,rabbitmq-deployment.yaml,rabbitmq-service.yaml,time-service-deployment.yaml,time-service-service.yaml,user-service-deployment.yaml,user-service-service.yaml,zipkin-server-deployment.yaml,zipkin-server-service.yaml,zookeeper-deployment.yaml,zookeeper-service.yaml
 
+kubectl apply -f gateway-ingress-class.yaml,config-map.yaml,k8s-cluster.yaml
+
+
+https://kubernetes.io/docs/tasks/debug/debugpplication/debug-running-pod/
+https://kubernetes.io/docs/tasks/access-application-cluster/access-cluster-services/
+https://docs.spring.io/spring-cloud-kubernetes/docs/current/reference/html/#kubernetes-native-service-discovery
+https://kubernetes.io/docs/tutorials/stateless-application/expose-external-ip-address/
+https://kubernetes.io/docs/concepts/services-networking/service/#loadbalancer

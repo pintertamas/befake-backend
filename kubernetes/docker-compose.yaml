@@ -41,6 +41,8 @@ services:
     depends_on:
       - rabbitmq
     environment:
+      EUREKA.CLIENT.ENABLED: false
+      SPRING.ZIPKIN.ENABLED: false
       SPRING.ZIPKIN.BASEURL: http://zipkin-server:9411
       RABBIT_URI: amqp://guest@rabbitmq:5672
       SPRING_RABBITMQ_HOST: rabbitmq
