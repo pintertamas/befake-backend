@@ -25,13 +25,14 @@ spec:
         io.kompose.service: api-gateway
     spec:
       containers:
-        - env:
-            - name: EUREKA.CLIENT.ENABLED
+        - name: api-gateway
+          imagePullPolicy: Always
+          env:
+            - name: EUREKA_CLIENT_ENABLED
               value: "false"
-            - name: SPRING.ZIPKIN.ENABLED
+            - name: SPRING_ZIPKIN_ENABLED
               value: "false"
           image: pintertamas/api-gateway:SNAPSHOT-0.0.1
-          name: api-gateway
           ports:
             - containerPort: 8765
           resources: {}
