@@ -12,5 +12,5 @@ RUN mvn -f /home/app/pom.xml package clean install
 FROM openjdk:17-alpine
 MAINTAINER pintertamas
 COPY target/post-service-latest.jar post-service-latest.jar
-ENTRYPOINT ["java","-jar","/post-service-latest.jar"]
 EXPOSE 8001
+ENTRYPOINT ["java","-jar","/post-service-latest.jar"]

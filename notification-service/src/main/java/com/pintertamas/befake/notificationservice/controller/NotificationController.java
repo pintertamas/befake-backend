@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/notification")
 public class NotificationController {
 
-    private final FirebaseMessagingService firebaseMessagingService;
+    /*private final FirebaseMessagingService firebaseMessagingService;
 
     public NotificationController(FirebaseMessagingService firebaseMessagingService) {
         this.firebaseMessagingService = firebaseMessagingService;
@@ -26,5 +26,5 @@ public class NotificationController {
             e.printStackTrace();
             return ResponseEntity.internalServerError().build();
         }
-    }
+    }*/
 }

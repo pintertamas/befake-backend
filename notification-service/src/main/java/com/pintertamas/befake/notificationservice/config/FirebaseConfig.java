@@ -16,13 +16,13 @@ import java.io.IOException;
 @Service
 public class FirebaseConfig {
 
-    private final CustomPropertyConfig propertyConfig;
+    /*private final CustomPropertyConfig propertyConfig;
 
     public FirebaseConfig(CustomPropertyConfig propertyConfig) {
         this.propertyConfig = propertyConfig;
     }
 
-    /*@Bean
+    @Bean
     FirebaseMessaging firebaseMessaging() throws IOException {
         GoogleCredentials googleCredentials = GoogleCredentials
                 .fromStream(new ClassPathResource(propertyConfig.firebaseConfigFile).getInputStream());
@@ -32,7 +32,7 @@ public class FirebaseConfig {
                 .build();
         FirebaseApp app = FirebaseApp.initializeApp(firebaseOptions);
         return FirebaseMessaging.getInstance(app);
-    }*/
+    }
 
     @PostConstruct
     public void initialize() {
@@ -46,5 +46,5 @@ public class FirebaseConfig {
         } catch (IOException e) {
             log.error(e.getMessage());
         }
-    }
+    }*/
 }

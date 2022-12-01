@@ -10,11 +10,13 @@ metadata:
   name: api-gateway
 spec:
   ports:
-    - name: "8765"
-      port: 8765
+    #- name: http
+    #  port: 80
+    #  nodePort: 30080
+    - port: 8765
       targetPort: 8765
   selector:
     io.kompose.service: api-gateway
-    run: api-gateway
+    service: api-gateway
 status:
   loadBalancer: {}

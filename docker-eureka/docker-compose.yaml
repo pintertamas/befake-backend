@@ -91,6 +91,21 @@ services:
       EUREKA.CLIENT.SERVICEURL.DEFAULTZONE: http://naming-server:8761/eureka
       SPRING.ZIPKIN.BASEURL: http://zipkin-server:9411
 
+  auth-service-2:
+    image: pintertamas/authorization-service:SNAPSHOT-0.0.1
+    restart: always
+    ports:
+      - "8088:8080"
+    networks:
+      - befake-network
+    depends_on:
+      - naming-server
+      - api-gateway
+      - user-service
+    environment:
+      EUREKA.CLIENT.SERVICEURL.DEFAULTZONE: http://naming-server:8761/eureka
+      SPRING.ZIPKIN.BASEURL: http://zipkin-server:9411
+
   friend-service:
     image: pintertamas/friend-service:SNAPSHOT-0.0.1
     restart: always
@@ -167,6 +182,46 @@ services:
       SPRING.DATASOURCE.PASSWORD: postgres
       KAFKA.URL: kafka:9092
 
+  post-service-2:
+    image: pintertamas/post-service:SNAPSHOT-0.0.1
+    restart: always
+    ports:
+      - "8011:8001"
+    networks:
+      - befake-network
+    depends_on:
+      - naming-server
+      - api-gateway
+      - kafka
+    environment:
+      EUREKA.CLIENT.SERVICEURL.DEFAULTZONE: http://naming-server:8761/eureka
+      SPRING.ZIPKIN.BASEURL: http://zipkin-server:9411
+      #SPRING.DATASOURCE.URL: jdbc:postgresql://lucky.db.elephantsql.com:5432/jcapalgw?user=jcapalgw&password=c7EsSkbl4kwOfCkb7JaQCtjekq2Xw4dL&sslmode=require
+      SPRING.DATASOURCE.URL: jdbc:postgresql://host.docker.internal:5432/post-service
+      SPRING.DATASOURCE.USERNAME: postgres
+      SPRING.DATASOURCE.PASSWORD: postgres
+      KAFKA.URL: kafka:9092
+
+  post-service-3:
+    image: pintertamas/post-service:SNAPSHOT-0.0.1
+    restart: always
+    ports:
+      - "8111:8001"
+    networks:
+      - befake-network
+    depends_on:
+      - naming-server
+      - api-gateway
+      - kafka
+    environment:
+      EUREKA.CLIENT.SERVICEURL.DEFAULTZONE: http://naming-server:8761/eureka
+      SPRING.ZIPKIN.BASEURL: http://zipkin-server:9411
+      #SPRING.DATASOURCE.URL: jdbc:postgresql://lucky.db.elephantsql.com:5432/jcapalgw?user=jcapalgw&password=c7EsSkbl4kwOfCkb7JaQCtjekq2Xw4dL&sslmode=require
+      SPRING.DATASOURCE.URL: jdbc:postgresql://host.docker.internal:5432/post-service
+      SPRING.DATASOURCE.USERNAME: postgres
+      SPRING.DATASOURCE.PASSWORD: postgres
+      KAFKA.URL: kafka:9092
+
   time-service:
     image: pintertamas/time-service:SNAPSHOT-0.0.1
     restart: always
@@ -188,6 +243,26 @@ services:
     restart: always
     ports:
       - "8000:8000"
+    networks:
+      - befake-network
+    depends_on:
+      - naming-server
+      - api-gateway
+      - kafka
+    environment:
+      EUREKA.CLIENT.SERVICEURL.DEFAULTZONE: http://naming-server:8761/eureka
+      SPRING.ZIPKIN.BASEURL: http://zipkin-server:9411
+      #SPRING.DATASOURCE.URL: jdbc:postgresql://lucky.db.elephantsql.com:5432/whdddskf?user=whdddskf&password=12kU7fMLNfuFSYto9MLcivaGsLvFf-E0&sslmode=require
+      SPRING.DATASOURCE.URL: jdbc:postgresql://host.docker.internal:5432/user-service
+      SPRING.DATASOURCE.USERNAME: postgres
+      SPRING.DATASOURCE.PASSWORD: postgres
+      KAFKA.URL: kafka:9092
+
+  user-service-2:
+    image: pintertamas/user-service:SNAPSHOT-0.0.1
+    restart: always
+    ports:
+      - "8009:8000"
     networks:
       - befake-network
     depends_on:

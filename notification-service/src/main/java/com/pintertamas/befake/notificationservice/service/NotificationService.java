@@ -11,8 +11,8 @@ import java.util.List;
 @Service
 public class NotificationService {
 
-    @Autowired
-    private FirebaseMessagingService firebaseMessagingService;
+    //@Autowired
+    //private FirebaseMessagingService firebaseMessagingService;
 
     public void sendPostNotification(Long postId, List<Long> friendIds) {
         log.info("sending post notification");
@@ -40,10 +40,11 @@ public class NotificationService {
     public void sendBeFakeNotification(String message) {
         log.info("sending befake time notification");
         System.out.println("Sending notification about BeFakeTime to every user: " + message);
-        try {
+        /*try {
             firebaseMessagingService.sendBeFakeTime();
         } catch (FirebaseException e) {
-            log.error(e.getMessage());
-        }
+            //log.error(e.getMessage());
+            log.error("Could not send message to Firebase");
+        }*/
     }
 }

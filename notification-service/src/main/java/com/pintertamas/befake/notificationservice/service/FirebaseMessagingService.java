@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class FirebaseMessagingService {
 
-    private final FirebaseMessaging firebaseMessaging;
+    /*private final FirebaseMessaging firebaseMessaging;
 
     public FirebaseMessagingService(FirebaseMessaging firebaseMessaging) {
         this.firebaseMessaging = firebaseMessaging;
@@ -20,7 +20,7 @@ public class FirebaseMessagingService {
 
         Notification notification = Notification
                 .builder()
-                .setTitle("⚠️It's BeFake time   ⚠️")
+                .setTitle(" ⚠️It's BeFake time   ⚠️")
                 .setBody("Capture a BeFake and see what your friends are up to!")
                 .build();
 
@@ -31,6 +31,6 @@ public class FirebaseMessagingService {
                 .build();
 
         return firebaseMessaging.send(message);
-    }
+    }*/
 
 }
