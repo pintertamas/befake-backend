@@ -6,19 +6,19 @@ docker volume prune -f
 
 echo Creating Docker containers from Dockerfiles...
 
-echo --------------------api-gateway--------------------
-cd api-gateway
-call .\mvnw package clean install
-docker build --tag=pintertamas/api-gateway:SNAPSHOT-0.0.1 .
-docker push pintertamas/api-gateway:SNAPSHOT-0.0.1
-cd ..
-
-echo --------------------authorization-service--------------------
-cd authorization-service
-call .\mvnw package clean install
-docker build --tag=pintertamas/authorization-service:SNAPSHOT-0.0.1 .
-docker push pintertamas/authorization-service:SNAPSHOT-0.0.1
-cd ..
+::echo --------------------api-gateway--------------------
+::cd api-gateway
+::call .\mvnw package clean install
+::docker build --tag=pintertamas/api-gateway:SNAPSHOT-0.0.1 .
+::docker push pintertamas/api-gateway:SNAPSHOT-0.0.1
+::cd ..
+::
+::echo --------------------authorization-service--------------------
+::cd authorization-service
+::call .\mvnw package clean install
+::docker build --tag=pintertamas/authorization-service:SNAPSHOT-0.0.1 .
+::docker push pintertamas/authorization-service:SNAPSHOT-0.0.1
+::cd ..
 
 echo --------------------friend-service--------------------
 cd friend-service
@@ -34,12 +34,12 @@ docker build --tag=pintertamas/interaction-service:SNAPSHOT-0.0.1 .
 docker push pintertamas/interaction-service:SNAPSHOT-0.0.1
 cd ..
 
-echo --------------------naming-server--------------------
-cd naming-server
-call .\mvnw package clean install
-docker build --tag=pintertamas/naming-server:SNAPSHOT-0.0.1 .
-docker push pintertamas/naming-server:SNAPSHOT-0.0.1
-cd ..
+::echo --------------------naming-server--------------------
+::cd naming-server
+::call .\mvnw package clean install
+::docker build --tag=pintertamas/naming-server:SNAPSHOT-0.0.1 .
+::docker push pintertamas/naming-server:SNAPSHOT-0.0.1
+::cd ..
 
 echo --------------------notification-service--------------------
 cd notification-service
