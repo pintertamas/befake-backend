@@ -1,0 +1,24 @@
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: service-reader-pod
+  uid: e719018f-2bc3-437a-9b9a-bb0e37c4832f
+  resourceVersion: '157790'
+  creationTimestamp: '2022-12-03T23:53:16Z'
+  managedFields:
+    - manager: kubectl-create
+      operation: Update
+      apiVersion: rbac.authorization.k8s.io/v1
+      time: '2022-12-03T23:53:16Z'
+      fieldsType: FieldsV1
+      fieldsV1:
+        f:roleRef: {}
+        f:subjects: {}
+subjects:
+  - kind: ServiceAccount
+    name: default
+    namespace: default
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: service-reader

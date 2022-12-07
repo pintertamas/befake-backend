@@ -1,0 +1,86 @@
+kind: PersistentVolume
+apiVersion: v1
+metadata:
+  name: postgres-pv-volume-interaction
+  uid: 9b8c49ef-c792-48cf-b8dc-5fffabaf4d40
+  resourceVersion: '122647'
+  creationTimestamp: '2022-12-03T16:42:28Z'
+  labels:
+    app: postgres-interaction
+    type: local
+  annotations:
+    pv.kubernetes.io/bound-by-controller: 'yes'
+  finalizers:
+    - kubernetes.io/pv-protection
+  managedFields:
+    - manager: dashboard
+      operation: Update
+      apiVersion: v1
+      time: '2022-12-03T16:42:28Z'
+      fieldsType: FieldsV1
+      fieldsV1:
+        f:metadata:
+          f:labels:
+            .: {}
+            f:app: {}
+            f:type: {}
+        f:spec:
+          f:accessModes: {}
+          f:capacity:
+            .: {}
+            f:storage: {}
+          f:hostPath:
+            .: {}
+            f:path: {}
+            f:type: {}
+          f:persistentVolumeReclaimPolicy: {}
+          f:storageClassName: {}
+          f:volumeMode: {}
+    - manager: kube-controller-manager
+      operation: Update
+      apiVersion: v1
+      time: '2022-12-03T16:46:40Z'
+      fieldsType: FieldsV1
+      fieldsV1:
+        f:metadata:
+          f:annotations:
+            .: {}
+            f:pv.kubernetes.io/bound-by-controller: {}
+        f:spec:
+          f:claimRef:
+            .: {}
+            f:apiVersion: {}
+            f:kind: {}
+            f:name: {}
+            f:namespace: {}
+            f:resourceVersion: {}
+            f:uid: {}
+    - manager: kube-controller-manager
+      operation: Update
+      apiVersion: v1
+      time: '2022-12-03T16:46:40Z'
+      fieldsType: FieldsV1
+      fieldsV1:
+        f:status:
+          f:phase: {}
+      subresource: status
+spec:
+  capacity:
+    storage: 5Gi
+  hostPath:
+    path: /mnt/data-interaction
+    type: ''
+  accessModes:
+    - ReadWriteMany
+  claimRef:
+    kind: PersistentVolumeClaim
+    namespace: default
+    name: postgres-pv-claim-post
+    uid: d623e767-d639-48ed-a232-0875b3281eb4
+    apiVersion: v1
+    resourceVersion: '122645'
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: manual
+  volumeMode: Filesystem
+status:
+  phase: Bound

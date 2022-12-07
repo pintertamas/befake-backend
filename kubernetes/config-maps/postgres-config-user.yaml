@@ -1,0 +1,26 @@
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: postgres-config-user
+  namespace: default
+  uid: fc3871ac-8508-45dd-86e8-878b57032b21
+  resourceVersion: '31301'
+  creationTimestamp: '2022-12-02T20:39:52Z'
+  labels:
+    app: postgres-user
+  managedFields:
+    - manager: dashboard
+      operation: Update
+      apiVersion: v1
+      time: '2022-12-02T20:39:52Z'
+      fieldsType: FieldsV1
+      fieldsV1:
+        f:data:
+          .: {}
+          f:Postgres_DB: {}
+        f:metadata:
+          f:labels:
+            .: {}
+            f:app: {}
+data:
+  Postgres_DB: user-service

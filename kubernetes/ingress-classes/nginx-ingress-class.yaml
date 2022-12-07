@@ -1,0 +1,30 @@
+kind: IngressClass
+apiVersion: networking.k8s.io/v1
+metadata:
+  name: nginx-ingress-class
+  uid: 860b39a2-c624-4c79-a04d-f7f1a07fc006
+  resourceVersion: '139231'
+  generation: 1
+  creationTimestamp: '2022-12-03T19:55:24Z'
+  labels:
+    app.kubernetes.io/component: controller
+  annotations:
+    ingressclass.kubernetes.io/is-default-class: 'true'
+  managedFields:
+    - manager: dashboard
+      operation: Update
+      apiVersion: networking.k8s.io/v1
+      time: '2022-12-03T19:55:24Z'
+      fieldsType: FieldsV1
+      fieldsV1:
+        f:metadata:
+          f:annotations:
+            .: {}
+            f:ingressclass.kubernetes.io/is-default-class: {}
+          f:labels:
+            .: {}
+            f:app.kubernetes.io/component: {}
+        f:spec:
+          f:controller: {}
+spec:
+  controller: k8s.io/ingress-nginx

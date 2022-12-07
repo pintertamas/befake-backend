@@ -1,0 +1,245 @@
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: api-gateway
+  namespace: default
+  uid: f485ae0b-279c-4843-8676-6db9ea8b6894
+  resourceVersion: '815856'
+  generation: 41
+  creationTimestamp: '2022-12-02T14:51:25Z'
+  labels:
+    app: api-gateway
+  annotations:
+    deployment.kubernetes.io/revision: '19'
+  managedFields:
+    - manager: kube-controller-manager
+      operation: Update
+      apiVersion: apps/v1
+      fieldsType: FieldsV1
+      fieldsV1:
+        f:spec:
+          f:replicas: {}
+      subresource: scale
+    - manager: kubectl-create
+      operation: Update
+      apiVersion: apps/v1
+      time: '2022-12-02T14:51:25Z'
+      fieldsType: FieldsV1
+      fieldsV1:
+        f:metadata:
+          f:labels:
+            .: {}
+            f:app: {}
+        f:spec:
+          f:progressDeadlineSeconds: {}
+          f:revisionHistoryLimit: {}
+          f:selector: {}
+          f:strategy:
+            f:rollingUpdate:
+              .: {}
+              f:maxSurge: {}
+              f:maxUnavailable: {}
+            f:type: {}
+          f:template:
+            f:metadata:
+              f:labels:
+                .: {}
+                f:app: {}
+            f:spec:
+              f:containers:
+                k:{"name":"api-gateway"}:
+                  .: {}
+                  f:image: {}
+                  f:name: {}
+                  f:resources: {}
+                  f:terminationMessagePath: {}
+                  f:terminationMessagePolicy: {}
+              f:dnsPolicy: {}
+              f:restartPolicy: {}
+              f:schedulerName: {}
+              f:securityContext: {}
+              f:terminationGracePeriodSeconds: {}
+    - manager: dashboard
+      operation: Update
+      apiVersion: apps/v1
+      time: '2022-12-07T17:41:43Z'
+      fieldsType: FieldsV1
+      fieldsV1:
+        f:spec:
+          f:template:
+            f:metadata:
+              f:annotations:
+                .: {}
+                f:kubectl.kubernetes.io/restartedAt: {}
+            f:spec:
+              f:containers:
+                k:{"name":"api-gateway"}:
+                  f:env:
+                    .: {}
+                    k:{"name":"DISCOVERY_CLIENT_ENABLED"}:
+                      .: {}
+                      f:name: {}
+                      f:value: {}
+                    k:{"name":"EUREKA_CLIENT_ENABLED"}:
+                      .: {}
+                      f:name: {}
+                      f:value: {}
+                    k:{"name":"SPRING_ZIPKIN_ENABLED"}:
+                      .: {}
+                      f:name: {}
+                      f:value: {}
+                  f:imagePullPolicy: {}
+                  f:livenessProbe:
+                    .: {}
+                    f:failureThreshold: {}
+                    f:httpGet:
+                      .: {}
+                      f:path: {}
+                      f:port: {}
+                      f:scheme: {}
+                    f:initialDelaySeconds: {}
+                    f:periodSeconds: {}
+                    f:successThreshold: {}
+                    f:timeoutSeconds: {}
+                  f:readinessProbe:
+                    .: {}
+                    f:failureThreshold: {}
+                    f:httpGet:
+                      .: {}
+                      f:path: {}
+                      f:port: {}
+                      f:scheme: {}
+                    f:initialDelaySeconds: {}
+                    f:periodSeconds: {}
+                    f:successThreshold: {}
+                    f:timeoutSeconds: {}
+                  f:resources:
+                    f:limits:
+                      .: {}
+                      f:cpu: {}
+                      f:memory: {}
+                    f:requests:
+                      .: {}
+                      f:cpu: {}
+                      f:memory: {}
+    - manager: kube-controller-manager
+      operation: Update
+      apiVersion: apps/v1
+      time: '2022-12-07T17:51:44Z'
+      fieldsType: FieldsV1
+      fieldsV1:
+        f:metadata:
+          f:annotations:
+            .: {}
+            f:deployment.kubernetes.io/revision: {}
+        f:status:
+          f:availableReplicas: {}
+          f:conditions:
+            .: {}
+            k:{"type":"Available"}:
+              .: {}
+              f:lastTransitionTime: {}
+              f:lastUpdateTime: {}
+              f:message: {}
+              f:reason: {}
+              f:status: {}
+              f:type: {}
+            k:{"type":"Progressing"}:
+              .: {}
+              f:lastTransitionTime: {}
+              f:lastUpdateTime: {}
+              f:message: {}
+              f:reason: {}
+              f:status: {}
+              f:type: {}
+          f:observedGeneration: {}
+          f:readyReplicas: {}
+          f:replicas: {}
+          f:unavailableReplicas: {}
+          f:updatedReplicas: {}
+      subresource: status
+spec:
+  replicas: 5
+  selector:
+    matchLabels:
+      app: api-gateway
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: api-gateway
+      annotations:
+        kubectl.kubernetes.io/restartedAt: '2022-12-07T17:41:43Z'
+    spec:
+      containers:
+        - name: api-gateway
+          image: pintertamas/api-gateway:SNAPSHOT-0.0.1
+          env:
+            - name: EUREKA_CLIENT_ENABLED
+              value: 'false'
+            - name: SPRING_ZIPKIN_ENABLED
+              value: 'false'
+            - name: DISCOVERY_CLIENT_ENABLED
+              value: 'true'
+          resources:
+            limits:
+              cpu: 500m
+              memory: 512Mi
+            requests:
+              cpu: 500m
+              memory: 512Mi
+          livenessProbe:
+            httpGet:
+              path: /actuator/health/liveness
+              port: 8000
+              scheme: HTTP
+            initialDelaySeconds: 20
+            timeoutSeconds: 10
+            periodSeconds: 3
+            successThreshold: 1
+            failureThreshold: 5
+          readinessProbe:
+            httpGet:
+              path: /actuator/health/readiness
+              port: 8000
+              scheme: HTTP
+            initialDelaySeconds: 20
+            timeoutSeconds: 10
+            periodSeconds: 3
+            successThreshold: 1
+            failureThreshold: 5
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          imagePullPolicy: Always
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 30
+      dnsPolicy: ClusterFirst
+      securityContext: {}
+      schedulerName: default-scheduler
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 25%
+      maxSurge: 25%
+  revisionHistoryLimit: 10
+  progressDeadlineSeconds: 600
+status:
+  observedGeneration: 41
+  replicas: 7
+  updatedReplicas: 3
+  readyReplicas: 4
+  availableReplicas: 4
+  unavailableReplicas: 3
+  conditions:
+    - type: Available
+      status: 'True'
+      lastUpdateTime: '2022-12-06T18:01:42Z'
+      lastTransitionTime: '2022-12-06T18:01:42Z'
+      reason: MinimumReplicasAvailable
+      message: Deployment has minimum availability.
+    - type: Progressing
+      status: 'False'
+      lastUpdateTime: '2022-12-07T17:51:44Z'
+      lastTransitionTime: '2022-12-07T17:51:44Z'
+      reason: ProgressDeadlineExceeded
+      message: ReplicaSet "api-gateway-69578fd875" has timed out progressing.

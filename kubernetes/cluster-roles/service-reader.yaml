@@ -1,0 +1,26 @@
+kind: ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: service-reader
+  uid: 7ef70f1e-af07-4793-974b-98dc60986b69
+  resourceVersion: '158194'
+  creationTimestamp: '2022-12-03T23:52:42Z'
+  managedFields:
+    - manager: dashboard
+      operation: Update
+      apiVersion: rbac.authorization.k8s.io/v1
+      time: '2022-12-03T23:58:15Z'
+      fieldsType: FieldsV1
+      fieldsV1:
+        f:rules: {}
+rules:
+  - verbs:
+      - get
+      - watch
+      - list
+    apiGroups:
+      - ''
+    resources:
+      - services
+      - pods
+      - endpoints

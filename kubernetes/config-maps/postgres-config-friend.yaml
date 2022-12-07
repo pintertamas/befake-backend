@@ -1,0 +1,26 @@
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: postgres-config-friend
+  namespace: default
+  uid: a00179d0-4384-4d0b-b750-f924b6e05df8
+  resourceVersion: '122065'
+  creationTimestamp: '2022-12-03T16:38:02Z'
+  labels:
+    app: postgres-friend
+  managedFields:
+    - manager: dashboard
+      operation: Update
+      apiVersion: v1
+      time: '2022-12-03T16:38:02Z'
+      fieldsType: FieldsV1
+      fieldsV1:
+        f:data:
+          .: {}
+          f:Postgres_DB: {}
+        f:metadata:
+          f:labels:
+            .: {}
+            f:app: {}
+data:
+  Postgres_DB: friend-service

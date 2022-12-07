@@ -1,0 +1,183 @@
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: time-service
+  namespace: default
+  uid: b88728d8-4590-4821-ad01-6b1c12886a01
+  resourceVersion: '174713'
+  generation: 6
+  creationTimestamp: '2022-12-03T18:13:42Z'
+  labels:
+    app: time-service
+  annotations:
+    deployment.kubernetes.io/revision: '6'
+  managedFields:
+    - manager: kubectl-create
+      operation: Update
+      apiVersion: apps/v1
+      time: '2022-12-03T18:13:42Z'
+      fieldsType: FieldsV1
+      fieldsV1:
+        f:metadata:
+          f:labels:
+            .: {}
+            f:app: {}
+        f:spec:
+          f:progressDeadlineSeconds: {}
+          f:replicas: {}
+          f:revisionHistoryLimit: {}
+          f:selector: {}
+          f:strategy:
+            f:rollingUpdate:
+              .: {}
+              f:maxSurge: {}
+              f:maxUnavailable: {}
+            f:type: {}
+          f:template:
+            f:metadata:
+              f:labels:
+                .: {}
+                f:app: {}
+            f:spec:
+              f:containers:
+                k:{"name":"time-service"}:
+                  .: {}
+                  f:image: {}
+                  f:name: {}
+                  f:resources: {}
+                  f:terminationMessagePath: {}
+                  f:terminationMessagePolicy: {}
+              f:dnsPolicy: {}
+              f:restartPolicy: {}
+              f:schedulerName: {}
+              f:securityContext: {}
+              f:terminationGracePeriodSeconds: {}
+    - manager: dashboard
+      operation: Update
+      apiVersion: apps/v1
+      time: '2022-12-04T03:29:29Z'
+      fieldsType: FieldsV1
+      fieldsV1:
+        f:spec:
+          f:template:
+            f:metadata:
+              f:annotations:
+                .: {}
+                f:kubectl.kubernetes.io/restartedAt: {}
+            f:spec:
+              f:containers:
+                k:{"name":"time-service"}:
+                  f:env:
+                    .: {}
+                    k:{"name":"DISCOVERY_CLIENT_ENABLED"}:
+                      .: {}
+                      f:name: {}
+                      f:value: {}
+                    k:{"name":"EUREKA_CLIENT_ENABLED"}:
+                      .: {}
+                      f:name: {}
+                      f:value: {}
+                    k:{"name":"KAFKA_URL"}:
+                      .: {}
+                      f:name: {}
+                      f:value: {}
+                    k:{"name":"SPRING_ZIPKIN_ENABLED"}:
+                      .: {}
+                      f:name: {}
+                      f:value: {}
+                  f:imagePullPolicy: {}
+    - manager: kube-controller-manager
+      operation: Update
+      apiVersion: apps/v1
+      time: '2022-12-04T03:29:37Z'
+      fieldsType: FieldsV1
+      fieldsV1:
+        f:metadata:
+          f:annotations:
+            .: {}
+            f:deployment.kubernetes.io/revision: {}
+        f:status:
+          f:availableReplicas: {}
+          f:conditions:
+            .: {}
+            k:{"type":"Available"}:
+              .: {}
+              f:lastTransitionTime: {}
+              f:lastUpdateTime: {}
+              f:message: {}
+              f:reason: {}
+              f:status: {}
+              f:type: {}
+            k:{"type":"Progressing"}:
+              .: {}
+              f:lastTransitionTime: {}
+              f:lastUpdateTime: {}
+              f:message: {}
+              f:reason: {}
+              f:status: {}
+              f:type: {}
+          f:observedGeneration: {}
+          f:readyReplicas: {}
+          f:replicas: {}
+          f:updatedReplicas: {}
+      subresource: status
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: time-service
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: time-service
+      annotations:
+        kubectl.kubernetes.io/restartedAt: '2022-12-04T03:29:29Z'
+    spec:
+      containers:
+        - name: time-service
+          image: pintertamas/time-service:SNAPSHOT-0.0.1
+          env:
+            - name: EUREKA_CLIENT_ENABLED
+              value: 'false'
+            - name: SPRING_ZIPKIN_ENABLED
+              value: 'false'
+            - name: KAFKA_URL
+              value: kafka-service:9092
+            - name: DISCOVERY_CLIENT_ENABLED
+              value: 'true'
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          imagePullPolicy: Always
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 30
+      dnsPolicy: ClusterFirst
+      securityContext: {}
+      schedulerName: default-scheduler
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 25%
+      maxSurge: 25%
+  revisionHistoryLimit: 10
+  progressDeadlineSeconds: 600
+status:
+  observedGeneration: 6
+  replicas: 1
+  updatedReplicas: 1
+  readyReplicas: 1
+  availableReplicas: 1
+  conditions:
+    - type: Available
+      status: 'True'
+      lastUpdateTime: '2022-12-03T18:13:52Z'
+      lastTransitionTime: '2022-12-03T18:13:52Z'
+      reason: MinimumReplicasAvailable
+      message: Deployment has minimum availability.
+    - type: Progressing
+      status: 'True'
+      lastUpdateTime: '2022-12-04T03:29:37Z'
+      lastTransitionTime: '2022-12-03T18:13:42Z'
+      reason: NewReplicaSetAvailable
+      message: ReplicaSet "time-service-54c6c548f7" has successfully progressed.

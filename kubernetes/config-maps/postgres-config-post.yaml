@@ -1,0 +1,26 @@
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: postgres-config-post
+  namespace: default
+  uid: 72054e73-5eff-4cf8-bc3a-62d243462876
+  resourceVersion: '121424'
+  creationTimestamp: '2022-12-03T16:28:23Z'
+  labels:
+    app: postgres-post
+  managedFields:
+    - manager: dashboard
+      operation: Update
+      apiVersion: v1
+      time: '2022-12-03T16:28:23Z'
+      fieldsType: FieldsV1
+      fieldsV1:
+        f:data:
+          .: {}
+          f:Postgres_DB: {}
+        f:metadata:
+          f:labels:
+            .: {}
+            f:app: {}
+data:
+  Postgres_DB: post-service

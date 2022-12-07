@@ -1,0 +1,189 @@
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: kafka-broker
+  namespace: default
+  uid: dd6dc9fe-b039-4c7c-a50f-851753ea805b
+  resourceVersion: '172298'
+  generation: 9
+  creationTimestamp: '2022-12-03T18:54:54Z'
+  labels:
+    app: kafka-broker
+  annotations:
+    deployment.kubernetes.io/revision: '9'
+  managedFields:
+    - manager: dashboard
+      operation: Update
+      apiVersion: apps/v1
+      time: '2022-12-04T03:00:03Z'
+      fieldsType: FieldsV1
+      fieldsV1:
+        f:metadata:
+          f:labels:
+            .: {}
+            f:app: {}
+        f:spec:
+          f:progressDeadlineSeconds: {}
+          f:replicas: {}
+          f:revisionHistoryLimit: {}
+          f:selector: {}
+          f:strategy:
+            f:rollingUpdate:
+              .: {}
+              f:maxSurge: {}
+              f:maxUnavailable: {}
+            f:type: {}
+          f:template:
+            f:metadata:
+              f:annotations:
+                .: {}
+                f:kubectl.kubernetes.io/restartedAt: {}
+              f:labels:
+                .: {}
+                f:app: {}
+            f:spec:
+              f:containers:
+                k:{"name":"kafka-broker"}:
+                  .: {}
+                  f:env:
+                    .: {}
+                    k:{"name":"KAFKA_ADVERTISED_LISTENERS"}:
+                      .: {}
+                      f:name: {}
+                      f:value: {}
+                    k:{"name":"KAFKA_BROKER_ID"}:
+                      .: {}
+                      f:name: {}
+                      f:value: {}
+                    k:{"name":"KAFKA_CREATE_TOPICS"}:
+                      .: {}
+                      f:name: {}
+                      f:value: {}
+                    k:{"name":"KAFKA_LISTENERS"}:
+                      .: {}
+                      f:name: {}
+                      f:value: {}
+                    k:{"name":"KAFKA_ZOOKEEPER_CONNECT"}:
+                      .: {}
+                      f:name: {}
+                      f:value: {}
+                  f:image: {}
+                  f:imagePullPolicy: {}
+                  f:name: {}
+                  f:ports:
+                    .: {}
+                    k:{"containerPort":9092,"protocol":"TCP"}:
+                      .: {}
+                      f:containerPort: {}
+                      f:protocol: {}
+                  f:resources: {}
+                  f:terminationMessagePath: {}
+                  f:terminationMessagePolicy: {}
+              f:dnsPolicy: {}
+              f:hostname: {}
+              f:restartPolicy: {}
+              f:schedulerName: {}
+              f:securityContext: {}
+              f:terminationGracePeriodSeconds: {}
+    - manager: kube-controller-manager
+      operation: Update
+      apiVersion: apps/v1
+      time: '2022-12-04T03:00:34Z'
+      fieldsType: FieldsV1
+      fieldsV1:
+        f:metadata:
+          f:annotations:
+            .: {}
+            f:deployment.kubernetes.io/revision: {}
+        f:status:
+          f:availableReplicas: {}
+          f:conditions:
+            .: {}
+            k:{"type":"Available"}:
+              .: {}
+              f:lastTransitionTime: {}
+              f:lastUpdateTime: {}
+              f:message: {}
+              f:reason: {}
+              f:status: {}
+              f:type: {}
+            k:{"type":"Progressing"}:
+              .: {}
+              f:lastTransitionTime: {}
+              f:lastUpdateTime: {}
+              f:message: {}
+              f:reason: {}
+              f:status: {}
+              f:type: {}
+          f:observedGeneration: {}
+          f:readyReplicas: {}
+          f:replicas: {}
+          f:updatedReplicas: {}
+      subresource: status
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kafka-broker
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: kafka-broker
+      annotations:
+        kubectl.kubernetes.io/restartedAt: '2022-12-04T03:00:03Z'
+    spec:
+      containers:
+        - name: kafka-broker
+          image: wurstmeister/kafka
+          ports:
+            - containerPort: 9092
+              protocol: TCP
+          env:
+            - name: KAFKA_BROKER_ID
+              value: '1'
+            - name: KAFKA_ZOOKEEPER_CONNECT
+              value: 172.21.209.103:2181
+            - name: KAFKA_LISTENERS
+              value: PLAINTEXT://:9092
+            - name: KAFKA_ADVERTISED_LISTENERS
+              value: PLAINTEXT://kafka-broker:9092
+            - name: KAFKA_CREATE_TOPICS
+              value: >-
+                befake:2:1,registration:2:1,post:2:1,comment:2:1,reaction:2:1,friend:2:1
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          imagePullPolicy: IfNotPresent
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 30
+      dnsPolicy: ClusterFirst
+      securityContext: {}
+      hostname: kafka-broker
+      schedulerName: default-scheduler
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 25%
+      maxSurge: 25%
+  revisionHistoryLimit: 10
+  progressDeadlineSeconds: 600
+status:
+  observedGeneration: 9
+  replicas: 1
+  updatedReplicas: 1
+  readyReplicas: 1
+  availableReplicas: 1
+  conditions:
+    - type: Progressing
+      status: 'True'
+      lastUpdateTime: '2022-12-04T03:00:05Z'
+      lastTransitionTime: '2022-12-03T18:54:54Z'
+      reason: NewReplicaSetAvailable
+      message: ReplicaSet "kafka-broker-7895b4444c" has successfully progressed.
+    - type: Available
+      status: 'True'
+      lastUpdateTime: '2022-12-04T03:00:34Z'
+      lastTransitionTime: '2022-12-04T03:00:34Z'
+      reason: MinimumReplicasAvailable
+      message: Deployment has minimum availability.

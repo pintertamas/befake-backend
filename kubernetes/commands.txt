@@ -6,9 +6,11 @@ kubectl apply -f api-gateway-deployment.yaml,api-gateway-service.yaml,auth-servi
 
 kubectl apply -f gateway-ingress-class.yaml,config-map.yaml,k8s-cluster.yaml
 
-
 https://kubernetes.io/docs/tasks/debug/debugpplication/debug-running-pod/
 https://kubernetes.io/docs/tasks/access-application-cluster/access-cluster-services/
 https://docs.spring.io/spring-cloud-kubernetes/docs/current/reference/html/#kubernetes-native-service-discovery
 https://kubernetes.io/docs/tutorials/stateless-application/expose-external-ip-address/
 https://kubernetes.io/docs/concepts/services-networking/service/#loadbalancer
+
+# HPA config
+kubectl patch hpa/user-service -p '{"spec": {"maxReplicas": 10, "scaleTargetRef": {"apiVersion": "apps/v1", "kind": "Deployment", "name": "user-service"}, "metrics": [{"type": "Resource", "resource": {"name": "cpu", "target": {"type": "Utilization", "averageUtilization": 50}}}, {"type": "Resource", "resource": {"name": "memory", "target": {"type": "Utilization", "averageUtilization": 50}}}], "scaleUp": {"cpu": {"averageUtilization": 80, "averageValue": "100m"}, "memory": {"averageUtilization": 80, "averageValue": "256Mi"}}, "scaleDown": {"cpu": {"averageUtilization": 20, "averageValue": "100m"}, "memory": {"averageUtilization": 20, "averageValue": "256Mi"}}}}'

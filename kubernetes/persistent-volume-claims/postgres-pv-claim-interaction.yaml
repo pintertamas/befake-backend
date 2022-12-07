@@ -1,0 +1,75 @@
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: postgres-pv-claim-interaction
+  namespace: default
+  uid: 3049382e-3170-402d-84ac-df907e626931
+  resourceVersion: '122627'
+  creationTimestamp: '2022-12-03T16:46:23Z'
+  labels:
+    app: postgres-interaction
+  annotations:
+    pv.kubernetes.io/bind-completed: 'yes'
+    pv.kubernetes.io/bound-by-controller: 'yes'
+  finalizers:
+    - kubernetes.io/pvc-protection
+  managedFields:
+    - manager: dashboard
+      operation: Update
+      apiVersion: v1
+      time: '2022-12-03T16:46:23Z'
+      fieldsType: FieldsV1
+      fieldsV1:
+        f:metadata:
+          f:labels:
+            .: {}
+            f:app: {}
+        f:spec:
+          f:accessModes: {}
+          f:resources:
+            f:requests:
+              .: {}
+              f:storage: {}
+          f:storageClassName: {}
+          f:volumeMode: {}
+    - manager: kube-controller-manager
+      operation: Update
+      apiVersion: v1
+      time: '2022-12-03T16:46:23Z'
+      fieldsType: FieldsV1
+      fieldsV1:
+        f:metadata:
+          f:annotations:
+            .: {}
+            f:pv.kubernetes.io/bind-completed: {}
+            f:pv.kubernetes.io/bound-by-controller: {}
+        f:spec:
+          f:volumeName: {}
+    - manager: kube-controller-manager
+      operation: Update
+      apiVersion: v1
+      time: '2022-12-03T16:46:23Z'
+      fieldsType: FieldsV1
+      fieldsV1:
+        f:status:
+          f:accessModes: {}
+          f:capacity:
+            .: {}
+            f:storage: {}
+          f:phase: {}
+      subresource: status
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 5Gi
+  volumeName: postgres-pv-volume-post
+  storageClassName: manual
+  volumeMode: Filesystem
+status:
+  phase: Bound
+  accessModes:
+    - ReadWriteMany
+  capacity:
+    storage: 5Gi

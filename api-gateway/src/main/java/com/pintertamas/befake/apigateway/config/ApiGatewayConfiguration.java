@@ -45,6 +45,10 @@ public class ApiGatewayConfiguration {
                 .route("time-service", r -> r.path("/time/**")
                         .filters(f -> f.filter(filter))
                         .uri("lb://time-service"))
+
+                .route("load-test-validation-service", r -> r.path("/loaderio**")
+                        .filters(f -> f.filter(filter))
+                        .uri("lb://load-test-validation-service"))
                 .build();
     }
 }

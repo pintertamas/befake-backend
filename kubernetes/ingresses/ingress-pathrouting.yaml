@@ -1,0 +1,42 @@
+kind: Ingress
+apiVersion: networking.k8s.io/v1
+metadata:
+  name: ingress-pathrouting
+  namespace: default
+  uid: a32f8230-5e88-4611-9f13-f499b5e570fa
+  resourceVersion: '210816'
+  generation: 4
+  creationTimestamp: '2022-12-03T21:26:11Z'
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /$1
+    nginx.ingress.kubernetes.io/user-regex: 'true'
+  managedFields:
+    - manager: dashboard
+      operation: Update
+      apiVersion: networking.k8s.io/v1
+      time: '2022-12-04T11:38:17Z'
+      fieldsType: FieldsV1
+      fieldsV1:
+        f:metadata:
+          f:annotations:
+            .: {}
+            f:nginx.ingress.kubernetes.io/rewrite-target: {}
+            f:nginx.ingress.kubernetes.io/user-regex: {}
+        f:spec:
+          f:ingressClassName: {}
+          f:rules: {}
+spec:
+  ingressClassName: nginx-ingress-class
+  rules:
+    - host: tamaspinter.com
+      http:
+        paths:
+          - path: /user/(.*)
+            pathType: Prefix
+            backend:
+              service:
+                name: user-service
+                port:
+                  number: 8000
+status:
+  loadBalancer: {}
