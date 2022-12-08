@@ -152,7 +152,7 @@ spec:
     spec:
       containers:
         - name: friend-service
-          image: pintertamas/friend-service:SNAPSHOT-0.0.1
+          image: pintertamas/friend-service:kubernetes
           env:
             - name: EUREKA_CLIENT_ENABLED
               value: 'false'

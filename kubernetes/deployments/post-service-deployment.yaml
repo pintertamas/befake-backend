@@ -152,7 +152,7 @@ spec:
     spec:
       containers:
         - name: post-service
-          image: pintertamas/post-service:SNAPSHOT-0.0.1
+          image: pintertamas/post-service:kubernetes
           env:
             - name: EUREKA_CLIENT_ENABLED
               value: 'false'

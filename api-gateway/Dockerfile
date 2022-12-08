@@ -11,8 +11,8 @@ RUN mvn -f /home/app/pom.xml package clean install
 #
 FROM openjdk:17-alpine
 MAINTAINER pintertamas
-COPY target/api-gateway-latest.jar api-gateway-latest.jar
+COPY target/api-gateway-docker.jar api-gateway-docker.jar
 EXPOSE 8765
-#CMD [ "java $JAVA_OPTS -jar ./api-gateway-latest.jar $MAIN_OPTS" ]
-#CMD [ "/bin/sh", "-c", "java $JAVA_OPTS -jar /api-gateway-latest.jar"]
-ENTRYPOINT ["java","-jar","/api-gateway-latest.jar"]
+#CMD [ "java $JAVA_OPTS -jar ./api-gateway-docker.jar $MAIN_OPTS" ]
+#CMD [ "/bin/sh", "-c", "java $JAVA_OPTS -jar /api-gateway-docker.jar"]
+ENTRYPOINT ["java","-jar","/api-gateway-docker.jar"]

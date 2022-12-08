@@ -173,7 +173,7 @@ spec:
     spec:
       containers:
         - name: api-gateway
-          image: pintertamas/api-gateway:SNAPSHOT-0.0.1
+          image: pintertamas/api-gateway:kubernetes
           env:
             - name: EUREKA_CLIENT_ENABLED
               value: 'false'

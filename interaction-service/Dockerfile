@@ -11,6 +11,6 @@ RUN mvn -f /home/app/pom.xml package clean install
 #
 FROM openjdk:17-alpine
 MAINTAINER pintertamas
-COPY target/interaction-service-latest.jar interaction-service-latest.jar
+COPY target/interaction-service-docker.jar interaction-service-docker.jar
 EXPOSE 8002
-ENTRYPOINT ["java","-jar","/interaction-service-latest.jar"]
+ENTRYPOINT ["java","-jar","/interaction-service-docker.jar"]
