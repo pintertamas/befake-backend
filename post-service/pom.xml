@@ -10,7 +10,7 @@
     </parent>
     <groupId>com.pintertamas.befake</groupId>
     <artifactId>post-service</artifactId>
-    <version>latest</version>
+    <version>kubernetes</version>
     <name>post-service</name>
     <description>This service is responsible for creating, editing and deleting posts with images</description>
     <properties>

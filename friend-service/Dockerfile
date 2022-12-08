@@ -11,6 +11,6 @@ RUN mvn -f /home/app/pom.xml package clean install
 #
 FROM openjdk:17-alpine
 MAINTAINER pintertamas
-COPY target/friend-service-latest.jar friend-service-latest.jar
+COPY target/friend-service-kubernetes.jar friend-service-kubernetes.jar
 EXPOSE 8003
-ENTRYPOINT ["java","-jar","/friend-service-latest.jar"]
+ENTRYPOINT ["java","-jar","/friend-service-kubernetes.jar"]

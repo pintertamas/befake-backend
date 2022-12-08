@@ -136,7 +136,7 @@ spec:
     spec:
       containers:
         - name: time-service
-          image: pintertamas/time-service:SNAPSHOT-0.0.1
+          image: pintertamas/time-service:kubernetes
           env:
             - name: EUREKA_CLIENT_ENABLED
               value: 'false'

@@ -193,7 +193,7 @@ spec:
     spec:
       containers:
         - name: user-service
-          image: pintertamas/user-service:SNAPSHOT-0.0.1
+          image: pintertamas/user-service:kubernetes
           env:
             - name: EUREKA_CLIENT_ENABLED
               value: 'false'

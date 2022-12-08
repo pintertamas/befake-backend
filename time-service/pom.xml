@@ -10,7 +10,7 @@
     </parent>
     <groupId>com.pintertamas.befake</groupId>
     <artifactId>time-service</artifactId>
-    <version>latest</version>
+    <version>kubernetes</version>
     <name>time-service</name>
     <description>A microservice that is responsible for the generation of BeFake times and everything in connection with it</description>
     <properties>

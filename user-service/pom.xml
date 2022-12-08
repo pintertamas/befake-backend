@@ -10,7 +10,7 @@
     </parent>
     <groupId>com.pintertamas</groupId>
     <artifactId>user-service</artifactId>
-    <version>latest</version>
+    <version>kubernetes</version>
     <name>user-service</name>
     <description>user-service</description>
     <properties>

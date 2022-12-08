@@ -10,7 +10,7 @@
     </parent>
     <groupId>com.pintertamas.befake</groupId>
     <artifactId>interaction-service</artifactId>
-    <version>latest</version>
+    <version>kubernetes</version>
     <name>interaction-service</name>
     <description>interaction-service</description>
     <properties>

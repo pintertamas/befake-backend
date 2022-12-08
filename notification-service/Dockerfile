@@ -11,6 +11,6 @@ RUN mvn -f /home/app/pom.xml package clean install
 #
 FROM openjdk:17-alpine
 MAINTAINER pintertamas
-COPY target/notification-service-latest.jar notification-service-latest.jar
+COPY target/notification-service-kubernetes.jar notification-service-kubernetes.jar
 EXPOSE 8101
-ENTRYPOINT ["java","-jar","/notification-service-latest.jar"]
+ENTRYPOINT ["java","-jar","/notification-service-kubernetes.jar"]

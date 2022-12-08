@@ -11,6 +11,6 @@ RUN mvn -f /home/app/pom.xml package clean install
 #
 FROM openjdk:17-alpine
 MAINTAINER pintertamas
-COPY target/load-test-validation-service-latest.jar load-test-validation-service-latest.jar
+COPY target/load-test-validation-service-kubernetes.jar load-test-validation-service-kubernetes.jar
 EXPOSE 8888
-ENTRYPOINT ["java","-jar","/load-test-validation-service-latest.jar"]
+ENTRYPOINT ["java","-jar","/load-test-validation-service-kubernetes.jar"]
