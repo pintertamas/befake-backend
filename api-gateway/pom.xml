@@ -10,7 +10,7 @@
     </parent>
     <groupId>com.pintertamas.befake</groupId>
     <artifactId>api-gateway</artifactId>
-    <version>latest</version>
+    <version>kubernetes</version>
     <name>api-gateway</name>
     <description>API gateway for the BeFake app</description>
     <properties>

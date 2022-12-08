@@ -10,7 +10,7 @@
     </parent>
     <groupId>com.pintertamas.befake</groupId>
     <artifactId>authorization-service</artifactId>
-    <version>latest</version>
+    <version>kubernetes</version>
     <name>authorization-service</name>
     <description>This is the authorization service of the BeFake app</description>
     <properties>

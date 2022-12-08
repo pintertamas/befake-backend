@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>com.pintertamas.befake</groupId>
 	<artifactId>naming-server</artifactId>
-	<version>latest</version>
+	<version>kubernetes</version>
 	<name>naming-server</name>
 	<description>Naming server for the BeFake app</description>
 	<properties>

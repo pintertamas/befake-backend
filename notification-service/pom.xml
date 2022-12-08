@@ -10,7 +10,7 @@
     </parent>
     <groupId>com.pintertamas.befake</groupId>
     <artifactId>notification-service</artifactId>
-    <version>latest</version>
+    <version>kubernetes</version>
     <name>notification-service</name>
     <description>notification-service</description>
     <properties>

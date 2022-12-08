@@ -152,7 +152,7 @@ spec:
     spec:
       containers:
         - name: interaction-service
-          image: pintertamas/interaction-service:SNAPSHOT-0.0.1
+          image: pintertamas/interaction-service:kubernetes
           env:
             - name: EUREKA_CLIENT_ENABLED
               value: 'false'

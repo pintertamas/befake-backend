@@ -10,7 +10,7 @@
     </parent>
     <groupId>com.pintertamas.befake</groupId>
     <artifactId>load-test-validation-service</artifactId>
-    <version>latest</version>
+    <version>kubernetes</version>
     <name>load-test-validation-service</name>
     <description>load-test-validation-service</description>
     <properties>

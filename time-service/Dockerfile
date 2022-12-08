@@ -11,6 +11,6 @@ RUN mvn -f /home/app/pom.xml package clean install
 #
 FROM openjdk:17-alpine
 MAINTAINER pintertamas
-COPY target/time-service-latest.jar time-service-latest.jar
+COPY target/time-service-kubernetes.jar time-service-kubernetes.jar
 EXPOSE 8081
-ENTRYPOINT ["java","-jar","/time-service-latest.jar"]
+ENTRYPOINT ["java","-jar","/time-service-kubernetes.jar"]

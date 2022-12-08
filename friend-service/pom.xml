@@ -10,7 +10,7 @@
     </parent>
     <groupId>com.pintertamas.befake</groupId>
     <artifactId>friend-service</artifactId>
-    <version>latest</version>
+    <version>kubernetes</version>
     <name>friend-service</name>
     <description>This service is responsible for the user-user connections in the BeFake app</description>
     <properties>
