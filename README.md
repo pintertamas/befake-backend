@@ -2,6 +2,10 @@ This project is the Spring Boot backend of a photo sharing app. It is for my the
 
 ---
 
+To start it up, follow the instructions in the ```!install.txt``` file.
+
+---
+
 Ports:
 
 | service name           | port        |
