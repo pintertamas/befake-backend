@@ -1,0 +1,70 @@
+---------- MAGYAR / HUNGARIAN ---------
+
+A projektet több féle képpen lehet kipróbálni, ezek módját ebben a text fájlban ismertetem.
+
+- Docker futtatás esetén a docker-eureka mappábban található docker-compose.yaml fájl-t kell használni, ebben több példányban vannak egyes microservice-ek, így az Eureka UI-nak is hasznát vehetjük, ami a localhost:8761 porton fut majd.
+	Ennek a compose-nak a futtatását két féle képpen tehetjük meg:
+		- IntellIJ IDE esetén a fájlban megjelenő docker-compose up gombbal (két kis zöld nyíl a kódot tartalmazó ablak bal felső sarkánál)
+		- Terminálból pedig a mappába navigálva a 'docker-compose up' parancsot kiadva.
+
+- lokális futtatás esetén a GitHub repository-t érdemes clone-olni (https://github.com/pintertamas/befake-backend).
+	Az én fejlesztői környezetemen a BellSoft 17-es Java JDK-ja fut, így azzal érdemes megpróbálni ezt a fajta futtatást.
+	Ahhoz, hogy működjön minden, az előző pontban bemutatott docker-compose fájlból a rabbitmq, zipkin, zookeeper és kafka image-eket el kell indítani először.
+		Ha nem IntellIJ-t használunk, akkor a fájlban megjelölt image-eket szedjök le és futtassuk a
+		'docker pull <image neve>:<image tagje>' és az itt található leírás alapján futtassuk: https://docs.docker.com/engine/reference/commandline/run/
+
+Hozzunk létre lokálisan a postgres:latest image alapján egy PostgreSQL adatbáziskezelőt, ami az 5432 porton fusson és csináljunk benne 4 adatbázist user-service, post-service, friend-service és interaction-service néven.
+Ha a lokális futtatást választjuk, akkor egy AWS fiókot is létre kell hozni és saját kulcsokat generálni, ugyanis nem akarom az enyémeket nyilvánosságra hozni értelemszerűen.
+Ebben az esetben a fent említett 4 service application-properties fájljában az alábbi két sor a következő módon nézzen ki:
+	aws.access.key.id=<saját AWS access key>
+	aws.secret.access.key=<saját AWS secret key>
+
+Miután futnak a szerverek, a Postman OpenAPI documentation mappában található json fájlokat importáljuk be a Postman nevű alkalmazásba, ahol látható lesz az összes elérhető endpoint mintaadatokkal.
+Azt fontos megjegyezni, hogy ezek a mintaadatok egy már elkészített környezetben lettek előkészítve, így ha hiba mentesen akarjuk kipróbálni az alkalmazás funkcionalitását, ahhoz érdemes végigcsinálni az összes lépést.
+
+- Mobil futtatás esetén klónozzuk le a befake-mobile repository-t (https://github.com/pintertamas/befake-mobile).
+	Ha ezzel megvagyunk és betöltött a projekt, bizonyosodjunk meg róla, hogy sync-elve vannak a gradle függőségek,
+	a NetworkService-ben lévő 'ENDPOINT_URL'-t írjuk át a saját gépünk lokális IP címére, hogy oda mehessenek a kérések,
+	majd egy emulátor létrehozása után futtathatjuk is rajta az appot a zöld háromszögre kattintva.
+
+- Egy rövid ideig még ki lehet próbálni az alkalmazást olyan módon is, hogy a Postman-ben lecseréljük az URL elejét a www.tamaspinter.com domain-re, ahol a felhőszolgáltatásban futó Kubernetes cluster-t érjük el.
+	Ez nem sokáig lesz elérhető, ugyanis rendkívül költséges a fenntartása és csak egy kis időre kaptam hozzáférést az IBM Cloudhoz.
+
+
+Kíváncsiság esetén érdemes lehet megnézni a https://github.com/pintertamas/befake-backend/tree/main/docs címen elérhető tartalmakat,
+ugyanis itt van a haladáási naplóm, tervezési megfontolásokról szóló dokumentációk és sok kép, amikből nem minden került bele a dolgozatomba.
+
+---------- ENGLISH / ANGOL ----------
+
+To try out the project, there are several methods described in this text file.
+
+- For Docker runtime, use the docker-compose.yaml file located in the docker-eureka folder, which contains multiple instances of some microservices, allowing us to also use the Eureka UI, which will run on localhost:8761.
+This compose can be run in two ways:
+    - In IntellIJ IDE, using the docker-compose up button (two small green arrows in the upper left corner of the code window)
+    - In the terminal, navigate to the folder and run the 'docker-compose up' command.
+
+- For local runtime, clone the GitHub repository (https://github.com/pintertamas/befake-backend).
+    In my development environment, the BellSoft 17 Java JDK is running, so it is best to try this type of run with it.
+    In order for everything to work, the rabbitmq, zipkin, zookeeper, and kafka images mentioned in the previous point must be started first.
+        If you are not using IntellIJ, download and run the images mentioned in the file using the
+        'docker pull <image name>:<image tag>' and the instructions found here: https://docs.docker.com/engine/reference/commandline/run/
+
+Create a PostgreSQL database manager based on the postgres:latest image locally, which runs on port 5432 and create 4 databases named user-service, post-service, friend-service and interaction-service.
+If you choose local runtime, you must also create an AWS account and generate your own keys, as I do not want to make mine public.
+In this case, the following two lines in the application-properties files of the 4 services mentioned above should look like this:
+    aws.access.key.id=<your AWS access key>
+    aws.secret.access.key=<your AWS secret key>
+
+After the servers are running, import the json files in the Postman OpenAPI documentation folder into the Postman application, where you can see all available endpoints with sample data.
+It is important to note that these sample data are from an already created environment, so you may have to change some of the parameters (for example, the ID of a post or comment) to see the real response.
+You can create your own environment in Postman, where you can change the base URLs of the services and other parameters.
+
+- For mobile runtime, clone the befake-mobile repository (https://github.com/pintertamas/befake-mobile).
+    Once this is done and the project is loaded, make sure the gradle dependencies are synced, replace the 'ENDPOINT_URL' in the NetworkService with your local IP address so the requests can be sent there, and then create an emulator and run the app on it by clicking on the green triangle.
+
+- For a short time, the application can also be tried by replacing the beginning of the URL in Postman with the www.tamaspinter.com domain, where we can reach the Kubernetes cluster running in the cloud service.
+    This will not be available for long, as it is extremely costly to maintain and I only have access to IBM Cloud for a short time.
+
+If you are curious, it may be worth checking out the contents available at https://github.com/pintertamas/befake-backend/tree/main/docs, as this is where my progress log, design documentation, and many images that did not make it into my thesis can be found.
+
+If you have any questions or problems, please contact me.
