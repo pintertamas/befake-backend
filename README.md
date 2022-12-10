@@ -25,6 +25,9 @@ Ports:
 | post-service           | 8001        |
 | postgres               | 5432        |
 
+---
+*Ignore this section if you are not planning on running this project on Google Kubernetes Engine*
+
 Service host name environment variables:
 (this table is only useful if the services are running on GKE. It generates environment variables for the services and these variables can be used for service discovery in the FeignClient. When being used, FeignClient must have the url tag in the following form:
 ```url = "${<environment variable>:http://localhost}:<the port that the service is running on>"```)
